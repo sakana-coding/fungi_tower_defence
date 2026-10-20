@@ -65,6 +65,7 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	var initial_root_children: Array[Node] = root.get_children()
 	root.size = Vector2i(1200, 920)
 	_create_fixture()
 	await _frames(12)
@@ -74,7 +75,8 @@ func _run() -> void:
 	await _test_exit_unpauses()
 	_fixture.free()
 	await _frames(2)
-	_check(not paused and root.get_child_count() == 0, "Fixture cleanup leaves no paused tree or orphan UI")
+	_check(not paused and root.get_children() == initial_root_children,
+		"Fixture cleanup leaves no paused tree or orphan UI and preserves autoloads")
 	print("STAGE11_PAUSE_UI_TEST_RESULT ", JSON.stringify({"checks": checks,
 		"failures": failures, "evidence": evidence,
 		"scope": "standalone SceneTree pause, sibling process/physics/Timer/Tween, actual viewport GUI events and copied result snapshots"}))

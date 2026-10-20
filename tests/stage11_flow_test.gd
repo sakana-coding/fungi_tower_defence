@@ -6,8 +6,8 @@ const CORE_SCENE: PackedScene = preload("res://scenes/colony/mother_core.tscn")
 const SPAWNER_SCENE: PackedScene = preload("res://scenes/systems/enemy_spawner.tscn")
 const NORMAL_SCENE: PackedScene = preload("res://scenes/enemies/basic_enemy.tscn")
 const EXPECTED: Array[Array] = [
-	[6, 0, 0, 0], [6, 2, 0, 0], [6, 4, 0, 0],
-	[6, 4, 2, 0], [8, 4, 1, 1], [8, 5, 3, 0],
+	[8, 0, 0, 0], [7, 3, 0, 0], [7, 6, 0, 0],
+	[8, 6, 2, 0], [9, 6, 2, 1], [10, 6, 4, 1],
 ]
 const SNAPSHOT_KEYS: Array[String] = [
 	"state", "wave_index", "completed_waves", "wave_total", "planned", "spawned",
@@ -25,6 +25,7 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	var initial_root_children: Array[Node] = root.get_children()
 	root.size = Vector2i(1200, 800)
 	_test_resources()
 	await _test_manual_pause_and_timer()
@@ -34,7 +35,7 @@ func _run() -> void:
 	await _test_reentrant_start_and_completion()
 	await _test_synchronous_completion()
 	await _test_configuration_guards()
-	_check(root.get_child_count() == 0, "Flow fixtures dispose all nodes")
+	_check(root.get_children() == initial_root_children, "Flow fixtures dispose all added nodes and preserve autoloads")
 	print("STAGE11_FLOW_TEST_RESULT ", JSON.stringify({"checks": checks,
 		"failures": failures, "evidence": evidence,
 		"fixture": "real EnemySpawner and enemy scenes; shortened intervals, stationary actors, direct damage; no playable-level balance claim"}))
@@ -80,7 +81,8 @@ func _test_resources() -> void:
 			total += amount
 		schedules.append({"wave": index + 1, "spawn_span_seconds": span - last_gap,
 			"anchors": points.keys()})
-	_check(total == 66, "Formal six waves plan exactly 66 individuals without multiplying swarm groups")
+	_check(total == 86 and flow.get_total_planned_count() == total,
+		"Formal six waves plan 86 individuals and expose the configured victory target")
 	evidence["resource_counts"] = counts
 	evidence["initial_schedules"] = schedules
 	flow.free()
@@ -253,13 +255,13 @@ func _test_six_waves_and_candidate() -> void:
 			_check(snapshot["state"] == "preparation" and snapshot["preparation_remaining"] == 20.0
 				and fixture["candidates"].is_empty(), "First five clears prepare without a victory candidate")
 	var final := flow.get_snapshot()
-	_check(final["state"] == "victory_candidate" and final["total_defeated"] == 66
+	_check(final["state"] == "victory_candidate" and final["total_defeated"] == 86
 		and fixture["starts"].size() == 6 and fixture["finishes"].size() == 6,
-		"Six true clears produce exactly 66 normal defeats and six completed batches")
+		"Six true clears produce exactly 86 normal defeats and six completed batches")
 	_check(fixture["candidates"].size() == 1, "Sixth clear emits exactly one candidate for the owning level")
 	var candidate: Dictionary = fixture["candidates"][0]
 	_check(candidate["completed_waves"] == 6 and candidate["wave_index"] == 6
-		and candidate["total_defeated"] == 66 and candidate["state"] == "completed"
+		and candidate["total_defeated"] == 86 and candidate["state"] == "completed"
 		and candidate["batch_id"] == final["batch_id"] and candidate["generation"] == final["batch_generation"]
 		and candidate["removed"] == 0 and candidate["active"] == 0 and candidate["unspawned"] == 0,
 		"Candidate supplies matching batch identity/generation and complete normal-death evidence")

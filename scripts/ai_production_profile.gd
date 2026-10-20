@@ -4,6 +4,7 @@ extends Resource
 
 @export var preparation_seconds: float = 30.0
 @export var cycle_seconds: float = 35.0
+@export var source_stagger_seconds: float = 0.0
 @export var warning_seconds: float = 5.0
 @export var destruction_grace_seconds: float = 20.0
 @export var advanced_after_seconds: float = 70.0
@@ -20,7 +21,7 @@ extends Resource
 
 
 func is_valid() -> bool:
-	for value: float in [preparation_seconds, warning_seconds, destruction_grace_seconds,
+	for value: float in [preparation_seconds, source_stagger_seconds, warning_seconds, destruction_grace_seconds,
 			advanced_after_seconds, full_after_seconds]:
 		if not is_finite(value) or value < 0:
 			return false

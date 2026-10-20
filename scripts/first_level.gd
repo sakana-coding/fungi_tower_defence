@@ -204,8 +204,10 @@ func _resolve_result() -> void:
 	var failed: bool = _failure_pending or mother_core.health <= 0
 	var flow: Dictionary = wave_flow.get_snapshot()
 	var batch: Dictionary = enemy_spawner.get_batch_snapshot()
+	var total_planned: int = wave_flow.get_total_planned_count()
 	var won: bool = not _pending_victory.is_empty() and not failed \
-		and int(flow.get("completed_waves", 0)) == 6 and int(flow.get("total_defeated", 0)) == 66 \
+		and total_planned > 0 and int(flow.get("completed_waves", 0)) == FirstLevelFlow.WAVE_TOTAL \
+		and int(flow.get("total_defeated", 0)) == total_planned \
 		and String(batch.get("state")) == "completed" and int(batch.get("removed", -1)) == 0 \
 		and int(batch.get("spawned", -1)) == int(batch.get("planned", 0)) \
 		and int(batch.get("defeated", -1)) == int(batch.get("planned", 0)) \

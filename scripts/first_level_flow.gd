@@ -254,6 +254,16 @@ func get_snapshot() -> Dictionary:
 	}
 
 
+func get_total_planned_count() -> int:
+	var total: int = 0
+	for wave: FirstLevelWave in waves:
+		var count: int = _get_wave_count(wave)
+		if count <= 0:
+			return 0
+		total += count
+	return total
+
+
 func stop(reason: StringName) -> void:
 	if _state == &"stopped":
 		return

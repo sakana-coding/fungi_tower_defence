@@ -50,7 +50,12 @@ func _dispose(level: ThirdLevel) -> void:
 
 
 func _initial_and_collection() -> void:
+	var defaults := ExplorationProductionProfile.new()
+	_check(defaults.source_stagger_seconds == 6.0 and defaults.is_valid(),
+		"third-level profile inherits the shared offset and retains its six-second default")
 	var level: ThirdLevel = await _fresh()
+	_check(level.wave_flow.profile.source_stagger_seconds == 6.0,
+		"saved third-level production keeps its original source offset")
 	var controller: FragmentCollectionController = level.fragment_collection
 	controller.set_process(false)
 	var targets: Array[MemoryFragment] = level.get_fragment_targets()

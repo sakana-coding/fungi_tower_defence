@@ -12,6 +12,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	await _initial_and_real_attack()
+	await _staggered_start_and_grace()
 	await _production_and_targets()
 	await _death_priority(false)
 	await _death_priority(true)
@@ -56,8 +57,8 @@ func _initial_and_real_attack() -> void:
 			and level.wave_flow.profile.preparation_seconds == configured.preparation_seconds \
 			and level.wave_flow.profile.cycle_seconds == configured.cycle_seconds,
 		"production uses an isolated copy of the current editable second-level timing configuration")
-	_check(level.wave_flow.profile.destruction_grace_seconds == 20, "destruction provides a configured twenty-second grace")
-	_check(level.get_facility_targets().map(func(ai: AIFacility) -> int: return ai.health) == [120, 180, 240],
+	_check(level.wave_flow.profile.destruction_grace_seconds == 45, "destruction provides at least forty-five seconds to rebuild and advance")
+	_check(level.get_facility_targets().map(func(ai: AIFacility) -> int: return ai.health) == [120, 156, 192],
 		"three stable facilities retain their independent initial health")
 	_check(level.get_node("World/Remains").get_child_count() == 2, "two eighty-nutrient sources are present")
 	_check(level.compact_hud.visible and not level.compact_hud.drawer.visible,
@@ -124,14 +125,62 @@ func _initial_and_real_attack() -> void:
 	await _dispose(level)
 
 
+func _staggered_start_and_grace() -> void:
+	var level: SecondLevel = await _fresh()
+	var producer: AIProductionController = level.wave_flow
+	var left: Dictionary = producer._sources[&"left"]
+	var center: Dictionary = producer._sources[&"center"]
+	var right: Dictionary = producer._sources[&"right"]
+	_check(is_equal_approx(float(center.remaining) - float(left.remaining), 6.0)
+		and is_equal_approx(float(right.remaining) - float(center.remaining), 6.0),
+		"initial production offsets the three entrances by six seconds")
+	_check(producer.profile.get_scenes_for_cycle(119, 0, 0).size() == 1
+		and producer.profile.get_scenes_for_cycle(120, 0, 0).size() == 3
+		and producer.profile.get_scenes_for_cycle(239, 0, 0).size() == 3
+		and producer.profile.get_scenes_for_cycle(240, 0, 0).size() == 5,
+		"small enemies begin at 120 seconds and mixed heavy pressure at 240 seconds")
+	_check(producer.profile.max_alive_per_source == 10, "three intact sources allow at most 30 live or pending enemies")
+	_check(level.start_next_wave() and left.remaining == 0.0
+		and center.remaining == 6.0 and right.remaining == 12.0,
+		"early start removes preparation while retaining entrance offsets")
+	# Only advance production in this timing fixture; normal playthrough covers the full simulation clock.
+	producer._process(0.01)
+	_check(left.cycles == 1 and center.cycles == 0 and right.cycles == 0,
+		"early start releases only the first source immediately")
+	producer._process(6.0)
+	_check(left.cycles == 1 and center.cycles == 1 and right.cycles == 0,
+		"center source follows the first source instead of creating a simultaneous burst")
+	producer._process(6.0)
+	_check(right.cycles == 1, "right source follows after its own offset")
+	level.get_facility_targets()[0].take_damage(999)
+	_check(center.remaining == 51.0 and right.remaining == 57.0,
+		"destroying a source grants recovery time without synchronizing the surviving sources")
+	var profile: AIProductionProfile = producer.profile.duplicate(true)
+	profile.source_stagger_seconds = -1.0
+	_check(not profile.is_valid(), "negative source offsets are rejected")
+	profile.source_stagger_seconds = INF
+	_check(not profile.is_valid(), "nonfinite source offsets are rejected")
+	await _dispose(level)
+	level = await _fresh()
+	producer = level.wave_flow
+	left = producer._sources[&"left"]
+	center = producer._sources[&"center"]
+	left.remaining = 55.0
+	center.remaining = 1.0
+	level.get_facility_targets()[2].take_damage(999)
+	_check(left.remaining == 55.0 and center.remaining == 61.0,
+		"grace never advances an existing cooldown and retains six seconds between survivors")
+	await _dispose(level)
+
+
 func _production_and_targets() -> void:
 	var level: SecondLevel = await _fresh()
 	var producer: AIProductionController = level.wave_flow
 	producer.profile.cycle_seconds = 0.35
+	producer.profile.source_stagger_seconds = 0.0
 	producer.profile.normal_count = 2
 	producer.profile.member_interval = 0.8
 	producer.profile.destruction_grace_seconds = 0.1
-	producer.profile.max_alive_per_source = 18
 	producer.enemy_created.connect(func(enemy: BasicEnemy) -> void: enemy.move_speed = 0.0)
 	_check(level.start_next_wave(), "initial preparation may be ended through the existing start intent")
 	_check(not level.start_next_wave(), "repeated start intent cannot repeat initial preparation")
@@ -161,7 +210,8 @@ func _production_and_targets() -> void:
 	_check(producer._source_load(&"left") == left_survivors.size(),
 		"destroying a source cancels its pending members instead of releasing them later")
 	await _frames(120)
-	_check(producer._source_load(&"center") <= 18, "production remains bounded by configured live-plus-pending pressure")
+	_check(producer._source_load(&"center") <= producer.profile.max_alive_per_source,
+		"production remains bounded by configured live-plus-pending pressure")
 	# Target strategy fixtures use a live map with closer, nonmatching tissues.
 	for spec: Array in [["silk_gnawer_enemy", HyphaEdge], ["junction_gnawer_enemy", HyphaNode]]:
 		var gnawer := load("res://scenes/enemies/%s.tscn" % spec[0]).instantiate() as BasicEnemy

@@ -41,13 +41,14 @@ func configure(level: ColonyLevelRuntime, facilities: Array[AIFacility]) -> void
 			_stopped = true
 			_sources.clear()
 			return
-		_sources[facility.facility_id] = {"facility": facility, "remaining": profile.preparation_seconds,
+		var initial_delay: float = profile.preparation_seconds + _sources.size() * profile.source_stagger_seconds
+		_sources[facility.facility_id] = {"facility": facility, "remaining": initial_delay,
 			"cycles": 0, "index": _sources.size(), "phase": &"preparing"}
 	for id: StringName in _sources:
 		var facility: Variant = _sources[id].facility
 		facility.facility_destroyed.connect(_on_facility_destroyed)
 		facility.tree_exiting.connect(_on_facility_exiting.bind(id))
-		facility.set_production_state(&"preparing", profile.preparation_seconds)
+		facility.set_production_state(&"preparing", float(_sources[id].remaining))
 	_configured = true
 	changed.emit(get_snapshot())
 
@@ -91,7 +92,7 @@ func begin_attack() -> bool:
 		if int(record.cycles) > 0:
 			return false
 	for record: Dictionary in _sources.values():
-		record.remaining = 0.0
+		record.remaining = int(record.index) * profile.source_stagger_seconds
 	_preparation_skipped = true
 	return true
 
@@ -137,8 +138,17 @@ func _on_facility_destroyed(id: StringName) -> void:
 	for batch: Dictionary in _batches:
 		if batch.source_id == id and is_instance_valid(batch.spawner):
 			(batch.spawner as EnemySpawner).stop_spawning(&"source_destroyed")
+	# 统一推迟剩余来源，再恢复入口差；任何来源都不会比原定时刻更早生产。
+	var next_cycle_delay: float = profile.destruction_grace_seconds
 	for record: Dictionary in _sources.values():
-		record.remaining = maxf(float(record.remaining), profile.destruction_grace_seconds)
+		var source: Variant = record.facility
+		if is_instance_valid(source) and source.is_alive():
+			next_cycle_delay = maxf(next_cycle_delay,
+				float(record.remaining) - int(record.index) * profile.source_stagger_seconds)
+	for record: Dictionary in _sources.values():
+		var source: Variant = record.facility
+		if is_instance_valid(source) and source.is_alive():
+			record.remaining = next_cycle_delay + int(record.index) * profile.source_stagger_seconds
 	changed.emit(get_snapshot())
 	if destroyed_ids.size() == 3:
 		objective_completed.emit({"level_id": "second_level", "completed": 3, "total": 3,

@@ -117,14 +117,14 @@ position = Vector2(600, 205)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"center"
 display_name = "中央绘图终端"
-max_health = 180
+max_health = 156
 
 [node name="RightAI" parent="World/Enemies" node_paths=PackedStringArray("mother_core") instance=ExtResource("10_facility")]
 position = Vector2(1000, 270)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"right"
 display_name = "右侧绘图终端"
-max_health = 240
+max_health = 192
 
 [node name="TerrainNavigation" type="Node2D" parent="World"]
 script = ExtResource("15_terrain")

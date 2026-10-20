@@ -2,13 +2,15 @@ class_name ExplorationProductionProfile
 extends AIProductionProfile
 ## 第三关独立配比；复用五类敌人资源和批次身份，不修改第二关配置。
 
-@export var source_stagger_seconds: float = 6.0
 @export var collection_grace_seconds: float = 15.0
 
 
+func _init() -> void:
+	source_stagger_seconds = 6.0
+
+
 func is_valid() -> bool:
-	return super.is_valid() and is_finite(source_stagger_seconds) and source_stagger_seconds >= 0 \
-		and is_finite(collection_grace_seconds) and collection_grace_seconds >= 0
+	return super.is_valid() and is_finite(collection_grace_seconds) and collection_grace_seconds >= 0
 
 
 func get_stage(elapsed: float, collected: int) -> int:

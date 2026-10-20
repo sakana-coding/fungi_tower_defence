@@ -57,7 +57,7 @@ func _run() -> void:
 	_check(_is_clean(), "restart during battle clears enemies and counters")
 	await _finish_fixture(false, false)
 	_check(bool(level.get_result_snapshot().get("victory", false)), "six real batch identities create one victory")
-	_check(level.get_result_snapshot().get("total_defeated") == 66, "victory reports exactly66")
+	_check(level.get_result_snapshot().get("total_defeated") == 86, "victory reports all 86 configured enemies")
 	_check(level.get_result_snapshot().get("completed_waves") == 6, "six waves completed")
 	_check(level.get_result_snapshot().get("resources", {}).get("balanced", false), "end snapshot balanced before cleanup")
 	var result: Dictionary = level.get_result_snapshot()
@@ -69,6 +69,13 @@ func _run() -> void:
 	await _frames(5)
 	level = current_scene as FirstLevel
 	_check(_is_clean(), "restart after victory is clean")
+	await _finish_fixture(false, false, true)
+	_check(bool(level.get_result_snapshot().get("victory", false))
+		and level.get_result_snapshot().get("total_defeated") == 6,
+		"editable six-enemy fixture wins without a hard-coded total")
+	level.restart_level()
+	await _frames(5)
+	level = current_scene as FirstLevel
 	await _finish_fixture(true, false)
 	_check(not bool(level.get_result_snapshot().get("victory", true)) and level.mother_core.health == 0, "same frame last enemy then core death fails")
 	level.restart_level()
@@ -95,11 +102,15 @@ func _fresh() -> void:
 	current_scene = level
 	await _frames(2)
 
-func _finish_fixture(fail_same_frame: bool, core_first: bool) -> void:
+func _finish_fixture(fail_same_frame: bool, core_first: bool, single_member: bool = false) -> void:
 	# Fixture-only spawn rhythm; production configs and all costs are unchanged on disk.
 	var fixture_waves: Array[FirstLevelWave] = []
 	for wave: FirstLevelWave in level.wave_flow.waves:
 		var fixture: FirstLevelWave = wave.duplicate(true) as FirstLevelWave
+		if single_member:
+			fixture.entries = [fixture.entries[0]]
+			fixture.entries[0].group_count = 1
+			fixture.entries[0].group_size = 1
 		for entry: EnemySpawnEntry in fixture.entries:
 			entry.group_interval = 0.02
 			entry.member_interval = 0.02

@@ -1,0 +1,251 @@
+{
+  "date": "2026-10-20",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "baseline_commit": "88e1c779c08ae2e2387652eaa019da97eaf022f4",
+  "scope": "第一关六波人数与密度；第二关独立生产、入口错开、压力上限、摧毁整备和终端生命；共用武器/敌人/费用及第三关未调整。",
+  "first_level": {
+    "wave_counts": [
+      8,
+      10,
+      13,
+      16,
+      18,
+      21
+    ],
+    "total_enemies": 86,
+    "group_intervals_seconds": [
+      5,
+      4.8,
+      4.6,
+      4.4,
+      4.2,
+      4
+    ],
+    "spawn_spans_seconds": [
+      35,
+      34.1,
+      37.8,
+      49.4,
+      55.6,
+      65
+    ],
+    "intermission_seconds": 20,
+    "initial_preparation": "manual"
+  },
+  "second_level": {
+    "preparation_seconds": 45,
+    "cycle_seconds": 35,
+    "source_stagger_seconds": 6,
+    "swarm_after_seconds": 120,
+    "full_after_seconds": 240,
+    "max_alive_and_pending_per_source": 10,
+    "destruction_grace_seconds": 45,
+    "facility_health": [
+      120,
+      156,
+      192
+    ]
+  },
+  "suites": [
+    {
+      "test": "stage11_flow_test",
+      "checks": 7517,
+      "failures": [],
+      "exit_diagnostics": []
+    },
+    {
+      "test": "stage11_pause_ui_test",
+      "checks": 55,
+      "failures": [],
+      "exit_diagnostics": []
+    },
+    {
+      "test": "second_level_test",
+      "checks": 64,
+      "failures": [],
+      "exit_diagnostics": [
+        "WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+      ]
+    },
+    {
+      "test": "stage11_integration_test",
+      "checks": 100,
+      "failures": [],
+      "exit_diagnostics": [
+        "WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 3 resources still in use at exit (run with --verbose for details)."
+      ]
+    }
+  ],
+  "total_functional_checks": 7736,
+  "normal_simulations": {
+    "command_options": "--headless --disable-render-loop --fixed-fps 60",
+    "boundary": "自动提交真实付费操作，仅省略HUD刷新；未注入营养、伤害、成长或免费建造。路线可行性不等同于人工难度验收。",
+    "first_level": {
+      "script": "tests/first_level_playthrough_test.gd",
+      "execution": "60帧临时校准脚本；同一操作路线已整理进项目回放脚本",
+      "victory": true,
+      "elapsed_seconds": 425.433,
+      "core_health": 240,
+      "defeated": 86,
+      "mature_organs": 7,
+      "tissue_hits": 22,
+      "lost_tissues": 0,
+      "repair_nutrition": 60,
+      "ledger_balanced": true,
+      "events": [
+        {
+          "accepted": true,
+          "kind": "left_build",
+          "time": 0.05
+        },
+        {
+          "accepted": true,
+          "kind": "right_build",
+          "time": 30.0166666666662
+        },
+        {
+          "core": 240,
+          "kind": "wave",
+          "nutrition": 52,
+          "recovered": 10,
+          "time": 30.0333333333329,
+          "wave": 1,
+          "weapons": 2
+        },
+        {
+          "direction": 1,
+          "kind": "specialize",
+          "point": "(470.0, 480.0)",
+          "time": 77.1166666666636
+        },
+        {
+          "direction": 2,
+          "kind": "specialize",
+          "point": "(730.0, 480.0)",
+          "time": 84.2333333333298
+        },
+        {
+          "core": 240,
+          "kind": "wave",
+          "nutrition": 189,
+          "recovered": 220,
+          "time": 88.0833333333296,
+          "wave": 2,
+          "weapons": 4
+        },
+        {
+          "accepted": true,
+          "kind": "reinforce",
+          "point": "(800.0, 390.0)",
+          "time": 88.0833333333296
+        },
+        {
+          "direction": 1,
+          "kind": "specialize",
+          "point": "(925.0, 390.0)",
+          "time": 91.3499999999961
+        },
+        {
+          "direction": 1,
+          "kind": "specialize",
+          "point": "(822.1928, 393.3947)",
+          "time": 100.499999999996
+        },
+        {
+          "core": 240,
+          "kind": "wave",
+          "nutrition": 160,
+          "recovered": 248,
+          "time": 146.050000000008,
+          "wave": 3,
+          "weapons": 5
+        },
+        {
+          "accepted": true,
+          "kind": "reinforce",
+          "point": "(420.0, 360.0)",
+          "time": 146.050000000008
+        },
+        {
+          "core": 240,
+          "kind": "wave",
+          "nutrition": 147,
+          "recovered": 292,
+          "time": 206.050000000056,
+          "wave": 4,
+          "weapons": 6
+        },
+        {
+          "core": 240,
+          "kind": "wave",
+          "nutrition": 148,
+          "recovered": 344,
+          "time": 278.016666666742,
+          "wave": 5,
+          "weapons": 6
+        },
+        {
+          "core": 240,
+          "kind": "wave",
+          "nutrition": 145,
+          "recovered": 400,
+          "time": 355.516666666672,
+          "wave": 6,
+          "weapons": 6
+        }
+      ],
+      "exit_diagnostics": [
+        "WARNING: 18 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 9 resources still in use at exit (run with --verbose for details)."
+      ]
+    },
+    "second_level": [
+      {
+        "order": [
+          "left",
+          "center",
+          "right"
+        ],
+        "victory": true,
+        "elapsed_seconds": 214.983,
+        "core_health": 240,
+        "spawned": 8,
+        "ledger_balanced": true
+      },
+      {
+        "order": [
+          "right",
+          "center",
+          "left"
+        ],
+        "victory": true,
+        "elapsed_seconds": 243.867,
+        "core_health": 240,
+        "spawned": 16,
+        "ledger_balanced": true
+      }
+    ]
+  },
+  "limitations": [
+    "未进行本轮人工键鼠难度复测或导出验收。",
+    "部分终局夹具或校准进程退出时出现资源引用清理诊断；未将断言通过描述为无引擎警告。"
+  ],
+  "saved_first_level_replay": {
+    "script": "tests/first_level_playthrough_test.gd",
+    "command_options": "--headless --disable-render-loop --fixed-fps 20",
+    "exit_code": 0,
+    "failures": [],
+    "victory": true,
+    "elapsed_seconds": 425.442,
+    "defeated": 86,
+    "core_health": 240,
+    "ledger_balanced": true,
+    "exit_diagnostics": []
+  },
+  "project_import": {
+    "exit_code": 0,
+    "diagnostics": []
+  }
+}
