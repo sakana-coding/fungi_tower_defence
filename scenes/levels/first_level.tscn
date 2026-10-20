@@ -10,7 +10,7 @@
 process_mode = 3
 script = ExtResource("2_level")
 free_camera_enabled = true
-camera_bounds = Rect2(-560, -400, 2320, 1720)
+camera_bounds = Rect2(-120, -80, 1440, 1080)
 
 [node name="World" parent="."]
 process_mode = 1

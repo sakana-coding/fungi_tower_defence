@@ -3,10 +3,13 @@ extends CanvasLayer
 ## 独立的暂停菜单；Space规划暂停仍由原控制器处理，打开菜单不提交任何建设指令。
 
 @onready var overlay: Control = $Overlay
-@onready var resume_button: Button = $Overlay/Center/Panel/Buttons/ResumeButton
-@onready var restart_button: Button = $Overlay/Center/Panel/Buttons/RestartButton
-@onready var title_button: Button = $Overlay/Center/Panel/Buttons/TitleButton
-@onready var quit_button: Button = $Overlay/Center/Panel/Buttons/QuitButton
+@onready var resume_button: Button = $Overlay/Center/Panel/Scroll/Buttons/ResumeButton
+@onready var restart_button: Button = $Overlay/Center/Panel/Scroll/Buttons/RestartButton
+@onready var title_button: Button = $Overlay/Center/Panel/Scroll/Buttons/TitleButton
+@onready var quit_button: Button = $Overlay/Center/Panel/Scroll/Buttons/QuitButton
+@onready var menu_panel: PanelContainer = $Overlay/Center/Panel
+@onready var menu_scroll: ScrollContainer = $Overlay/Center/Panel/Scroll
+@onready var menu_buttons: VBoxContainer = $Overlay/Center/Panel/Scroll/Buttons
 
 var result_title_button: Button
 var result_quit_button: Button
@@ -21,15 +24,16 @@ func configure(level: Node2D) -> void:
 		return
 	_level = level
 	ArtUI.skin_tree(overlay)
-	ArtUI.menu_button(resume_button, "继续游戏")
-	ArtUI.menu_button(restart_button, "重新开始")
-	ArtUI.menu_button(title_button, "返回主菜单")
-	ArtUI.menu_button(quit_button, "退出游戏")
-	ArtUI.typography($Overlay/Center/Panel/Buttons/Title, 38, true)
-	ArtUI.typography($Overlay/Center/Panel/Buttons/Hint, 20)
-	$Overlay/Center/Panel/Buttons/Hint.text = "已解锁的关卡进度会保留。\n当前布局与战斗进度不会保留。"
-	$Overlay/Center/Panel/Buttons/Hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	ArtUI.typography($Overlay/Center/Panel/Buttons/KeyboardHint, 20)
+	ArtUI.menu_button(resume_button, "继续游戏", false, Vector2(270, 76))
+	ArtUI.menu_button(restart_button, "重新开始", false, Vector2(270, 76))
+	ArtUI.menu_button(title_button, "返回主菜单", false, Vector2(270, 76))
+	ArtUI.menu_button(quit_button, "退出游戏", false, Vector2(270, 76))
+	ArtUI.typography(menu_buttons.get_node("Title"), 38, true)
+	var hint_label: Label = menu_buttons.get_node("Hint")
+	ArtUI.typography(hint_label, 20)
+	hint_label.text = "已解锁的关卡进度会保留。\n当前布局与战斗进度不会保留。"
+	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	ArtUI.typography(menu_buttons.get_node("KeyboardHint"), 20)
 	_navigator = get_node_or_null("/root/CampaignFlow") as CampaignNavigator
 	resume_button.pressed.connect(close_menu)
 	restart_button.pressed.connect(_restart)
@@ -45,6 +49,9 @@ func configure(level: Node2D) -> void:
 	row.theme = preload("res://resources/ui/menu_theme.tres")
 	_level.flow_hud.result_panel.size = Vector2(712, 680)
 	get_viewport().size_changed.connect(_layout_result_panel)
+	get_viewport().size_changed.connect(_layout_menu)
+	menu_buttons.minimum_size_changed.connect(_layout_menu)
+	_layout_menu.call_deferred()
 	_layout_result_panel.call_deferred()
 	for button: Button in [_level.flow_hud.result_restart_button, _level.flow_hud.result_continue_button]:
 		button.theme = row.theme
@@ -86,6 +93,16 @@ func _layout_result_panel() -> void:
 		panel.position = (get_viewport().get_visible_rect().size - panel.size) * 0.5
 
 
+func _layout_menu() -> void:
+	if not is_inside_tree():
+		return
+	# 菜单不撑破矮窗口；仅在内容超出时滚动，焦点仍能带到每个按钮。
+	var available_height: float = get_viewport().get_visible_rect().size.y - 48.0
+	var paper: StyleBox = menu_panel.get_theme_stylebox("panel")
+	var content_height: float = menu_buttons.get_combined_minimum_size().y + paper.get_minimum_size().y
+	menu_panel.custom_minimum_size.y = minf(content_height, maxf(240.0, available_height))
+
+
 func _result_button(parent: Node, caption: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = caption
@@ -107,6 +124,8 @@ func open_menu() -> void:
 	resume_button.text = "返回暂停规划" if _was_paused else "继续游戏"
 	resume_button.tooltip_text = resume_button.text
 	overlay.show()
+	menu_scroll.scroll_vertical = 0
+	_layout_menu()
 	resume_button.grab_focus()
 
 
@@ -124,6 +143,8 @@ func is_open() -> bool:
 
 
 func _input(event: InputEvent) -> void:
+	if GameDisplayManager.is_display_shortcut(event):
+		return
 	if not is_open():
 		return
 	if event is InputEventKey:

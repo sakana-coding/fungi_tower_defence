@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/display/display_settings_control.gd" id="1_display"]
+
+[node name="DisplaySettings" type="HBoxContainer"]
+process_mode = 3
+custom_minimum_size = Vector2(300, 48)
+theme_override_constants/separation = 12
+script = ExtResource("1_display")
+
+[node name="ModeButton" type="Button" parent="."]
+custom_minimum_size = Vector2(188, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "无边框全屏"
+
+[node name="ShortcutHint" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "F11 切换"

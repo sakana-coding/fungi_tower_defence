@@ -10,15 +10,12 @@ var first_guide: ThirdLevelGuide
 var compact_hud: CompactColonyHUD
 var _third_ready: bool = false
 var _restart_pending: bool = false
-var _old_content_size: Vector2i
 var _objective_overlay: Node2D
 var _preview_font: SystemFont
 
 
 func _ready() -> void:
-	_old_content_size = get_window().content_scale_size
-	get_window().content_scale_size = Vector2i(1200, 920)
-	get_window().size = Vector2i(1200, 920)
+	GameDisplayManager.ensure(get_tree()).configure_canvas()
 	growth_planner = growth_planner.duplicate(true) as GrowthPlanner
 	growth_planner.bounded_branches_enabled = true
 	growth_planner.auto_join_enabled = true
@@ -122,7 +119,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _exit_tree() -> void:
 	super._exit_tree()
-	get_window().content_scale_size = _old_content_size
 
 
 func start_next_wave() -> bool:

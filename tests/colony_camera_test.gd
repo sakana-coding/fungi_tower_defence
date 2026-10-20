@@ -39,6 +39,10 @@ func _fresh(chapter: String) -> void:
 	await _frames(4)
 	# Synthetic input tests do not depend on which desktop application owns focus.
 	camera.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_IN)
+	# 输入回归使用固定画布夹具；实际屏幕/全屏适配另由显示集成测试覆盖。
+	root.size = Vector2i(1200, 920)
+	await _frames(3)
+	camera.reset_view()
 	camera.view_changed.connect(func() -> void: view_notifications += 1)
 
 
@@ -80,7 +84,7 @@ func _test_view_math(chapter: String) -> void:
 	_check(camera.zoom.x == 0.75, chapter + ": lower zoom limit")
 	camera.pan_by(Vector2(1e6, -1e6))
 	var visible: Rect2 = root.get_canvas_transform().affine_inverse() * root.get_visible_rect()
-	_check(camera.camera_bounds.grow(0.1).encloses(visible), chapter + ": visible extent obeys bounds")
+	_check(_view_obeys_bounds(visible), chapter + ": visible extent obeys bounds or centers an oversized view")
 	var ground: Control = level.get_node("World/Ground")
 	_check(ground.get_rect().encloses(visible), chapter + ": ground covers zoomed out edge")
 	var bounds: Rect2 = camera.camera_bounds
@@ -116,8 +120,19 @@ func _test_resize_and_labels(chapter: String) -> void:
 	await _frames(3)
 	_check(root.get_visible_rect().size.x > screen_rect.size.x, chapter + ": actual window resize changes viewport")
 	var view: Rect2 = root.get_canvas_transform().affine_inverse() * root.get_visible_rect()
-	_check(camera.camera_bounds.grow(0.1).encloses(view), chapter + ": resize recalculates camera limits")
+	_check(_view_obeys_bounds(view), chapter + ": resize recalculates camera limits")
 	_check((level.get_node("World/Ground") as Control).get_rect().encloses(view), chapter + ": resized view remains covered by ground")
+	_check(camera._home_position == Vector2(600, 460), chapter + ": wide window keeps fixed world reset focus")
+	var boundary: MapBoundary = level.get_node("World/MapBoundary")
+	_check(boundary.visible and boundary.buildable_bounds == level.growth_input_controller.placement_bounds,
+		chapter + ": visible boundary follows existing placement rules")
+	root.size = Vector2i(2520, 1080)
+	await _frames(3)
+	camera.pan_by(Vector2(100000, -100000))
+	view = root.get_canvas_transform().affine_inverse() * root.get_visible_rect()
+	_check(_view_obeys_bounds(view), chapter + ": 21:9 view stays centered on oversized axes")
+	_check((level.get_node("World/Ground") as Control).get_rect().encloses(view),
+		chapter + ": 21:9 zoomed out view remains entirely on paper")
 	root.size = Vector2i(1200, 920)
 	await _frames(3)
 	camera.reset_view()
@@ -215,6 +230,7 @@ func _test_pause_previews(chapter: String) -> void:
 	var before: Dictionary = _simulation_snapshot()
 	for mode: Key in [KEY_G, KEY_B, KEY_L]:
 		_tap(mode)
+		_check(level.map_boundary.caption.visible, chapter + ": paused placement shows buildable boundary caption")
 		_motion(Vector2(420, 400))
 		var old_point: Vector2 = level.get_global_mouse_position()
 		_key(KEY_D, true)
@@ -234,6 +250,7 @@ func _test_pause_previews(chapter: String) -> void:
 			chapter + ": paused preview refreshed for " + OS.get_keycode_string(mode))
 		_wheel(Vector2(420, 400), true)
 		_tap(KEY_ESCAPE)
+		_check(not level.map_boundary.caption.visible, chapter + ": cancelled placement hides boundary caption")
 	_check(before == _simulation_snapshot(), chapter + ": previews freeze timers, packets, budget, flow and construction")
 	pause_controller.set_paused(false)
 	camera.reset_view()
@@ -399,6 +416,17 @@ func _simulation_snapshot() -> Dictionary:
 
 func _screen(point: Vector2) -> Vector2:
 	return level.get_canvas_transform() * point
+
+
+func _view_obeys_bounds(view: Rect2) -> bool:
+	for axis: int in range(2):
+		if view.size[axis] >= camera.camera_bounds.size[axis]:
+			if absf(view.get_center()[axis] - camera.camera_bounds.get_center()[axis]) > 0.1:
+				return false
+		elif view.position[axis] < camera.camera_bounds.position[axis] - 0.1 \
+				or view.end[axis] > camera.camera_bounds.end[axis] + 0.1:
+			return false
+	return true
 
 
 func _key(code: Key, pressed_value: bool) -> void:

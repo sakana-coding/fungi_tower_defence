@@ -2,15 +2,11 @@ class_name ColonyOperationsDemo
 extends "res://scripts/terrain_threat_demo.gd"
 ## 第十阶段兼容入口；共用运营操作由 gameplay 层实现。
 
-var _old_content_size := Vector2i(1200, 800)
-
 func _ready() -> void:
 	growth_planner = growth_planner.duplicate(true) as GrowthPlanner
 	growth_planner.bounded_branches_enabled = true
 	growth_planner.auto_join_enabled = true
-	_old_content_size = get_window().content_scale_size
-	get_window().content_scale_size = Vector2i(1200, 920)
-	get_window().size = Vector2i(1200, 920)
+	GameDisplayManager.ensure(get_tree()).configure_canvas()
 	_prepare_colony_operations()
 	super._ready()
 	_connect_colony_operations()
@@ -21,7 +17,6 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	_close_operations(&"scene_exit")
-	get_window().content_scale_size = _old_content_size
 	super._exit_tree()
 
 func _process(delta: float) -> void:

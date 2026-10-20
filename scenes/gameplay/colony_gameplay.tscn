@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/gameplay/colony_level_runtime.gd" id="1_i2aat"]
 [ext_resource type="Script" path="res://scripts/gameplay/colony_camera.gd" id="colony_camera"]
+[ext_resource type="Script" path="res://scripts/visuals/map_boundary.gd" id="map_boundary"]
 [ext_resource type="PackedScene" path="res://scenes/audio/game_audio.tscn" id="audio_feedback"]
 [ext_resource type="Script" path="res://scripts/visuals/world_art.gd" id="world_art"]
 [ext_resource type="Resource" path="res://resources/art/chapter_1.tres" id="chapter_art"]
@@ -61,6 +62,19 @@ script = ExtResource("colony_camera")
 
 [node name="World" type="Node2D" parent="."]
 y_sort_enabled = true
+
+[node name="MapBoundary" type="Node2D" parent="World"]
+visible = false
+z_index = -7
+script = ExtResource("map_boundary")
+
+[node name="Caption" type="Label" parent="World/MapBoundary"]
+visible = false
+offset_right = 220.0
+offset_bottom = 26.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "虚线内可生长"
 
 [node name="FungalField" type="Node2D" parent="World"]
 z_index = -5

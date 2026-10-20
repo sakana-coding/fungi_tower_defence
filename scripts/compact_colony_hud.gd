@@ -181,7 +181,7 @@ func _build_shell() -> void:
 	exposure_label.add_theme_color_override("font_color", Color("9a572a"))
 	exposure_label.add_theme_font_size_override("font_size", 18)
 	_mode_panel = _surface("PlacementHint")
-	var hint_paper := ArtUI.paper(ArtUI.UI + "窗口 (2).png", 32)
+	var hint_paper := ArtUI.paper(ArtUI.UI + "框底 (2).png", 12)
 	_mode_panel.add_theme_stylebox_override("panel", hint_paper)
 	_mode_panel.minimum_size_changed.connect(func() -> void: _layout_mode_hint.call_deferred())
 	var hint_column := VBoxContainer.new()
@@ -746,28 +746,33 @@ func _layout() -> void:
 	top_left.size = top_left.get_combined_minimum_size()
 	top_right.size = top_right.get_combined_minimum_size()
 	top_right.position = Vector2(viewport_size.x - top_right.size.x - 24, 18)
+	# 窄比例画面把控制区放到下一行，不覆盖生命、能量和关卡目标。
+	if top_left.get_global_rect().end.x + 16 > top_right.position.x:
+		top_right.position.y = top_left.get_global_rect().end.y + 12
 	dock.size = Vector2(660, 90)
 	dock.position = Vector2((viewport_size.x - dock.size.x) * 0.5, viewport_size.y - 114)
 	drawer.position = Vector2(viewport_size.x - 544, maxf(130, top_right.get_global_rect().end.y + 16))
 	drawer.size = Vector2(520, maxf(300, viewport_size.y - drawer.position.y - 140))
-	selection_button.position = Vector2(24, viewport_size.y - 151)
 	selection_button.size = Vector2(320, 38)
+	selection_button.position = Vector2(24, dock.position.y - selection_button.size.y - 16)
 	camera_reset_button.position = Vector2(viewport_size.x - 164, viewport_size.y - 82)
 	camera_reset_button.size = Vector2(140, 46)
 	_layout_mode_hint()
-	_toast.position = Vector2(24, maxf(128, top_left.get_global_rect().end.y + 12))
-	_toast.size = Vector2(minf(660, viewport_size.x - 48), 48)
+	_toast.position = Vector2(24, maxf(128, maxf(top_left.get_global_rect().end.y,
+		top_right.get_global_rect().end.y) + 12))
+	_toast.size = Vector2(minf(660, drawer.position.x - 40 if drawer.visible else viewport_size.x - 48), 48)
 
 
 func _layout_mode_hint() -> void:
 	if not is_inside_tree() or not is_instance_valid(_mode_panel) or not is_instance_valid(dock):
 		return
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
-	var hint_width: float = minf(760, drawer.position.x - 48) if drawer.visible else minf(760, viewport_size.x - 48)
+	# 建造时保留画面中央观察小画家和路径，说明固定收在左下角。
+	var hint_width: float = minf(560, drawer.position.x - 48) if drawer.visible else minf(560, viewport_size.x - 48)
 	_mode_panel.size.x = hint_width
-	var height: float = maxf(124, _mode_panel.get_combined_minimum_size().y)
+	var height: float = maxf(84, _mode_panel.get_combined_minimum_size().y)
 	_mode_panel.size.y = height
-	_mode_panel.position = Vector2(24 if drawer.visible else (viewport_size.x - hint_width) * 0.5, dock.position.y - height - 16)
+	_mode_panel.position = Vector2(24, dock.position.y - height - 16)
 
 
 func _box(background: Color, border: Color, radius: int) -> StyleBoxFlat:

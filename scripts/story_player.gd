@@ -109,12 +109,15 @@ func _ready() -> void:
 	_caption.add_theme_constant_override("line_spacing", 5)
 	ArtUI.typography(_caption, 26)
 	text_column.add_child(_caption)
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 10)
+	# 按钮和音量在宽屏保持一行，较窄的画布自然换行，避免末端控件被挤出。
+	var row := HFlowContainer.new()
+	row.alignment = FlowContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("h_separation", 10)
+	row.add_theme_constant_override("v_separation", 8)
 	column.add_child(row)
 	_counter = Label.new()
-	_counter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_counter.custom_minimum_size.x = 74
+	_counter.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	ArtUI.typography(_counter, 18)
 	row.add_child(_counter)
 	_previous = _button(row, "上一幕", previous)
@@ -126,7 +129,7 @@ func _ready() -> void:
 	_refresh()
 	_next.grab_focus()
 
-func _button(row: HBoxContainer, text: String, callback: Callable) -> Button:
+func _button(row: Container, text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(144, 46)
@@ -147,6 +150,8 @@ func _process(delta: float) -> void:
 		advance()
 
 func _input(event: InputEvent) -> void:
+	if GameDisplayManager.is_display_shortcut(event):
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE:
 			finish()

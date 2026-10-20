@@ -20,7 +20,7 @@ func _ready() -> void:
 		button.tooltip_text = ""
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().paused = false
-	get_window().content_scale_size = Vector2i(1200, 800)
+	GameDisplayManager.ensure(get_tree()).configure_canvas(GameDisplayManager.TITLE_CANVAS)
 	start_button.disabled = true
 	continue_button.disabled = true
 	quit_button.disabled = true

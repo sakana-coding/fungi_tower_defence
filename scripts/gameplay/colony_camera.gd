@@ -10,6 +10,8 @@ signal view_changed
 @export var maximum_zoom: float = 2.0
 @export var initial_zoom: float = 1.0
 @export var gesture_pan_speed: float = 1.0
+## 关卡使用世界坐标取景，窗口尺寸或宽高比不会改变开局关注的位置。
+@export var opening_position: Vector2 = Vector2(600, 460)
 
 var camera_bounds: Rect2
 var controls_allowed: Callable
@@ -30,12 +32,12 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_on_viewport_resized)
 
 
-## 在正式关卡完成窗口配置后调用；默认倍率保留旧画布的开局中心。
+## 在正式关卡完成窗口配置后调用；取景位置独立于窗口大小。
 func initialize(bounds: Rect2, permission: Callable, ui_test: Callable) -> void:
 	camera_bounds = bounds.abs()
 	controls_allowed = permission
 	pointer_over_ui = ui_test
-	_home_position = get_viewport().get_canvas_transform().affine_inverse() * (get_viewport_rect().size * 0.5)
+	_home_position = opening_position
 	global_position = _home_position
 	zoom = Vector2.ONE * clampf(initial_zoom, minimum_zoom, maximum_zoom)
 	initialized = true
@@ -187,6 +189,8 @@ func _apply_view() -> void:
 	var half: Vector2 = get_viewport_rect().size * 0.5 / zoom
 	var center: Vector2 = global_position
 	for axis: int in range(2):
+		# 超宽窗口或缩小到整张地图时，固定在地图中心；地面继续覆盖视口。
+		# 这样无需扩大可平移范围来迁就屏幕，也不会把玩家带到大片空纸上。
 		if camera_bounds.size[axis] <= half[axis] * 2.0:
 			center[axis] = camera_bounds.get_center()[axis]
 		else:

@@ -24,7 +24,7 @@ font_names = PackedStringArray("Microsoft YaHei", "PingFang SC", "Noto Sans CJK 
 [node name="SecondLevel" instance=ExtResource("1_base")]
 script = ExtResource("2_level")
 free_camera_enabled = true
-camera_bounds = Rect2(-560, -400, 2320, 1800)
+camera_bounds = Rect2(-120, -80, 1440, 1080)
 normal_weapon_profile = ExtResource("9_weapon_profile")
 
 [node name="WorldArt" parent="."]

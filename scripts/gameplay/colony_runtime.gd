@@ -9,9 +9,10 @@ signal level_stopping(reason: StringName)
 @export var initial_digestive_organ: DigestiveOrgan
 @export var normal_weapon_profile: WeaponProfile
 @export var free_camera_enabled: bool = false
-@export var camera_bounds: Rect2 = Rect2(-560, -400, 2320, 1720)
+@export var camera_bounds: Rect2 = Rect2(-120, -80, 1440, 1080)
 
 @onready var colony_camera: ColonyCamera = $ColonyCamera
+@onready var map_boundary: MapBoundary = $World/MapBoundary
 var _camera_hud: CompactColonyHUD
 
 @onready var mother_core: MotherCore = $World/Colony/MotherCore
@@ -129,9 +130,20 @@ func initialize_level_camera(interface: CompactColonyHUD, permission: Callable) 
 	if not free_camera_enabled:
 		return
 	_camera_hud = interface
+	map_boundary.configure(growth_input_controller.placement_bounds)
+	growth_input_controller.mode_changed.connect(_on_map_placement_changed)
+	cultivation_input_controller.remote_mode_changed.connect(_on_map_placement_changed)
+	connection_input_controller.mode_changed.connect(_on_map_placement_changed)
+	_on_map_placement_changed(false)
 	colony_camera.view_changed.connect(_on_camera_view_changed)
 	colony_camera.initialize(camera_bounds, permission, _camera_pointer_over_ui)
 	_on_camera_view_changed()
+
+
+func _on_map_placement_changed(_active: bool) -> void:
+	# 由模式信号刷新，暂停规划时也立即显示边界提示。
+	map_boundary.set_placement_active(growth_input_controller.is_placing() \
+		or cultivation_input_controller.is_remote_placing() or connection_input_controller.is_placing())
 
 
 func _handle_camera_input(event: InputEvent) -> bool:
