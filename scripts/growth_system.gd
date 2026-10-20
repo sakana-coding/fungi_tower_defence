@@ -125,7 +125,7 @@ func preview_retarget(target_position: Vector2) -> Dictionary:
 		preview["error"] = String(replacement.get("error", "新目标没有可行路线。"))
 		return preview
 	if float(replacement.get("distance", 0.0)) == 0.0 and not paid and not _anchor is HyphaNode:
-		preview["error"] = "目标必须与母核保持距离。"
+		preview["error"] = "目标必须与小画家保持距离。"
 		return preview
 	var locked_cost: int = int(current_segment["junction_cost"]) if paid else 0
 	var replacement_cost: int = int(replacement["total_cost"])

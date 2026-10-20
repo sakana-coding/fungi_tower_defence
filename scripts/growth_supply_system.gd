@@ -374,10 +374,10 @@ func _dispatch_one(owner: Node, owner_generation: int, attempt_epoch: int) -> Sh
 	if receiver.get_requested_nutrition(task_id) - _outstanding_for(receiver, task_id) <= 0:
 		return null
 	if not _is_alive_source(mother_core):
-		_reject("母核当前无法供给生长")
+		_reject("小画家当前无法供给生长")
 		return null
 	if not _has_transport_configuration():
-		_reject("生长供给缺少网络或营养包配置")
+		_reject("生长供给缺少网络或补给包配置")
 		return null
 	var source: MotherCore = mother_core
 	var network: NetworkSystem = network_system
@@ -391,13 +391,13 @@ func _dispatch_one(owner: Node, owner_generation: int, attempt_epoch: int) -> Sh
 		return null
 	var route: NetworkRoute = network.find_route(source, target)
 	if not route.found:
-		_reject("母核到生长端点的运输线路已断开")
+		_reject("小画家到生长端点的运输线路已断开")
 		return null
 	var instance: Node = scene.instantiate()
 	if not instance is NutrientPacket:
 		instance.free()
 		_invalid_packet_scene = scene
-		_reject("生长营养包场景类型不正确")
+		_reject("生长补给包场景类型不正确")
 		return null
 	var packet: NutrientPacket = instance as NutrientPacket
 	packet.traffic_required = require_traffic

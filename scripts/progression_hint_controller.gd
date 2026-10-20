@@ -11,13 +11,13 @@ const HINT_IDS: Array[StringName] = [
 	&"first_vein_upgrade",
 ]
 const HINT_TEXT: Dictionary = {
-	&"first_resource_connected": "第一处资源已首次接入菌网。保持通向胃室与母核的通路，才能持续采集与回流。",
-	&"expanded": "群落已展开：累计回收达到 60。成长只累计真正到达母核的消化产物。",
-	&"two_tips_available": "当前施工系统已允许 2 个延伸尖端。实际施工仍需要可用通路与营养供给。",
-	&"second_resource_connected": "第二处资源已首次接入菌网。两处资源的采集与回流仍需要保持各自通路可用。",
-	&"mature": "群落已成熟：累计回收达到 160。第二消化腔室须完成扩建后才可工作。",
-	&"second_chamber_ready": "第二消化腔室已完成扩建，现在可并行消化。两腔室仍共用有限的产物库存。",
-	&"first_vein_upgrade": "第一条菌脉已升级。确认完成的运输经过会推动主脉成长，并提高通行容量。",
+	&"first_resource_connected": "第一处资源已首次接入花径网络。保持通向回收碎纸机与小画家的通路，才能持续采集与回运。",
+	&"expanded": "创作进入铺展阶段：累计回收达到60。只有送回小画家的回收补给计入成长。",
+	&"two_tips_available": "双线延伸已解锁：最多同时使用2个延伸花苞，建设仍需连通的花径与创作能量。",
+	&"second_resource_connected": "第二处资源已首次接入花径网络。两处资源的采集与回运仍需要保持各自通路可用。",
+	&"mature": "创作进入成形阶段：累计回收达到160。第二处理通道须完成扩建后才可工作。",
+	&"second_chamber_ready": "第二处理通道已完成扩建，现在可并行加工。两条处理通道仍共用有限的补给库存。",
+	&"first_vein_upgrade": "第一条花径已升级。确认完成的运输经过会推动主干花径成长，并提高通行容量。",
 }
 
 var _enabled: bool = true

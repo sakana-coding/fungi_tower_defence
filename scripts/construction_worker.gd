@@ -772,7 +772,7 @@ func _node_is_available(node: Variant) -> bool:
 
 func preview_retarget(position: Vector2) -> Dictionary:
 	if not _has_live_request() or _shutting_down or _phase == &"maturing" or _kind not in [&"growth", &"remote_cultivation"]:
-		return {"valid": false, "error": "此目标已成熟或不能改向。"}
+		return {"valid": false, "error": "此目标已建成或不能改向。"}
 	return remote_cultivation_system.preview_retarget(position) if _kind == &"remote_cultivation" else growth_system.preview_retarget(position)
 
 

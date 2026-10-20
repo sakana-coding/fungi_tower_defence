@@ -74,4 +74,4 @@ spawn_point_index = 0
 script = ExtResource("1_wave")
 entries = Array[ExtResource("2_entry")]([SubResource("Entry_01"), SubResource("Entry_02"), SubResource("Entry_03"), SubResource("Entry_04"), SubResource("Entry_05"), SubResource("Entry_06"), SubResource("Entry_07"), SubResource("Entry_08"), SubResource("Entry_09")])
 title = "第六波 · 双路合围"
-direction_text = "两个入口交错来袭，三只重甲掩护五只小型敌人。"
+direction_text = "两处入口交错来袭，三只重甲花羊掩护五只小涂鸦羊。"

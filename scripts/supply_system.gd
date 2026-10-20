@@ -157,7 +157,7 @@ func get_active_organs() -> Array[AttackOrgan]:
 
 func request_supply(organ: AttackOrgan = null) -> bool:
 	if _is_exiting or _resetting:
-		return _reject("供养系统正在退出", true)
+		return _reject("补给系统正在退出", true)
 	var organs: Array[AttackOrgan] = get_registered_organs()
 	var receiver: AttackOrgan = organ
 	if organ == null:
@@ -174,20 +174,20 @@ func get_in_transit_count() -> int:
 
 func _dispatch_packet(receiver: AttackOrgan, show_rejection: bool) -> bool:
 	if _is_exiting or _resetting or not _is_alive_source(mother_core):
-		return _reject("母核无法提供营养：母核无效或生命值已归零", show_rejection)
+		return _reject("小画家无法提供创作能量：小画家无效或生命值已归零", show_rejection)
 	if not _is_registered_organ(receiver):
-		return _reject("供养器官无效或尚未登记", show_rejection)
+		return _reject("补给设施无效或尚未登记", show_rejection)
 	if not receiver.is_combat_active():
-		return _reject("供养器官已暂停或武器无法工作", show_rejection)
+		return _reject("补给设施已暂停或武器无法工作", show_rejection)
 	if not is_instance_valid(packet_container) or (
 			packet_container.is_queued_for_deletion() or packet_scene == null):
-		return _reject("供养系统缺少营养包配置", show_rejection)
+		return _reject("补给系统缺少补给包配置", show_rejection)
 	if network_system != null and (
 			not is_instance_valid(network_system) or network_system.is_queued_for_deletion()):
-		return _reject("供养网络已退出", show_rejection)
+		return _reject("补给网络已退出", show_rejection)
 
 	if not _traffic_configuration_is_valid(network_system, traffic_system, traffic_required):
-		return _reject("供养缺少有效的共享交通调度器", show_rejection)
+		return _reject("补给缺少有效的共享交通调度器", show_rejection)
 
 	# 后续回调即使修改导出配置，本次运输也沿用这些源、接收者和网络。
 	var source: MotherCore = mother_core
@@ -198,19 +198,19 @@ func _dispatch_packet(receiver: AttackOrgan, show_rejection: bool) -> bool:
 	var container: Node2D = packet_container
 	var route: NetworkRoute = _find_supply_route(source, receiver, transport_network)
 	if not route.found:
-		return _reject("母核到目标菌结没有可用供养线路", show_rejection)
+		return _reject("小画家到目标花朵没有可用补给线路", show_rejection)
 
 	var instance: Node = packet_scene.instantiate()
 	if not instance is NutrientPacket:
 		instance.free()
-		return _reject("营养包场景类型不正确", show_rejection)
+		return _reject("补给包场景类型不正确", show_rejection)
 	var packet: NutrientPacket = instance as NutrientPacket
 	packet.traffic_required = require_traffic
 	if attempt_epoch != _reset_epoch or not _traffic_configuration_is_valid(transport_network, dispatcher, require_traffic) \
 			or not _is_alive_source(source) or not _is_registered_organ(receiver) \
 			or not receiver.is_combat_active():
 		packet.free()
-		return _reject("母核或供养器官当前无法工作", show_rejection)
+		return _reject("小画家或补给设施当前无法工作", show_rejection)
 	var shipment: Shipment = Shipment.new()
 	shipment.source = source
 	shipment.receiver = receiver
@@ -222,10 +222,10 @@ func _dispatch_packet(receiver: AttackOrgan, show_rejection: bool) -> bool:
 	shipment.transport_task_id = "combat:%d:%d" % [get_instance_id(), shipment_id]
 	if source.get_spendable_nutrition() < PACKET_NUTRITION:
 		packet.free()
-		return _reject("营养已预留给修复" if source.nutrition > 0 else "母核营养不足", show_rejection)
+		return _reject("创作能量已预留给修复" if source.nutrition > 0 else "小画家创作能量不足", show_rejection)
 	if not receiver.reserve_nutrition(PACKET_NUTRITION):
 		packet.free()
-		return _reject("库存与在途供养已占满容量", show_rejection)
+		return _reject("库存与在途补给已占满容量", show_rejection)
 	if attempt_epoch != _reset_epoch or not _is_registered_organ(receiver) or _is_exiting \
 			or not _is_alive_source(source) \
 			or not _traffic_configuration_is_valid(transport_network, dispatcher, require_traffic) \
@@ -233,12 +233,12 @@ func _dispatch_packet(receiver: AttackOrgan, show_rejection: bool) -> bool:
 		if is_instance_valid(receiver):
 			receiver.cancel_reservation(PACKET_NUTRITION)
 		packet.free()
-		return _reject("母核或供养器官当前无法工作", show_rejection)
+		return _reject("小画家或补给设施当前无法工作", show_rejection)
 	if not source.try_spend_nutrition(PACKET_NUTRITION):
 		if is_instance_valid(receiver):
 			receiver.cancel_reservation(PACKET_NUTRITION)
 		packet.free()
-		return _reject("母核无法提供营养：余额不足或生命值已归零", show_rejection)
+		return _reject("小画家无法提供创作能量：余额不足或生命值已归零", show_rejection)
 
 	_bind_passage_tracking(shipment)
 	_shipments[shipment_id] = shipment
@@ -251,7 +251,7 @@ func _dispatch_packet(receiver: AttackOrgan, show_rejection: bool) -> bool:
 	if attempt_epoch != _reset_epoch or not _is_registered_organ(receiver) or _is_exiting or (
 			not is_instance_valid(container) or container.is_queued_for_deletion()):
 		_cancel_shipment(shipment_id)
-		return _reject("供养器官已退出或注销", show_rejection)
+		return _reject("补给设施已退出或注销", show_rejection)
 	container.add_child(packet)
 	_emit_transport_changed()
 	# 无效路线可在这里同步中断，所以记录和所有回调必须先提交。
@@ -378,7 +378,7 @@ func _settle_shipment(shipment_id: int, was_delivered: bool) -> void:
 	shipment.was_delivered = accepted
 	if accepted:
 		delivered_packets += 1
-		notice.emit("营养已送达攻击器官")
+		notice.emit("创作能量已送达文具炮台")
 	else:
 		_discard_passage_tracking(shipment)
 		if is_instance_valid(shipment.receiver):
@@ -386,7 +386,7 @@ func _settle_shipment(shipment_id: int, was_delivered: bool) -> void:
 		if is_instance_valid(shipment.source):
 			shipment.source.add_nutrition(PACKET_NUTRITION)
 		interrupted_packets += 1
-		notice.emit("供养已取消，营养退回母核")
+		notice.emit("补给已取消，创作能量退回小画家")
 	_emit_transport_changed()
 	if accepted:
 		_confirm_passage_tracking(shipment)

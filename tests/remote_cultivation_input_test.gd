@@ -389,8 +389,8 @@ func _test_quotes_and_connected_start() -> void:
 		"A 320px request quotes exactly 16 network plus 12 organ nutrition")
 	_check(preview == remote.preview_request(front, Vector2(720, 400)), "Input returns the coordinator quote without recalculating costs")
 	var marker: GrowthTarget = _markers(fixture, true)[0]
-	_check(marker.status_label.text.contains("菌路 16 + 器官 12") and marker.status_label.text.contains("总计 28") \
-		and marker.status_label.text.contains("新菌结 3"), "Remote marker explains both costs and every planned new node")
+	_check(marker.status_label.text.contains("花径 16 + 设施 12") and marker.status_label.text.contains("总计 28") \
+		and marker.status_label.text.contains("新花朵 3"), "Remote marker explains both costs and every planned new node")
 	for point: Vector2 in [Vector2(560, 460), Vector2(1080, 400), Vector2(1199, 639)]:
 		_check(bool(controller.preview_remote_at(point).get("valid", false)), "Preview accepts free positions independently of funds")
 	_check(core.nutrition == 0 and network.get_registered_nodes() == original_nodes,
@@ -505,7 +505,7 @@ func _test_phase_controls_costs_and_continuation() -> void:
 		"Remote status marker owns the request identity")
 	growth.set_supply_wait_reason(growth_task_id, &"combat_reserve")
 	controller.refresh()
-	_check(marker.status_label.text.contains("保留战斗营养"), "Current phase waiting reason reaches the remote marker")
+	_check(marker.status_label.text.contains("保留战斗创作能量"), "Current phase waiting reason reaches the remote marker")
 	_check(not controller.handle_input(_key(KEY_P, true)), "P echo cannot toggle remote phase control")
 	_check(_dispatch(fixture, _key(KEY_P)), "P pauses the remote growth phase once")
 	_check(remote.get_request_snapshot().get("state") == &"paused" and growth.get_task_snapshot().get("state") == &"paused",
@@ -530,7 +530,7 @@ func _test_phase_controls_costs_and_continuation() -> void:
 	_check(network.is_connected_to_core(endpoint) and core.nutrition == 48 \
 		and int(snapshot.get("growth_consumed", 0)) == 16 and int(snapshot.get("remaining_cost", 0)) == 12,
 		"Connection preserves paid network cost and all twelve organ nutrition remain")
-	_check(marker.get_status_snapshot() == snapshot and marker.status_label.text.contains("培育攻击芽") \
+	_check(marker.get_status_snapshot() == snapshot and marker.status_label.text.contains("建造炮台花苞") \
 		and marker.status_label.text.contains("已投入 16") and marker.status_label.text.contains("尚需 12"),
 		"Marker follows phase, invested nutrition, and remaining cost")
 	var original_cultivation_id: int = int(snapshot.get("cultivation_task_id", 0))
@@ -585,7 +585,7 @@ func _test_phase_controls_costs_and_continuation() -> void:
 		"Final unified accounting splits all sixteen plus eight plus four paid nutrition")
 	_check(core.nutrition == 36, "The real core pays the quoted twenty-eight exactly once across continuation")
 	marker = _markers(fixture, false)[0]
-	_check(marker.get_status_snapshot() == snapshot and marker.status_label.text.contains("已成熟"),
+	_check(marker.get_status_snapshot() == snapshot and marker.status_label.text.contains("已建成"),
 		"Marker follows the latest mature snapshot")
 	_check(marker.status_label.text.contains("已转入库存 4") \
 		and not marker.status_label.text.contains("启动库存 0"),
@@ -655,7 +655,7 @@ func _test_forward_dependency_and_mouse_coordinates() -> void:
 	_check(_dispatch(fixture, _motion(screen_point)), "Remote pointer motion is handled under a transformed canvas")
 	var preview: GrowthTarget = _markers(fixture, true)[0]
 	_check(preview.global_position.is_equal_approx(world_point), "Remote preview converts viewport coordinates to world coordinates")
-	var label_rect: Rect2 = preview.get_global_transform_with_canvas() * Rect2(preview.status_label.position, preview.status_label.size)
+	var label_rect: Rect2 = preview.status_label.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, preview.status_label.size)
 	_check(label_rect.position.x >= 0 and label_rect.end.x <= root.size.x, "Remote cost label stays within the right viewport boundary")
 	_check(_dispatch(fixture, _mouse(MOUSE_BUTTON_LEFT, screen_point)), "Transformed remote click is consumed once")
 	var snapshot: Dictionary = remote.get_request_snapshot()
@@ -674,8 +674,8 @@ func _test_forward_dependency_and_mouse_coordinates() -> void:
 		"valid": true, "target_position": Vector2(900, 400),
 		"plan": planner.plan(front.global_position, Vector2(900, 400), false),
 	})
-	_check(ordinary_marker.status_label.text.contains("预计营养") \
-		and not ordinary_marker.status_label.text.contains("远程攻击芽"), "Ordinary growth keeps its original preview label")
+	_check(ordinary_marker.status_label.text.contains("预计创作能量") \
+		and not ordinary_marker.status_label.text.contains("远程炮台花苞"), "Ordinary growth keeps its original preview label")
 	ordinary_marker.show_status(growth.get_task_snapshot())
 	_check(ordinary_marker.get_task_id() == int(growth.get_task_snapshot().get("task_id", 0)) \
 		and ordinary_marker.status_label.text.contains("生长 #"), "Ordinary marker keeps growth task identity and status text")

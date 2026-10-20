@@ -342,26 +342,26 @@ func _test_placeholder_scene() -> void:
 	var title_label := source.get_node("TitleLabel") as Label
 	var stock_label := source.get_node("StockLabel") as Label
 	var status_label := source.get_node("StatusLabel") as Label
-	_check(title_label.text == "大型尸骸", "Placeholder did not use the project source terminology")
+	_check(title_label.text == "破旧画架", "Placeholder did not use the project source terminology")
 	var chinese_font := stock_label.get_theme_font("font") as SystemFont
 	_check(chinese_font != null, "Placeholder did not provide a Chinese system font")
 	if chinese_font != null:
 		_check(chinese_font.font_names == PackedStringArray([
 			"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC"
 		]), "Placeholder Chinese font fallback names changed")
-	_check(stock_label.text == "剩余营养：13/13", "Placeholder did not show initialized remaining stock")
-	_check(status_label.text == "菌域外", "Placeholder did not show Chinese initial state")
+	_check(stock_label.text == "可回收能量：13/13", "Placeholder did not show initialized remaining stock")
+	_check(status_label.text == "花海外", "Placeholder did not show Chinese initial state")
 	source.set_harvest_status(&"exhausted")
-	_check(status_label.text == "菌域外", "Placeholder claimed depletion before its stock was committed")
+	_check(status_label.text == "花海外", "Placeholder claimed depletion before its stock was committed")
 	source.set_harvest_status(&"capacity_full")
-	_check(status_label.text == "胃囊已满", "Placeholder did not update its Chinese state")
+	_check(status_label.text == "回收碎纸机已满", "Placeholder did not update its Chinese state")
 	_check(source.reserve_batch("view:first") == 10, "Placeholder reserve failed")
-	_check(stock_label.text == "剩余营养：13/13", "Placeholder deducted reserved stock before commit")
+	_check(stock_label.text == "可回收能量：13/13", "Placeholder deducted reserved stock before commit")
 	_check(source.commit_batch("view:first", "view:first:batch"), "Placeholder commit failed")
-	_check(stock_label.text == "剩余营养：3/13", "Placeholder did not show committed remaining stock")
+	_check(stock_label.text == "可回收能量：3/13", "Placeholder did not show committed remaining stock")
 	_check(source.reserve_batch("view:tail") == 3, "Placeholder tail reserve failed")
 	_check(source.commit_batch("view:tail", "view:tail:batch"), "Placeholder tail commit failed")
-	_check(stock_label.text == "剩余营养：0/13" and status_label.text == "已耗尽",
+	_check(stock_label.text == "可回收能量：0/13" and status_label.text == "已耗尽",
 		"Placeholder did not show depleted stock and exhausted state")
 	source.free()
 	var empty_source := SOURCE_SCENE.instantiate() as LargeCarcass

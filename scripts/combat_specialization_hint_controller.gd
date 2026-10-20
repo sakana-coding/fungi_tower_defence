@@ -11,14 +11,14 @@ const HINT_IDS: Array[StringName] = [
 	&"swarm_encounter", &"ammunition_wait",
 ]
 const HINT_TEXT: Dictionary = {
-	&"mature_unlocked": "累计回收达到160，攻击器官可分化。选择普通攻击器官，再选破甲或散射；费用8材料，至少5秒有效工作。",
-	&"differentiation_started": "分化已开始：方向已锁定，材料到达后逐段工作；付款进度会保留。",
-	&"differentiation_ceasefire": "分化器官正在停火：等待材料和暂停时也不会射击，完成或取消后恢复工作。",
-	&"piercing_completed": "破甲分化完成：24伤害、1.8秒、178射程，每轮2营养；破甲可忽略护甲。",
-	&"scatter_completed": "散射分化完成：6伤害、0.9秒、145射程，整轮1营养；完整60度内最多命中3个不同目标，适合小型群。",
-	&"armored_encounter": "当前批次出现了重甲敌人。护甲会削减普通和散射伤害，可考虑用破甲应对左翼。",
-	&"swarm_encounter": "当前批次出现了小型敌人。可考虑右翼散射覆盖多个不同目标；同一敌人不会承受三弹集中。",
-	&"ammunition_wait": "射程内有活敌，但活动武器库存不足支付一整轮，正在等待弹药；保持供养通路可用。",
+	&"mature_unlocked": "累计回收达到160，文具炮台可改装。选择铅笔炮台，再选橡皮炮台或喷漆炮台；费用8材料，至少5秒有效工作。",
+	&"differentiation_started": "改装已开始：方向已锁定，材料到达后逐段工作；付款进度会保留。",
+	&"differentiation_ceasefire": "改装设施正在停火：等待材料和暂停时也不会射击，完成或取消后恢复工作。",
+	&"piercing_completed": "橡皮炮台改装完成：24伤害、1.8秒、178射程，每轮2创作能量；破甲可忽略护甲。",
+	&"scatter_completed": "喷漆炮台改装完成：6伤害、0.9秒、145射程，整轮1创作能量；完整60度内最多命中3个不同目标，适合小涂鸦羊群。",
+	&"armored_encounter": "当前批次出现了重甲花羊。护甲会削减普通和散射伤害，可考虑用橡皮炮台应对左翼。",
+	&"swarm_encounter": "当前批次出现了小涂鸦羊。可考虑右翼喷漆炮台覆盖多个不同目标；同一敌人不会承受三弹集中。",
+	&"ammunition_wait": "射程内有活敌，但活动武器库存不足支付一整轮，正在等待弹药；保持补给通路可用。",
 }
 
 var _enabled: bool = true

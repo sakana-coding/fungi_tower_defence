@@ -100,6 +100,7 @@ func open_menu() -> void:
 	if not _configured or is_open() or not _level.get_result_snapshot().is_empty() or _level._restart_pending:
 		return
 	_was_paused = _level.pause_controller.is_paused()
+	_level.colony_camera.clear_input_state()
 	_level.compact_hud.close_drawer()
 	_level.pause_controller.set_menu_active(true)
 	_level.pause_controller.set_paused(true)

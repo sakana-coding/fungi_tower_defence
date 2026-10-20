@@ -8,19 +8,19 @@ const PAUSED_COLOR: Color = Color(0.61, 0.75, 0.95)
 const COMPLETE_COLOR: Color = Color(0.41, 0.92, 0.75)
 const ERROR_COLOR: Color = Color(0.94, 0.43, 0.40)
 const STATE_TEXT: Dictionary = {
-	&"idle": "未开始", &"waiting": "等待供养", &"extending": "延伸中",
-	&"connected": "菌路已接通", &"cultivating": "培育中",
+	&"idle": "未开始", &"waiting": "等待补给", &"extending": "延伸中",
+	&"connected": "花径已接通", &"cultivating": "建造中",
 	&"paused": "已暂停", &"cancelled": "已取消", &"completed": "已完成",
 }
 const PHASE_TEXT: Dictionary = {
-	&"growth": "延伸菌路", &"connected": "接通菌路", &"cultivation": "培育攻击芽",
+	&"growth": "延伸花径", &"connected": "接通花径", &"cultivation": "建造炮台花苞",
 }
 const WAIT_TEXT: Dictionary = {
-	&"nutrition": "等待营养", &"in_transit": "营养运输中", &"core_empty": "母核营养不足",
-	&"combat_reserve": "保留战斗营养", &"repair_budget": "营养优先用于修复", &"disconnected": "生长路线断开",
-	&"invalid_configuration": "生长配置无效", &"core_unavailable": "母核不可用",
+	&"nutrition": "等待创作能量", &"in_transit": "创作能量运输中", &"core_empty": "小画家创作能量不足",
+	&"combat_reserve": "保留战斗创作能量", &"repair_budget": "创作能量优先用于修复", &"disconnected": "生长路线断开",
+	&"invalid_configuration": "生长配置无效", &"core_unavailable": "小画家不可用",
 	&"paused": "生长已暂停",
-	&"settlement_pending": "等待退款结算", &"occupied": "器官槽位已占用",
+	&"settlement_pending": "等待退款结算", &"occupied": "设施槽位已占用",
 	&"construction_busy": "等待当前建造任务", &"startup": "等待启动库存",
 }
 
@@ -103,34 +103,34 @@ func _refresh_label() -> void:
 			var plan: Dictionary = _preview.get("plan", {})
 			var junction_positions: PackedVector2Array = plan.get("junction_positions", PackedVector2Array())
 			if _preview.has("old_remaining_cost"):
-				status_label.text = "左键确认 · 修改目标\n剩余营养 %d → %d · 变化 %+d" % [
+				status_label.text = "左键确认 · 修改目标\n剩余创作能量 %d → %d · 变化 %+d" % [
 					int(_preview.get("old_remaining_cost", 0)), int(_preview.get("new_remaining_cost", 0)),
 					int(_preview.get("cost_delta", 0)),
 				]
 				if bool(_preview.get("deferred", false)):
 					status_label.text += "\n当前已付费段落成后转向"
 			elif _is_remote_preview():
-				status_label.text = "左键确认 · 远程攻击芽\n菌路 %d + 器官 %d = 总计 %d\n距离 %.0f · 新菌结 %d" % [
+				status_label.text = "左键确认 · 远程炮台花苞\n花径 %d + 设施 %d = 总计 %d\n距离 %.0f · 新花朵 %d" % [
 					int(_preview.get("network_cost", 0)), int(_preview.get("organ_cost", 12)),
 					int(_preview.get("total_cost", 0)), float(plan.get("distance", 0.0)), junction_positions.size(),
 				]
 			else:
-				status_label.text = "左键确认 · 预计营养 %d\n距离 %.0f · 新菌结 %d" % [
+				status_label.text = "左键确认 · 预计创作能量 %d\n距离 %.0f · 新花朵 %d" % [
 					int(plan.get("total_cost", 0)), float(plan.get("distance", 0.0)), junction_positions.size(),
 				]
 			if int(plan.get("branch_count", 0)) > 0:
 				status_label.text += "\n含 %d 条短侧枝" % int(plan["branch_count"])
 			if is_instance_valid(plan.get("join_node")):
-				status_label.text += "\n将接入既有菌结"
+				status_label.text += "\n将接入既有花朵"
 	else:
 		var state: StringName = StringName(_snapshot.get("state", &"idle"))
 		var wait_reason: StringName = StringName(_snapshot.get("wait_reason", &""))
 		if _is_remote_status():
 			var phase: StringName = StringName(_snapshot.get("phase", &""))
-			var state_text: String = "已成熟" if state == &"completed" else String(STATE_TEXT.get(state, String(state)))
+			var state_text: String = "已建成" if state == &"completed" else String(STATE_TEXT.get(state, String(state)))
 			var startup_text: String = "已转入库存 %d" % int(_snapshot.get("startup_transferred", 0)) \
 				if state == &"completed" else "已预留启动库存 %d" % int(_snapshot.get("startup_reserved", 0))
-			status_label.text = "远程攻击芽 #%d · %s · %d%%\n阶段：%s\n菌路 %d + 器官 %d = 总计 %d\n已投入 %d · 尚需 %d\n待供养 %d · 缓冲 %d · %s" % [
+			status_label.text = "远程炮台花苞 #%d · %s · %d%%\n阶段：%s\n花径 %d + 设施 %d = 总计 %d\n已投入 %d · 尚需 %d\n待补给 %d · 缓冲 %d · %s" % [
 				get_task_id(), state_text, int(round(float(_snapshot.get("progress", 0.0)) * 100.0)),
 				String(PHASE_TEXT.get(phase, "未开始")), int(_snapshot.get("network_cost", 0)),
 				int(_snapshot.get("organ_cost", 12)), int(_snapshot.get("total_cost", 0)),
@@ -139,7 +139,7 @@ func _refresh_label() -> void:
 				startup_text,
 			]
 		else:
-			status_label.text = "生长 #%d · %s · %d%%\n营养 %d/%d" % [
+			status_label.text = "生长 #%d · %s · %d%%\n创作能量 %d/%d" % [
 				get_task_id(), String(STATE_TEXT.get(state, String(state))),
 				int(round(float(_snapshot.get("progress", 0.0)) * 100.0)),
 				int(_snapshot.get("consumed_nutrition", 0)), int(_snapshot.get("total_cost", 0)),
@@ -149,26 +149,33 @@ func _refresh_label() -> void:
 			if _is_remote_status() and wait_reason == &"paused":
 				wait_text = "当前阶段已暂停"
 			elif _is_remote_status() and wait_reason == &"disconnected":
-				wait_text = "菌路断开，等待恢复连接"
+				wait_text = "花径断开，等待恢复连接"
 			status_label.text += "\n" + wait_text
 		if bool(_snapshot.get("retarget_pending", false)):
 			status_label.text += "\n当前段落成后转向新目标"
 	_position_label()
 
 
+func refresh_view() -> void:
+	if is_node_ready():
+		_position_label()
+
+
 func _position_label() -> void:
 	var width: float = 360.0 if _is_remote_preview() or _is_remote_status() else 280.0
 	status_label.size = Vector2(width, maxf(70.0, status_label.get_combined_minimum_size().y))
-	status_label.position = Vector2(20, -35)
 	var canvas_transform: Transform2D = get_global_transform_with_canvas()
+	status_label.scale = Vector2.ONE / canvas_transform.get_scale().abs()
+	status_label.position = Vector2(20, -35) * status_label.scale
 	var viewport_rect: Rect2 = get_viewport_rect().grow(-8.0)
-	var label_rect: Rect2 = canvas_transform * Rect2(status_label.position, status_label.size)
+	status_label.visible = get_viewport_rect().grow(24.0).has_point(canvas_transform.origin)
+	var label_rect: Rect2 = canvas_transform * Rect2(status_label.position, status_label.size * status_label.scale)
 	if label_rect.end.x > viewport_rect.end.x:
-		status_label.position.x = -20.0 - status_label.size.x
-		label_rect = canvas_transform * Rect2(status_label.position, status_label.size)
+		status_label.position.x = (-20.0 - status_label.size.x) * status_label.scale.x
+		label_rect = canvas_transform * Rect2(status_label.position, status_label.size * status_label.scale)
 	var screen_offset: Vector2 = Vector2(
-		clampf(label_rect.position.x, viewport_rect.position.x, viewport_rect.end.x - label_rect.size.x),
-		clampf(label_rect.position.y, viewport_rect.position.y, viewport_rect.end.y - label_rect.size.y)
+		clampf(label_rect.position.x, viewport_rect.position.x, maxf(viewport_rect.position.x, viewport_rect.end.x - label_rect.size.x)),
+		clampf(label_rect.position.y, viewport_rect.position.y, maxf(viewport_rect.position.y, viewport_rect.end.y - label_rect.size.y))
 	) - label_rect.position
 	status_label.position += canvas_transform.affine_inverse().basis_xform(screen_offset)
 

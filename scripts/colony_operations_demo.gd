@@ -14,9 +14,9 @@ func _ready() -> void:
 	_prepare_colony_operations()
 	super._ready()
 	_connect_colony_operations()
-	(hud.get_node("HelpLabel") as Label).text = "G 伸展 · B 远处种芽 · C 原位培育 · O 切换器官 · T 改向 · M 移植 · L 接合 · P 暂停 · X 取消 · R 重开 · F5–F10 各阶段"
+	(hud.get_node("HelpLabel") as Label).text = "G 延伸 · B 远处建造 · C 原位建造 · O 切换设施 · T 改向 · M 搬迁 · L 接合 · P 暂停 · X 取消 · R 重开 · F5–F10 各阶段"
 	(hud.get_node("HelpLabel") as Label).add_theme_font_size_override("font_size", 14)
-	hud.show_notice("第十阶段：G扩张→T改向；下方选胃囊后C/B培育；选成熟攻击器官M移植，真实付款6。")
+	hud.show_notice("第十阶段：G延伸→T改向；下方选回收碎纸机后C/B建造；选已建成的文具炮台M搬迁，真实付款6。")
 	_refresh_operations_status()
 
 func _exit_tree() -> void:

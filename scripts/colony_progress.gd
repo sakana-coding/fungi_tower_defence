@@ -100,11 +100,11 @@ func get_stage() -> Stage:
 func get_stage_name() -> String:
 	match get_stage():
 		Stage.EXPANDED:
-			return "展开"
+			return "铺展"
 		Stage.MATURE:
-			return "成熟"
+			return "成形"
 		_:
-			return "初生"
+			return "起笔"
 
 
 func get_next_stage_threshold() -> int:

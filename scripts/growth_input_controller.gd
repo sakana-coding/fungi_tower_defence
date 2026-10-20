@@ -269,7 +269,7 @@ func _make_preview(world_position: Vector2) -> Dictionary:
 		return preview
 	var terrain: TerrainNavigation = planner.terrain_navigation
 	if is_instance_valid(terrain) and not terrain.is_point_walkable(world_position, 10.0):
-		preview["error"] = "目标在岩石或战场边界内，无法生长；未扣除营养"
+		preview["error"] = "目标在障碍物或战场边界内，无法生长；未扣除创作能量"
 		return preview
 	var start_node: Node2D = null
 	var nearest_distance: float = INF
@@ -282,7 +282,7 @@ func _make_preview(world_position: Vector2) -> Dictionary:
 		if not node.global_position.is_finite():
 			continue
 		if node.global_position == world_position and not planner.auto_join_enabled:
-			preview["error"] = "目标不能与已有菌结或母核重合"
+			preview["error"] = "目标不能与已有花朵或小画家重合"
 			return preview
 		if planner.auto_join_enabled and node is HyphaNode \
 				and node.global_position.distance_to(world_position) <= planner.auto_join_radius:
@@ -300,7 +300,7 @@ func _make_preview(world_position: Vector2) -> Dictionary:
 			start_node = node
 			nearest_distance = distance
 	if start_node == null:
-		preview["error"] = "没有与母核连通的生长起点"
+		preview["error"] = "没有与小画家连通的生长起点"
 		return preview
 	if is_instance_valid(construction_coordinator):
 		var queued_preview: Dictionary = construction_coordinator.preview(&"growth", {

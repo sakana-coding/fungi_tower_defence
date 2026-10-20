@@ -112,7 +112,7 @@ offset_bottom = 45.0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 14
 theme_override_constants/line_spacing = 1
-text = "母核 --/-- · 营养 -- · 累计回收 --\n成长：-- · 本局用时 -- · 空格 暂停/恢复"
+text = "小画家 --/-- · 创作能量 -- · 累计回收 --\n创作阶段：-- · 本局用时 -- · 空格 暂停/恢复"
 
 [node name="FlowPanel" type="Panel" parent="."]
 offset_left = 790.0
@@ -253,7 +253,7 @@ offset_right = 576.0
 offset_bottom = 258.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.72, 0.82, 0.75, 1)
-text = "重开会回到初始准备，重新安排菌落。"
+text = "重开会回到初始准备，重新安排画中世界。"
 horizontal_alignment = 1
 
 [node name="RestartButton" type="Button" parent="ResultPanel"]

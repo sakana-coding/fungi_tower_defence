@@ -487,7 +487,7 @@ func _preview_request(kind: StringName, parameters: Dictionary, payer: Variant) 
 			var reason: StringName = &"invalid_target"
 			if result["error"] == RemoteCultivationSystem.EXISTING_NODE_REASON:
 				reason = &"occupied_target"
-			elif result["error"] == "起点未连接母核。":
+			elif result["error"] == "起点未连接小画家。":
 				# 即使断网也先保存合法几何，供等待行显示费用。
 				reason = &"disconnected"
 				var plan: Dictionary = growth_system.preview_target(start, target)
@@ -545,7 +545,7 @@ func _preview_connection(parameters: Dictionary, result: Dictionary, payer: Moth
 	result["plan"] = plan
 	result["total_cost"] = int(plan.get("total_cost", 0))
 	if not bool(plan.get("valid", false)) or float(plan.get("distance", 0.0)) <= 0.0:
-		return _reject_preview(result, &"invalid_target", String(plan.get("error", "重合菌结无法施工。")))
+		return _reject_preview(result, &"invalid_target", String(plan.get("error", "重合花朵无法施工。")))
 	if (not first_connected and not second_connected) \
 			or not network_system.is_available_connected_to_core(source):
 		return _reject_preview(result, &"disconnected")
@@ -1131,15 +1131,15 @@ func _error_for_reason(reason: StringName) -> String:
 		&"queue_full":
 			return "建设队列最多容纳三个目标，请先完成或取消一项。"
 		&"disconnected":
-			return "施工起点暂时断开，等待恢复到母核的连接。"
+			return "施工起点暂时断开，等待恢复到小画家的连接。"
 		&"core_unavailable", &"payer_replaced":
-			return "原付款母核已失效或被替换，请重新放置目标。"
+			return "原付款小画家已失效或被替换，请重新放置目标。"
 		&"invalid_endpoint", &"unregistered_endpoint":
 			return "原施工端点已失效或不属于当前网络。"
 		&"already_connected":
-			return "两个菌结已有直接连接。"
+			return "两个花朵已有直接连接。"
 		&"same_node":
-			return "连接需要两个不同菌结。"
+			return "连接需要两个不同花朵。"
 		&"occupied_target":
 			return RemoteCultivationSystem.EXISTING_NODE_REASON
 		&"invalid_target":
@@ -1259,13 +1259,13 @@ func get_cultivation_selection(host: HyphaNode, organ_kind: StringName = &"") ->
 		kind = &"digestive" if _node_is_available(host) and bool(host.get_meta("rebuild_digestive", false)) else &"attack"
 	var recipe: Dictionary = CultivationSystem.get_recipe(kind)
 	var result: Dictionary = {
-		"host": host if _node_is_available(host) else null, "reason": &"no_selection", "message": "请选择成熟菌结。",
+		"host": host if _node_is_available(host) else null, "reason": &"no_selection", "message": "请选择已开放花朵。",
 		"can_cultivate": false, "can_continue": false, "can_pause": false, "can_resume": false, "can_cancel": false,
 		"task": {}, "organ_kind": kind, "total_cost": int(recipe.get("total_cost", 0)), "remaining_cost": int(recipe.get("total_cost", 0)),
 		"available_nutrition": 0, "construction_id": "",
 	}
 	if recipe.is_empty():
-		return _cultivation_selection_reason(result, &"invalid_configuration", "器官类型无效。")
+		return _cultivation_selection_reason(result, &"invalid_configuration", "设施类型无效。")
 	if not _node_is_available(host):
 		return result
 	if _node_is_available(cultivation_supply_system):
@@ -1285,12 +1285,12 @@ func get_cultivation_selection(host: HyphaNode, organ_kind: StringName = &"") ->
 		result["can_pause"] = active["state"] != &"paused"
 		result["can_resume"] = active["state"] == &"paused"
 		result["reason"] = &"paused" if active["state"] == &"paused" else &"construction_busy"
-		result["message"] = "培育已暂停。" if active["state"] == &"paused" else "该菌结的培育请求正在进行。"
+		result["message"] = "建造已暂停。" if active["state"] == &"paused" else "该花朵的建造请求正在进行。"
 		return result
 	if not multi_worker_enabled or not _configuration_is_valid(&"remote_cultivation") or _payer_reason(&"cultivation", mother_core) != &"":
-		return _cultivation_selection_reason(result, &"invalid_configuration", "培育系统配置尚未就绪。")
+		return _cultivation_selection_reason(result, &"invalid_configuration", "建造系统配置尚未就绪。")
 	if not network_system.is_node_registered(host):
-		return _cultivation_selection_reason(result, &"invalid_endpoint", "该菌结不属于当前网络。")
+		return _cultivation_selection_reason(result, &"invalid_endpoint", "该花朵不属于当前网络。")
 	var retained: ConstructionWorker = _retained_bud_worker(host, false)
 	if retained != null:
 		var task: Dictionary = retained.cultivation_system.get_task_snapshot()
@@ -1299,18 +1299,18 @@ func get_cultivation_selection(host: HyphaNode, organ_kind: StringName = &"") ->
 		result["total_cost"] = int(task.get("total_cost", recipe["total_cost"]))
 		result["remaining_cost"] = int(task.get("remaining_cost", CultivationSystem.TOTAL_COST))
 		if not retained.is_settled():
-			return _cultivation_selection_reason(result, &"settlement_pending", "上一培育尝试正在结算。")
+			return _cultivation_selection_reason(result, &"settlement_pending", "上一建造尝试正在结算。")
 		var availability: StringName = retained.cultivation_system.get_cultivation_availability(host)
 		if availability != &"continuable":
-			return _cultivation_selection_reason(result, availability, "器官芽暂时无法继续培育。")
+			return _cultivation_selection_reason(result, availability, "设施花苞暂时无法继续建造。")
 		result["can_continue"] = true
-		return _cultivation_selection_reason(result, &"continuable", "可继续原器官芽的培育。")
+		return _cultivation_selection_reason(result, &"continuable", "可继续原设施花苞的建造。")
 	if not host.is_organ_slot_available():
-		return _cultivation_selection_reason(result, &"occupied", "该菌结已有器官或器官芽。")
+		return _cultivation_selection_reason(result, &"occupied", "该花朵已有设施或设施花苞。")
 	if not network_system.is_available_connected_to_core(host):
-		return _cultivation_selection_reason(result, &"disconnected", "该菌结暂时未连接母核。")
+		return _cultivation_selection_reason(result, &"disconnected", "该花朵暂时未连接小画家。")
 	result["can_cultivate"] = true
-	return _cultivation_selection_reason(result, &"ready", "培育胃囊：8营养全计结构、至少3秒，空输入与空产物。" if kind == &"digestive" else "培育攻击器官：12营养＝8结构＋4启动库存。")
+	return _cultivation_selection_reason(result, &"ready", "建造回收碎纸机：8创作能量全计结构、至少3秒，初始没有待加工回收物和补给。" if kind == &"digestive" else "建造文具炮台：12创作能量＝8结构＋4启动库存。")
 
 
 func _set_queue_mode() -> void:

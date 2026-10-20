@@ -23,6 +23,8 @@ font_names = PackedStringArray("Microsoft YaHei", "PingFang SC", "Noto Sans CJK 
 
 [node name="SecondLevel" instance=ExtResource("1_base")]
 script = ExtResource("2_level")
+free_camera_enabled = true
+camera_bounds = Rect2(-560, -400, 2320, 1800)
 normal_weapon_profile = ExtResource("9_weapon_profile")
 
 [node name="WorldArt" parent="."]
@@ -42,7 +44,7 @@ initial_nutrition = 90
 
 [node name="LeftGuard" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(475, 600)
-display_name = "左翼菌结"
+display_name = "左翼花朵"
 
 [node name="AttackOrgan" parent="World/Colony/Nodes/LeftGuard" instance=ExtResource("5_attack")]
 initial_nutrition = 4
@@ -57,7 +59,7 @@ targeting_required = true
 
 [node name="RightGuard" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(725, 600)
-display_name = "右翼菌结"
+display_name = "右翼花朵"
 
 [node name="AttackOrgan" parent="World/Colony/Nodes/RightGuard" instance=ExtResource("5_attack")]
 initial_nutrition = 4
@@ -72,7 +74,7 @@ targeting_required = true
 
 [node name="StomachHost" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(600, 755)
-display_name = "后方消化菌结"
+display_name = "后方回收花朵"
 
 [node name="DigestiveOrgan" parent="World/Colony/Nodes/StomachHost" node_paths=PackedStringArray("mother_core", "core_edge", "colony_capabilities") instance=ExtResource("7_stomach")]
 mother_core = NodePath("../../../MotherCore")
@@ -107,21 +109,21 @@ total_nutrition = 80
 position = Vector2(260, 300)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"left"
-display_name = "左侧AI"
+display_name = "左侧绘图终端"
 max_health = 120
 
 [node name="CenterAI" parent="World/Enemies" node_paths=PackedStringArray("mother_core") instance=ExtResource("10_facility")]
 position = Vector2(600, 205)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"center"
-display_name = "中央AI"
+display_name = "中央绘图终端"
 max_health = 180
 
 [node name="RightAI" parent="World/Enemies" node_paths=PackedStringArray("mother_core") instance=ExtResource("10_facility")]
 position = Vector2(1000, 270)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"right"
-display_name = "右侧AI"
+display_name = "右侧绘图终端"
 max_health = 240
 
 [node name="TerrainNavigation" type="Node2D" parent="World"]
@@ -143,7 +145,7 @@ offset_right = 160.0
 offset_bottom = 90.0
 mouse_filter = 2
 theme_override_fonts/font = SubResource("MapFont")
-text = "左侧尸骸80 · 接通后向左AI推进"
+text = "左侧数位板 · 80能量\n接通后向左侧绘图终端推进"
 horizontal_alignment = 1
 
 [node name="SecondResourceGuide" type="Node2D" parent="World"]
@@ -156,7 +158,7 @@ offset_right = 160.0
 offset_bottom = 90.0
 mouse_filter = 2
 theme_override_fonts/font = SubResource("MapFont")
-text = "右侧尸骸80 · 保护推进中的线路"
+text = "右侧数位板 · 80能量\n保护推进中的花径"
 horizontal_alignment = 1
 
 [node name="GrowthInputController" parent="Systems"]

@@ -89,7 +89,7 @@ offset_top = 112.0
 offset_right = 108.0
 offset_bottom = 176.0
 theme_override_fonts/font = SubResource("Font_map")
-text = "① 左前尸骸80 · 先向十字伸展\n接通后每批回运10"
+text = "① 左前画架 · 80能量 · 先向十字伸展\n接通后每批回收10能量"
 
 [node name="SecondResourceGuide" parent="World"]
 z_index = 6
@@ -101,7 +101,7 @@ offset_top = 162.0
 offset_right = 259.0
 offset_bottom = 226.0
 theme_override_fonts/font = SubResource("Font_map")
-text = "② 右前尸骸120 · 留意侧入口\n向十字伸展，保护回运路线"
+text = "② 右前画架 · 120能量 · 留意侧入口\n向十字伸展，保护回运路线"
 
 [node name="TerrainNavigation" parent="World"]
 bounds = Rect2(16, 258, 1168, 362)
@@ -117,7 +117,7 @@ mouse_filter = 2
 theme_override_fonts/font = SubResource("Font_map")
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.69, 0.83, 0.76, 1)
-text = "两处接通后，L连接菌结形成旁路"
+text = "两处接通后，L连接花朵形成旁路"
 horizontal_alignment = 1
 
 [node name="GrowthInputController" parent="Systems"]

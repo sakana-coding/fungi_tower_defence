@@ -8,6 +8,11 @@ signal level_stopping(reason: StringName)
 @export var initial_attack_organ: AttackOrgan
 @export var initial_digestive_organ: DigestiveOrgan
 @export var normal_weapon_profile: WeaponProfile
+@export var free_camera_enabled: bool = false
+@export var camera_bounds: Rect2 = Rect2(-560, -400, 2320, 1720)
+
+@onready var colony_camera: ColonyCamera = $ColonyCamera
+var _camera_hud: CompactColonyHUD
 
 @onready var mother_core: MotherCore = $World/Colony/MotherCore
 @onready var hypha_nodes: Node2D = $World/Colony/Nodes
@@ -117,6 +122,54 @@ func _exit_tree() -> void:
 func _prepare_map_content() -> void:
 	# Map-specific initialization runs before network registration.
 	pass
+
+
+## 正式关卡在窗口、HUD 和状态初始化完成后显式启用；旧演示维持原画布。
+func initialize_level_camera(interface: CompactColonyHUD, permission: Callable) -> void:
+	if not free_camera_enabled:
+		return
+	_camera_hud = interface
+	colony_camera.view_changed.connect(_on_camera_view_changed)
+	colony_camera.initialize(camera_bounds, permission, _camera_pointer_over_ui)
+	_on_camera_view_changed()
+
+
+func _handle_camera_input(event: InputEvent) -> bool:
+	if free_camera_enabled and colony_camera.handle_input(event):
+		get_viewport().set_input_as_handled()
+		return true
+	return false
+
+
+func _camera_pointer_over_ui(point: Vector2) -> bool:
+	var flow_hud := get_node_or_null("FirstLevelHUD") as FirstLevelHUD
+	var guide := hud.get_node_or_null("FirstEventGuide") as Control
+	return (is_instance_valid(_camera_hud) and _camera_hud.is_pointer_over_ui(point)) \
+		or (is_instance_valid(flow_hud) and flow_hud.is_pointer_over_panel(point)) \
+		or (is_instance_valid(guide) and guide.is_visible_in_tree() and guide.get_global_rect().has_point(point))
+
+
+## 纯展示刷新：不调用关卡/系统的 _process，不推动模拟或资源结算。
+func _on_camera_view_changed() -> void:
+	var point: Vector2 = get_global_mouse_position()
+	if growth_input_controller.is_placing():
+		growth_input_controller.preview_at(point)
+	if cultivation_input_controller.is_remote_placing():
+		cultivation_input_controller.preview_remote_at(point)
+	if connection_input_controller.is_placing():
+		connection_input_controller.preview_at(point)
+	repair_input_controller.queue_redraw()
+	construction_queue_controller.queue_redraw()
+	for marker: Node in $World/GrowthTargets.get_children():
+		if marker.has_method("refresh_view"):
+			marker.refresh_view()
+	# 地图比视口小时允许居中；地面同时覆盖实际可见矩形，绝不移动 World。
+	var ground := get_node_or_null("World/Ground") as Control
+	if ground != null:
+		var view_rect: Rect2 = get_viewport().get_canvas_transform().affine_inverse() * get_viewport_rect()
+		var coverage: Rect2 = camera_bounds.merge(view_rect).grow(2.0)
+		ground.position = coverage.position
+		ground.size = coverage.size
 
 
 func _connect_progression_hints() -> void:
@@ -343,7 +396,7 @@ func _on_organ_matured(_task_id: int, host: HyphaNode,
 		cultivation_input_controller.refresh()
 		if is_instance_valid(differentiation_input_controller):
 			differentiation_input_controller.refresh()
-	hud.show_notice("攻击器官已成熟：启动库存 4，现由战斗供养补给")
+	hud.show_notice("铅笔炮台已建成：启动库存4，后续弹药沿花径补充")
 
 
 func _connect_nutrition_return() -> void:
@@ -372,9 +425,9 @@ func _on_colony_stage_changed(_previous_stage: ColonyProgress.Stage,
 	_refresh_growth_stage()
 	if current_stage != ColonyProgress.Stage.NASCENT and current_stage == colony_progress.get_stage():
 		if current_stage == ColonyProgress.Stage.MATURE:
-			hud.show_notice("菌落成熟：选中普通攻击器官，可花 8 营养分化为破甲或散射")
+			hud.show_notice("创作进入成形阶段：选中铅笔炮台，可花8创作能量改装为橡皮炮台或喷漆炮台")
 		else:
-			hud.show_notice("菌落成长至「%s」阶段" % colony_progress.get_stage_name())
+			hud.show_notice("创作进入「%s」阶段" % colony_progress.get_stage_name())
 
 
 func _connect_growth() -> void:
@@ -480,7 +533,7 @@ func _on_growth_pause_requested() -> void:
 		else:
 			cultivation_input_controller.pause_cultivation()
 	else:
-		hud.show_notice("请先选择队列目标，或选择正在就地培育的菌结")
+		hud.show_notice("请先选择队列目标，或选择正在就地建造的花朵")
 
 
 func _on_growth_cancel_requested() -> void:
@@ -494,7 +547,7 @@ func _on_growth_cancel_requested() -> void:
 		elif _selected_local_cultivation():
 			cultivation_input_controller.cancel_cultivation()
 		else:
-			hud.show_notice("请先选择队列目标，或选择正在就地培育的菌结")
+			hud.show_notice("请先选择队列目标，或选择正在就地建造的花朵")
 
 
 func _selected_local_cultivation() -> bool:
@@ -595,8 +648,8 @@ func _on_organ_differentiated(_task_id: int, organ: AttackOrgan, direction: int)
 		return
 	_refresh_weapon_ranges()
 	_refresh_inventory_hud()
-	var kind: String = "破甲" if direction == WeaponProfile.DamageType.ARMOR_PIERCING else "散射"
-	hud.show_notice("%s分化完成：原库存保留，按新冷却恢复射击" % kind)
+	var kind: String = "橡皮炮台" if direction == WeaponProfile.DamageType.ARMOR_PIERCING else "喷漆炮台"
+	hud.show_notice("%s改装完成：原库存保留，按新冷却恢复射击" % kind)
 
 
 func _stop_differentiation() -> void:
@@ -818,7 +871,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if is_instance_valid(organ):
 			supply_system.request_supply(organ)
 		else:
-			hud.show_notice("请选择一个攻击器官所在的菌结")
+			hud.show_notice("请选择一个文具炮台所在的花朵")
 	elif event.is_action_pressed("restart_level"):
 		restart_level()
 	else:
@@ -931,7 +984,7 @@ func _on_mother_core_depleted() -> void:
 	supply_system.process_mode = Node.PROCESS_MODE_DISABLED
 	recycling_system.process_mode = Node.PROCESS_MODE_DISABLED
 	hud.show_battle_result(false)
-	hud.show_notice("母核生命值归零；按 R 重新开始")
+	hud.show_notice("小画家生命值归零；按 R 重新开始")
 
 
 func _on_wave_finished() -> void:
@@ -943,6 +996,8 @@ func _announce_level_stopping(reason: StringName) -> void:
 	if _stopping_announced:
 		return
 	_stopping_announced = true
+	if is_instance_valid(colony_camera):
+		colony_camera.stop()
 	level_stopping.emit(reason)
 	if is_instance_valid(enemy_spawner):
 		enemy_spawner.stop_spawning(reason)

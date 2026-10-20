@@ -6,7 +6,7 @@ signal facility_destroyed(facility_id: StringName)
 signal priority_requested(facility_id: StringName)
 
 @export var facility_id: StringName = &"left"
-@export var display_name: String = "AI设施"
+@export var display_name: String = "AI绘图终端"
 
 var production_phase: StringName = &"preparing"
 var production_remaining: float = 30.0
@@ -57,7 +57,7 @@ func _refresh_view() -> void:
 		&"blocked": "出口受阻", &"capped": "生产受限", &"stopped": "已停止"}
 	($Title as Label).text = display_name + (" · 优先目标" if prioritized and is_alive() else "")
 	($Status as Label).text = "%d/%d · %s %ds" % [health, max_health,
-		names.get(production_phase, String(production_phase)), ceili(production_remaining)] if is_alive() else "已摧毁 · 永久停产"
+		names.get(production_phase, String(production_phase)), ceili(production_remaining)] if is_alive() else "已摧毁 · 停止生成"
 	queue_redraw()
 
 

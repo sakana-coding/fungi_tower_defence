@@ -76,7 +76,7 @@ offset_bottom = -91.0
 mouse_filter = 2
 theme_override_fonts/font = SubResource("Font_ui")
 theme_override_font_sizes/font_size = 12
-text = "单腔\n空闲"
+text = "单通道\n空闲"
 horizontal_alignment = 1
 
 [node name="SecondChamber" type="Node2D" parent="."]
@@ -131,7 +131,7 @@ offset_bottom = -91.0
 mouse_filter = 2
 theme_override_fonts/font = SubResource("Font_ui")
 theme_override_font_sizes/font_size = 12
-text = "二腔\n空闲"
+text = "通道二\n空闲"
 horizontal_alignment = 1
 
 [node name="GainFeedback" type="Node2D" parent="."]

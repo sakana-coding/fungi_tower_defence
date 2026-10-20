@@ -119,7 +119,7 @@ func preview_at(world_position: Vector2) -> Dictionary:
 
 func select_endpoint(endpoint: HyphaNode) -> bool:
 	if not _placing:
-		notice.emit("按 L 进入已有菌结连接")
+		notice.emit("按 L 进入已有花朵连接")
 		return false
 	_connect_connection_system()
 	var error: String = _configuration_error()
@@ -139,13 +139,13 @@ func select_endpoint(endpoint: HyphaNode) -> bool:
 		_pointer_world_position = endpoint.global_position
 		var waiting: Dictionary = _empty_preview(_pointer_world_position)
 		waiting["reason"] = &"choose_second"
-		waiting["error"] = "已选第一个菌结；移动到另一个已有菌结预览，左键确认"
+		waiting["error"] = "已选第一个花朵；移动到另一个已有花朵预览，左键确认"
 		_publish_preview(waiting)
 		return true
 	var preview: Dictionary = _preview_endpoint(endpoint, endpoint.global_position)
 	_publish_preview(preview)
 	if is_inside_tree() and get_tree().paused:
-		notice.emit("连接预览已保留：恢复全局暂停后，再点击第二个菌结确认。")
+		notice.emit("连接预览已保留：恢复全局暂停后，再点击第二个花朵确认。")
 		return false
 	if not bool(preview.get("valid", false)):
 		notice.emit(String(preview.get("error", "连接不可创建")))
@@ -186,13 +186,13 @@ func select_endpoint(endpoint: HyphaNode) -> bool:
 
 func place_at(world_position: Vector2) -> bool:
 	if not _placing:
-		notice.emit("按 L 进入已有菌结连接")
+		notice.emit("按 L 进入已有花朵连接")
 		return false
 	var preview: Dictionary = preview_at(world_position)
 	var hover: Variant = preview.get("hover_node")
 	var endpoint: HyphaNode = hover as HyphaNode if _is_live_node(hover) else null
 	if not _is_selectable_node(endpoint):
-		notice.emit(String(preview.get("error", "请点击已有菌结")))
+		notice.emit(String(preview.get("error", "请点击已有花朵")))
 		return false
 	return select_endpoint(endpoint)
 
@@ -210,7 +210,7 @@ func clear_endpoints() -> void:
 	_second_node = null
 	var preview: Dictionary = _empty_preview(_pointer_world_position)
 	preview["reason"] = &"choose_first"
-	preview["error"] = "左键选择第一个已有菌结，再选择第二个菌结连接；右键 / Esc 退出"
+	preview["error"] = "左键选择第一个已有花朵，再选择第二个花朵连接；右键 / Esc 退出"
 	_publish_preview(preview)
 
 
@@ -264,11 +264,11 @@ func _make_preview(world_position: Vector2) -> Dictionary:
 		preview["first_node"] = null
 		preview["reason"] = &"construction_busy" if _has_active_build() else &"choose_first"
 		preview["error"] = "已有建造任务；请先完成或取消当前任务" if _has_active_build() \
-			else "左键选择第一个已有菌结，再选择第二个菌结连接"
+			else "左键选择第一个已有花朵，再选择第二个花朵连接"
 		return preview
 	if endpoint == null:
 		preview["reason"] = &"endpoint_required"
-		preview["error"] = "已选第一个菌结；请将鼠标移到另一个已有菌结"
+		preview["error"] = "已选第一个花朵；请将鼠标移到另一个已有花朵"
 		return preview
 	return _preview_endpoint(endpoint, world_position)
 
@@ -337,9 +337,9 @@ func _configuration_error() -> String:
 
 func _endpoint_error(endpoint: Variant) -> Dictionary:
 	if not _is_selectable_node(endpoint):
-		return {"reason": &"invalid_endpoint", "error": "请选择网络中的已有成熟菌结"}
+		return {"reason": &"invalid_endpoint", "error": "请选择网络中的已有已开放花朵"}
 	if not endpoint.global_position.is_finite():
-		return {"reason": &"invalid_coordinates", "error": "菌结坐标必须有限"}
+		return {"reason": &"invalid_coordinates", "error": "花朵坐标必须有限"}
 	if not placement_bounds.has_point(endpoint.global_position):
 		return {"reason": &"outside_bounds", "error": "连接端点必须位于可生长区域内"}
 	return {}

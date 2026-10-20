@@ -9,7 +9,7 @@ var progression_hint_controller: ProgressionHintController
 func _ready() -> void:
 	super._ready()
 	if carcass_demo_enabled:
-		hud.show_notice("L 连接菌结：先选左翼，再选右翼，预览环路；B 在右侧十字种芽，G 伸展，C 培育")
+		hud.show_notice("L 连接花朵：先选左翼，再选右翼，预览环路；B 在右侧十字处建造，G 延伸，C 建造")
 
 func _prepare_map_content() -> void:
 	if not expansion_demo_enabled:
@@ -87,15 +87,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		if is_instance_valid(organ):
 			supply_system.request_supply(organ)
 		else:
-			hud.show_notice("请选择一个攻击器官所在的菌结")
+			hud.show_notice("请选择一个文具炮台所在的花朵")
 	elif event.is_action_pressed("debug_consume_nutrition"):
 		if normal_weapon_profile != null:
 			return
 		var organ := _get_selected_organ()
 		if is_instance_valid(organ) and organ.consume_nutrition():
-			hud.show_notice("器官消耗 1 点营养；库存不足时会自动补给")
+			hud.show_notice("设施消耗 1 点创作能量；库存不足时会自动补给")
 		else:
-			hud.show_notice("器官库存为空，等待供养")
+			hud.show_notice("设施库存为空，等待补给")
 	elif event.is_action_pressed("restart_level"):
 		get_viewport().set_input_as_handled()
 		restart_level()

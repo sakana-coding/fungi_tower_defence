@@ -30,7 +30,7 @@ func refresh_view() -> void:
 	if is_instance_valid(_label):
 		_label.text = "%s\n%s" % [display_name, "已收集" if collected else (
 			"收集中 %.1f / %.0fs" % [progress_seconds, collection_seconds] if collecting else (
-				"收集暂停 %.1f / %.0fs" % [progress_seconds, collection_seconds] if progress_seconds > 0 else "连通菌域后收集"))]
+				"收集暂停 %.1f / %.0fs" % [progress_seconds, collection_seconds] if progress_seconds > 0 else "连通花海后收集"))]
 	queue_redraw()
 
 

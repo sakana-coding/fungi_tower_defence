@@ -4,6 +4,7 @@ extends Node2D
 
 @export var compact_labels: bool = false
 @export var exposure_label_position: Vector2 = Vector2(405, 245)
+var exposure_in_hud: bool = false
 
 var level: Node2D
 var preview: Dictionary = {}
@@ -22,11 +23,20 @@ func _process(_delta: float) -> void:
 
 func show_preview(value: Dictionary) -> void:
 	preview = value.duplicate(true)
+	queue_redraw()
 
 
 func clear_preview(placing: bool) -> void:
 	if not placing:
 		preview.clear()
+		queue_redraw()
+
+
+func get_exposure_text() -> String:
+	if not bool(preview.get("valid", false)):
+		return ""
+	var exposed: float = get_exposed_length(preview.get("plan", {}))
+	return "橙段 %.0f 像素缺少火力保护 · 仍可建设" % exposed if exposed > 0.0 else ""
 
 
 func get_exposed_length(plan: Dictionary) -> float:
@@ -68,9 +78,9 @@ func _draw() -> void:
 					or (hp > 0.0 and not bool(node.get_meta("combat_injured", false))):
 				continue
 			point = node.get_point_at(0.5)
-			caption = "断路" if hp <= 0.0 else "菌丝"
+			caption = "断路" if hp <= 0.0 else "花径"
 		elif node is HyphaNode:
-			caption = "枯结" if hp <= 0.0 else ("失联" if not network.is_available_connected_to_core(node) else "菌结")
+			caption = "枯萎花朵" if hp <= 0.0 else ("失联" if not network.is_available_connected_to_core(node) else "花朵")
 			if hp <= 0.0:
 				var center: Vector2 = to_local(point)
 				draw_circle(center, 17.0, Color("665953"), true)
@@ -79,14 +89,14 @@ func _draw() -> void:
 			point += Vector2(-24.0, 40.0 if node.get_organ_occupant() != null else 23.0)
 		elif node is GrowthTip:
 			point += Vector2(-16.0, -22.0)
-			caption = "尖端"
+			caption = "延伸花苞"
 		else:
 			point += Vector2(38.0, -40.0) if node is DigestiveOrgan else Vector2(-30.0, -76.0)
 			if point.x > 730.0 and point.y < 360.0:
 				point.y = 360.0
-			caption = "胃囊" if node is DigestiveOrgan else ("芽" if node is OrganBud else "器官")
+			caption = "回收碎纸机" if node is DigestiveOrgan else ("花苞" if node is OrganBud else "设施")
 		var color: Color = Color("ad5546") if hp < maximum else Color("54674d")
-		if caption == "失联" or caption == "枯结":
+		if caption == "失联" or caption == "枯萎花朵":
 			color = Color("9a683d")
 		draw_string(_font, to_local(point), "%s %.0f/%.0f" % [caption, hp, maximum], HORIZONTAL_ALIGNMENT_LEFT, -1.0, 11, color)
 	for enemy: Node in level.get_node("World/Enemies").get_children():
@@ -114,9 +124,8 @@ func _draw_exposure() -> void:
 			var b: Vector2 = start.lerp(end, float(index + 1) / steps)
 			if not _protected((a + b) * 0.5):
 				draw_line(to_local(a), to_local(b), Color("f59b53"), 3.0, true)
-	var exposed: float = get_exposed_length(plan)
-	if exposed > 0.0:
-		draw_string(_font, exposure_label_position, "橙段 %.0f 像素缺少火力保护 · 仍可建设" % exposed, HORIZONTAL_ALIGNMENT_LEFT, -1.0, 14, Color("f5b879"))
+	if not exposure_in_hud:
+		draw_string(_font, exposure_label_position, get_exposure_text(), HORIZONTAL_ALIGNMENT_LEFT, -1.0, 14, Color("f5b879"))
 
 
 func _protected(point: Vector2) -> bool:

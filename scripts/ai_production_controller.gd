@@ -37,7 +37,7 @@ func configure(level: ColonyLevelRuntime, facilities: Array[AIFacility]) -> void
 		return
 	for facility: AIFacility in facilities:
 		if facility.facility_id.is_empty() or _sources.has(facility.facility_id):
-			push_error("AI设施ID必须非空且唯一。")
+			push_error("AI绘图终端ID必须非空且唯一。")
 			_stopped = true
 			_sources.clear()
 			return

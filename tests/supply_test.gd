@@ -104,7 +104,7 @@ func _test_delivery_and_auto_supply() -> void:
 	_press_key(KEY_N)
 	_press_key(KEY_N)
 	_check_state(level, 70, 4, 2, "Capacity includes incoming stock")
-	_check(level.hud.stock_label.text.contains("母核营养：70"), "HUD missed debit")
+	_check(level.hud.stock_label.text.contains("小画家创作能量：70"), "HUD missed debit")
 	_check(level.hud.transport_label.text.contains("在途 2"), "HUD missed shipments")
 	var packet := level.get_node("World/Packets").get_child(0) as NutrientPacket
 	_check(packet.global_position == level.mother_core.global_position, "Packet start position")

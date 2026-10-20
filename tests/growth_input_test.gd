@@ -245,7 +245,7 @@ func _test_preview_and_connected_start() -> void:
 		_check(geometry_matches and plan.get("join_node") == null and plan.get("effective_point") == point,
 			"Preview preserves straight-line geometry, endpoint charge and explicit unsnapped target")
 	var marker: GrowthTarget = _markers(fixture, true)[0]
-	_check(marker.status_label.text.contains("预计营养"), "Preview displays planned nutrition cost")
+	_check(marker.status_label.text.contains("预计创作能量"), "Preview displays planned nutrition cost")
 	var screen_rect: Rect2 = marker.get_global_transform_with_canvas() * Rect2(
 		marker.status_label.position, marker.status_label.size)
 	_check(screen_rect.position.x >= 0 and screen_rect.end.x <= root.size.x,
@@ -324,7 +324,7 @@ func _test_controls_and_status() -> void:
 	_check(int(growth.get_task_snapshot()["task_id"]) == task_id, "Rejected second target retains the task id")
 	growth.set_supply_wait_reason(task_id, &"combat_reserve")
 	_check(marker.get_status_snapshot()["wait_reason"] == &"combat_reserve", "Supply wait reason reaches marker")
-	_check(marker.status_label.text.contains("保留战斗营养"), "Wait reason is readable on the marker")
+	_check(marker.status_label.text.contains("保留战斗创作能量"), "Wait reason is readable on the marker")
 	_check(not controller.handle_input(_key(KEY_P, true)), "P echo never toggles growth")
 	_check(controller.handle_input(_key(KEY_P)), "Configured P action pauses growth")
 	_check(growth.get_task_snapshot()["state"] == &"paused", "Pause is committed by the growth system")

@@ -59,8 +59,9 @@ func _ready() -> void:
 	compact_hud.configure(self)
 	LevelStoryCaption.attach(self, 2)
 	_second_ready = true
+	initialize_level_camera(compact_hud, _camera_input_allowed)
 	_refresh_second_hud()
-	hud.show_notice("第二关：%d秒后AI开始生产。接通两侧尸骸，培育前沿火力；点击AI可设为优先目标。" % ceili(wave_flow.profile.preparation_seconds))
+	hud.show_notice("第二关：%d秒后AI绘图终端开始生成敌人。接通两侧数位板，建造前沿炮台；点击终端可设为优先目标。" % ceili(wave_flow.profile.preparation_seconds))
 
 
 func _process(delta: float) -> void:
@@ -73,6 +74,10 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if _handle_camera_input(event):
+		return
+	if event is InputEventKey and get_viewport().gui_get_focus_owner() != null:
+		return
 	if not _second_ready or _restart_pending:
 		return
 	if is_instance_valid(compact_hud) and compact_hud.level_menu.is_open():
@@ -87,7 +92,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		compact_hud.close_drawer()
-	if event is InputEventMouse and (compact_hud.is_pointer_over_ui(event.position) \
+	if (event is InputEventMouse or event is InputEventGesture) and (compact_hud.is_pointer_over_ui(event.position) \
 			or flow_hud.is_pointer_over_panel(event.position)):
 		return
 	if event.is_action_pressed("debug_damage_core") or event.is_action_pressed("debug_consume_nutrition"):
@@ -97,12 +102,14 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and get_viewport().gui_get_focus_owner() != null:
+		return
 	if not _second_ready or _restart_pending:
 		return
 	if is_instance_valid(compact_hud) and compact_hud.level_menu.is_open():
 		get_viewport().set_input_as_handled()
 		return
-	if event is InputEventMouse and (compact_hud.is_pointer_over_ui(event.position) \
+	if (event is InputEventMouse or event is InputEventGesture) and (compact_hud.is_pointer_over_ui(event.position) \
 			or flow_hud.is_pointer_over_panel(event.position)):
 		return
 	if get_tree().paused and event.is_action_pressed("request_supply"):
@@ -163,7 +170,7 @@ func prioritize_facility(id: StringName) -> void:
 	for facility: AIFacility in get_facility_targets():
 		facility.prioritized = facility == chosen
 		facility._refresh_view()
-	hud.show_notice("优先攻击%s：需要正常攻击器官在射程内。再次点击可取消优先，恢复自动选敌。" % chosen.display_name)
+	hud.show_notice("优先攻击%s：需要可工作的炮台在射程内。再次点击可取消优先，恢复自动选敌。" % chosen.display_name)
 
 
 func clear_facility_priority() -> void:
@@ -173,11 +180,11 @@ func clear_facility_priority() -> void:
 	for facility: AIFacility in get_facility_targets():
 		facility.prioritized = false
 		facility._refresh_view()
-	hud.show_notice("已恢复自动选敌：先应对射程内的敌人，空闲时攻击AI设施。")
+	hud.show_notice("已恢复自动选敌：先应对射程内的敌人，空闲时攻击AI绘图终端。")
 
 
 func get_objective_caption() -> String:
-	return "摧毁 AI %d/3" % wave_flow.destroyed_ids.size()
+	return "摧毁终端 %d/3" % wave_flow.destroyed_ids.size()
 
 
 func get_level_snapshot() -> Dictionary:
@@ -213,7 +220,7 @@ func _open_third_level() -> void:
 
 func _on_facility_destroyed(_id: StringName) -> void:
 	first_guide.record_event(&"facility_destroyed")
-	hud.show_notice("AI设施已摧毁，永久停止该来源生产；已出生敌人仍需防守。")
+	hud.show_notice("AI绘图终端已摧毁，永久停止该终端的后续生成；仍需防守已出现的敌人。")
 
 
 func _on_enemy_created(enemy: BasicEnemy) -> void:
@@ -260,4 +267,10 @@ func _draw_attack_preview() -> void:
 	var color := Color("b9dd93") if not covered.is_empty() else Color("edb272")
 	_objective_overlay.draw_arc(point, float(_attack_preview.range), 0, TAU, 60, color, 1.5, true)
 	_objective_overlay.draw_string(_preview_font, point + Vector2(-95, 35),
-		"可覆盖：" + "、".join(covered) if not covered.is_empty() else "此处攻击器官无法覆盖AI", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, color)
+		"可覆盖：" + "、".join(covered) if not covered.is_empty() else "此处炮台无法覆盖绘图终端", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, color)
+
+
+func _camera_input_allowed() -> bool:
+	return _second_ready and not _restart_pending and not _stopping_announced \
+		and mother_core.health > 0 and _result_snapshot.is_empty() \
+		and is_instance_valid(compact_hud) and not compact_hud.level_menu.is_open()

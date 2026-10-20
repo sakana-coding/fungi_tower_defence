@@ -7,11 +7,11 @@ signal exhausted
 
 const MAX_BATCH_SIZE: int = 10
 const STATUS_TEXT: Dictionary = {
-	&"out_of_field": "菌域外",
-	&"no_route": "无开采路径",
-	&"capacity_full": "胃囊已满",
-	&"ready": "可开采",
-	&"harvesting": "开采中",
+	&"out_of_field": "花海外",
+	&"no_route": "回收路线未接通",
+	&"capacity_full": "回收碎纸机已满",
+	&"ready": "可回收",
+	&"harvesting": "回收中",
 	&"exhausted": "已耗尽",
 }
 
@@ -184,7 +184,7 @@ func _notify_resources_changed() -> void:
 func _refresh_view() -> void:
 	var stock_label := get_node_or_null("StockLabel") as Label
 	if stock_label != null:
-		stock_label.text = "剩余营养：%d/%d" % [_remaining_nutrition, _initial_nutrition]
+		stock_label.text = "可回收能量：%d/%d" % [_remaining_nutrition, _initial_nutrition]
 	var status_label := get_node_or_null("StatusLabel") as Label
 	if status_label != null:
 		status_label.text = STATUS_TEXT[_harvest_status]

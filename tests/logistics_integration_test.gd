@@ -117,8 +117,8 @@ func _test_selection_and_route_removal() -> void:
 	_check(level.mother_core.nutrition == 71, "Selected supply debits immediately")
 	await _wait_supply(level)
 	_check(organ.nutrition == 4 and organ.incoming_nutrition == 0, "Two-edge delivery reaches selected organ")
-	_check(level.hud.colony_label.text.contains("攻击器官：2"), "HUD counts both organs")
-	_check(level.hud.stock_label.text.contains("器官库存：4/6"), "HUD follows selected inventory")
+	_check(level.hud.colony_label.text.contains("文具炮台：2"), "HUD counts both organs")
+	_check(level.hud.stock_label.text.contains("设施库存：4/6"), "HUD follows selected inventory")
 	var balance: int = level.mother_core.nutrition
 	var route := network.find_route(level.mother_core, right)
 	_check(network.is_route_valid(route), "Fresh route is valid")

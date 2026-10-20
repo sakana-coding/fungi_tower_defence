@@ -251,10 +251,10 @@ func _test_quotes_selection_orders_and_slots() -> void:
 	var marker: ConnectionTarget = _markers(fixture, true)[0]
 	_check(marker.get_route_plan() == expected_plan and marker.first_label.visible and marker.second_label.visible,
 		"Preview visibly retains the exact route and both endpoint markers")
-	_check(marker.status_label.text.contains("延伸 5 + 中继菌结 12 = 总计 17") \
+	_check(marker.status_label.text.contains("延伸 5 + 中继花朵 12 = 总计 17") \
 		and marker.status_label.text.contains("已有两端各 0") and marker.status_label.text.contains("付费中继 3"),
 		"Marker explains extension fees, paid relays and free existing hosts")
-	_check(marker.first_label.text.contains("供养起点") and marker.second_label.text.contains("接入终点"),
+	_check(marker.first_label.text.contains("补给起点") and marker.second_label.text.contains("接入终点"),
 		"Endpoint labels distinguish the real source and target")
 	controller.clear_endpoints()
 	_check(controller.get_selection_snapshot().get("first_node") == null \
@@ -270,7 +270,7 @@ func _test_quotes_selection_orders_and_slots() -> void:
 	_check(quote.get("plan") == expected_plan and marker.get_route_plan() == expected_plan,
 		"Reversed input retains the same source-oriented planner fees")
 	_check(marker.status_label.text.contains("② → ①") and marker.status_label.text.contains("自动反向") \
-		and marker.first_label.text.contains("接入终点") and marker.second_label.text.contains("供养起点"),
+		and marker.first_label.text.contains("接入终点") and marker.second_label.text.contains("补给起点"),
 		"Preview clearly displays the reversed route and actual endpoint roles")
 	_check(marker.get_endpoint_snapshot().get("first_node") == remote \
 		and marker.get_endpoint_snapshot().get("second_node") == front,
@@ -287,7 +287,7 @@ func _test_quotes_selection_orders_and_slots() -> void:
 	quote = controller.preview_at(front.global_position)
 	var free_relay_positions: PackedVector2Array = marker.get_route_plan().get("junction_positions", PackedVector2Array())
 	_check(bool(quote.get("valid", false)) and marker.get_route_plan() == free_relay_plan \
-		and free_relay_positions.size() == 3 and marker.status_label.text.contains("中继菌结 0 = 总计 5"),
+		and free_relay_positions.size() == 3 and marker.status_label.text.contains("中继花朵 0 = 总计 5"),
 		"A zero relay price preserves every planned relay point while quoting only actual extension fees")
 	await _remove_fixture(fixture)
 
@@ -404,7 +404,7 @@ func _test_confirmation_status_and_exit() -> void:
 	_check(not controller.handle_input(_key(KEY_P)) and not controller.handle_input(_key(KEY_X)),
 		"Connection controller leaves confirmed-build P/X routing to its parent")
 	growth.set_supply_wait_reason(task_id, &"combat_reserve")
-	_check(marker.status_label.text.contains("保留战斗营养"), "Actual growth supply status reaches the connection marker")
+	_check(marker.status_label.text.contains("保留战斗创作能量"), "Actual growth supply status reaches the connection marker")
 	_check(connection.pause_task() and marker.get_status_snapshot().get("state") == &"paused",
 		"Parent coordinator pause synchronizes the persistent marker")
 	_check(connection.resume_task() and connection.cancel_task(), "Parent coordinator owns resume and actual cancellation")
@@ -487,10 +487,10 @@ func _test_lower_endpoint_label_layout() -> void:
 		_check(controller.placement_bounds.encloses(label_rect) and label_rect.end.y < 650.0,
 			"Every lower-endpoint label remains in the map without covering the bottom HUD")
 	_check(marker.status_label.text.contains("方向 ① → ②") \
-		and marker.status_label.text.contains("延伸 5 + 中继菌结 12 = 总计 17") \
+		and marker.status_label.text.contains("延伸 5 + 中继花朵 12 = 总计 17") \
 		and marker.status_label.text.contains("已有两端各 0") \
 		and marker.status_label.text.contains("已投入") \
-		and marker.status_label.text.contains("保留战斗营养"),
+		and marker.status_label.text.contains("保留战斗创作能量"),
 		"Layout retains direction, all planner fees, investment and waiting information")
 	await _remove_fixture(fixture)
 
@@ -543,8 +543,8 @@ func _test_bounds_coordinates_and_forward_binding() -> void:
 	_check(bool(quote.get("valid", false)) and bool(quote.get("reversed", false)) \
 		and quote.get("second_node") == front and marker.global_position.is_equal_approx(front.global_position),
 		"World-coordinate preview finds the powered second host and shows actual reversed direction")
-	var label_rect: Rect2 = marker.get_global_transform_with_canvas() * Rect2(
-		marker.status_label.position, marker.status_label.size)
+	var label_rect: Rect2 = marker.status_label.get_global_transform_with_canvas() * Rect2(
+		Vector2.ZERO, marker.status_label.size)
 	_check(label_rect.position.x >= 0 and label_rect.end.x <= root.size.x,
 		"Transformed fee label remains inside the viewport")
 	_check(controller.handle_input(_mouse(MOUSE_BUTTON_LEFT, screen_front)),

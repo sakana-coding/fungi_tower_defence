@@ -43,7 +43,6 @@ func _ready() -> void:
 	hud.set_combat_demo_enabled(false)
 	hud.show_progression_hint({})
 	frontier_status.compact_labels = true
-	frontier_status.exposure_label_position = Vector2(424, 637)
 	first_guide = FirstEventGuide.new()
 	first_guide.name = "FirstEventGuide"
 	hud.add_child(first_guide)
@@ -62,8 +61,9 @@ func _ready() -> void:
 	_formal_ready = true
 	_layout_formal_hud()
 	LevelStoryCaption.attach(self, 1)
+	initialize_level_camera(compact_hud, _camera_input_allowed)
 	_refresh_formal_hud()
-	hud.show_notice("第一关：可先用 G 接通左前方80尸骸，再点击开始第一波。Space随时暂停规划。")
+	hud.show_notice("第一关：可先用 G 接通左前方破旧画架（80能量），再开始第一波涂鸦羊。Space随时暂停规划。")
 
 
 func _process(delta: float) -> void:
@@ -80,6 +80,10 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if _handle_camera_input(event):
+		return
+	if event is InputEventKey and get_viewport().gui_get_focus_owner() != null:
+		return
 	if not _formal_ready or _restart_pending:
 		return
 	if is_instance_valid(compact_hud) and compact_hud.level_menu.is_open():
@@ -101,11 +105,11 @@ func _input(event: InputEvent) -> void:
 				return
 		if event.is_pressed() and event.keycode == KEY_ESCAPE:
 			compact_hud.close_drawer()
-	if event is InputEventMouse and compact_hud.is_pointer_over_ui(event.position):
+	if (event is InputEventMouse or event is InputEventGesture) and compact_hud.is_pointer_over_ui(event.position):
 		return
-	if event is InputEventMouse and flow_hud.is_pointer_over_panel(event.position):
+	if (event is InputEventMouse or event is InputEventGesture) and flow_hud.is_pointer_over_panel(event.position):
 		return
-	if event is InputEventMouse and first_guide.is_visible_in_tree() \
+	if (event is InputEventMouse or event is InputEventGesture) and first_guide.is_visible_in_tree() \
 			and first_guide.get_global_rect().has_point(event.position):
 		return
 	# 正式关卡不暴露旧调试伤害/库存快捷键。
@@ -119,12 +123,14 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and get_viewport().gui_get_focus_owner() != null:
+		return
 	if not _formal_ready or _restart_pending or not _result_snapshot.is_empty() or _failure_pending:
 		return
 	if is_instance_valid(compact_hud) and compact_hud.level_menu.is_open():
 		get_viewport().set_input_as_handled()
 		return
-	if event is InputEventMouse and (compact_hud.is_pointer_over_ui(event.position) \
+	if (event is InputEventMouse or event is InputEventGesture) and (compact_hud.is_pointer_over_ui(event.position) \
 			or flow_hud.is_pointer_over_panel(event.position) \
 			or (first_guide.is_visible_in_tree() and first_guide.get_global_rect().has_point(event.position))):
 		return
@@ -358,8 +364,8 @@ func _refresh_resource_guides() -> void:
 		var marker: Node2D = get_node("World/FirstResourceGuide" if index == 0 else "World/SecondResourceGuide")
 		var plan: Dictionary = growth_system.preview_target(origins[index], marker.global_position)
 		var label: Label = marker.get_node("Hint")
-		label.text = "%s｜G接通约%d营养\n每批10回运，绿色产物到母核才入账" % [
-			"左前尸骸80 · 先发展" if index == 0 else "右前尸骸120 · 注意侧翼", int(plan.get("total_cost", 0))]
+		label.text = "%s｜G接通约%d创作能量\n每批回收10能量，补给送回小画家后才入账" % [
+			"左前画架 · 可回收80能量" if index == 0 else "右前画架 · 可回收120能量", int(plan.get("total_cost", 0))]
 
 
 func _layout_formal_hud() -> void:
@@ -381,3 +387,9 @@ func open_development_demo(action: StringName) -> void:
 
 func _reload_operations() -> void:
 	open_development_demo(&"colony_operations_demo")
+
+
+func _camera_input_allowed() -> bool:
+	return _formal_ready and not _restart_pending and not _stopping_announced \
+		and mother_core.health > 0 and _result_snapshot.is_empty() and not _failure_pending \
+		and is_instance_valid(compact_hud) and not compact_hud.level_menu.is_open()

@@ -20,7 +20,7 @@ func _ready() -> void:
 	$RecoveryHUD/Buttons/Supply.pressed.connect(dispatch_demo_supply)
 	$RecoveryHUD/Buttons/Access.pressed.connect(func() -> void:
 		damage_demo_edge(access_edge))
-	hud.show_notice("测试性伤害：1 主路、2 旁路、5 采集段；J / 3 支付营养修复，K 暂停，Backspace 取消")
+	hud.show_notice("测试性伤害：1 主路、2 旁路、5 采集段；J / 3 支付创作能量修复，K 暂停，Backspace 取消")
 	_refresh_demo_status()
 
 
@@ -64,7 +64,7 @@ func damage_demo_edge(edge: HyphaEdge, amount: float = 35.0) -> void:
 	repair_input_controller.enter_selection_mode()
 	repair_input_controller.select_edge(edge)
 	_sync_fungal_sources()
-	hud.show_notice("测试性伤害：菌丝生命 %.1f / %.0f；按 J 修复，只有真实营养抵达才恢复" % [edge.health, edge.max_health])
+	hud.show_notice("测试性伤害：花径生命 %.1f / %.0f；按 J 修复，只有真实创作能量抵达才恢复" % [edge.health, edge.max_health])
 	_refresh_demo_status()
 
 
@@ -93,7 +93,7 @@ func restore_demo_edges() -> void:
 	for edge: HyphaEdge in network_system.get_registered_edges():
 		edge.entry_enabled = true
 	_sync_fungal_sources()
-	hud.show_notice("仅清除旧测试的临时禁行开关；生命为 0 的菌丝仍需支付营养修复")
+	hud.show_notice("仅清除旧测试的临时禁行开关；生命为 0 的花径仍需支付创作能量修复")
 	_refresh_demo_status()
 
 

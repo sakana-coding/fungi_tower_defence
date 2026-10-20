@@ -12,14 +12,14 @@ const TOTAL_COST: int = 12
 const TARGET_SCENE: PackedScene = preload("res://scenes/colony/growth_target.tscn")
 const OVERLAP_RADIUS: float = 24.0
 const REASON_TEXT: Dictionary = {
-	&"no_selection": "请先选择一个成熟菌结",
-	&"occupied": "器官槽位已占用；请选择空菌结或已取消的培育芽",
-	&"disconnected": "所选菌结未与存活的母核连通",
-	&"construction_busy": "已有建造任务；请先完成或取消当前生长或培育",
-	&"invalid_configuration": "培育系统或供养配置尚未就绪",
-	&"settlement_pending": "上一轮培育退款尚未结算，请等待后再继续",
-	&"ready": "可培育攻击器官：结构 8 + 库存 4，共 12 营养",
-	&"continuable": "可继续培育芽，保留已付结构与进度",
+	&"no_selection": "请先选择一个已开放花朵",
+	&"occupied": "设施槽位已占用；请选择空花朵或已取消的建造芽",
+	&"disconnected": "所选花朵未与存活的小画家连通",
+	&"construction_busy": "已有建造任务；请先完成或取消当前生长或建造",
+	&"invalid_configuration": "建造系统或补给配置尚未就绪",
+	&"settlement_pending": "上一轮建造退款尚未结算，请等待后再继续",
+	&"ready": "可建造文具炮台：结构 8 + 库存 4，共 12 创作能量",
+	&"continuable": "可继续建造芽，保留已付结构与进度",
 }
 
 @export var cultivation_system: CultivationSystem
@@ -154,11 +154,11 @@ func get_selection_status() -> Dictionary:
 				reason = &"construction_busy"
 	var can_cultivate: bool = reason == &"ready"
 	var can_continue: bool = reason == &"continuable"
-	var message: String = String(REASON_TEXT.get(reason, "当前无法培育，请检查任务与连接"))
+	var message: String = String(REASON_TEXT.get(reason, "当前无法建造，请检查任务与连接"))
 	# 缺粮只影响提示；允许创建等待任务，真实运输送达以后才会推进。
 	if (can_cultivate or can_continue) and available < remaining:
 		reason = &"insufficient_nutrition"
-		message = "营养不足：培育可用 %d，尚需 %d；可先创建任务等待供养" % [available, remaining]
+		message = "创作能量不足：建造可用 %d，尚需 %d；可先创建任务等待补给" % [available, remaining]
 	return {
 		"host": host, "reason": reason, "message": message,
 		"can_cultivate": can_cultivate, "can_continue": can_continue,
@@ -222,12 +222,12 @@ func request_cultivation() -> bool:
 		else cultivation_system.start_cultivation(host, selected_organ_kind)
 	refresh()
 	if task_id <= 0:
-		notice.emit("培育任务创建失败；请检查当前任务、连接和器官槽位")
+		notice.emit("建造任务创建失败；请检查当前任务、连接和设施槽位")
 		return false
 	if selection["reason"] == &"insufficient_nutrition":
-		notice.emit("已创建培育任务；营养不足，等待真实供养送达")
+		notice.emit("已创建建造任务；创作能量不足，等待真实补给送达")
 	else:
-		notice.emit("已继续所选培育芽" if continuing else "已开始培育普通攻击器官")
+		notice.emit("已继续所选建造芽" if continuing else "已开始建造铅笔炮台")
 	return true
 
 
@@ -242,12 +242,12 @@ func pause_cultivation() -> bool:
 		refresh()
 		return paused_remote
 	if not _is_live_node(cultivation_system):
-		notice.emit("培育系统尚未配置")
+		notice.emit("建造系统尚未配置")
 		return false
 	var paused_task: bool = cultivation_system.pause_task()
 	refresh()
 	if not paused_task:
-		notice.emit("当前没有可暂停的培育任务")
+		notice.emit("当前没有可暂停的建造任务")
 	return paused_task
 
 
@@ -262,12 +262,12 @@ func resume_cultivation() -> bool:
 		refresh()
 		return resumed_remote
 	if not _is_live_node(cultivation_system):
-		notice.emit("培育系统尚未配置")
+		notice.emit("建造系统尚未配置")
 		return false
 	var resumed_task: bool = cultivation_system.resume_task()
 	refresh()
 	if not resumed_task:
-		notice.emit("当前没有可恢复的培育任务")
+		notice.emit("当前没有可恢复的建造任务")
 	return resumed_task
 
 
@@ -282,12 +282,12 @@ func cancel_cultivation() -> bool:
 		refresh()
 		return cancelled_remote
 	if not _is_live_node(cultivation_system):
-		notice.emit("培育系统尚未配置")
+		notice.emit("建造系统尚未配置")
 		return false
 	var cancelled_task: bool = cultivation_system.cancel_task()
 	refresh()
 	if not cancelled_task:
-		notice.emit("当前没有可取消的培育任务")
+		notice.emit("当前没有可取消的建造任务")
 	return cancelled_task
 
 
@@ -395,7 +395,7 @@ func place_remote_target(world_position: Vector2) -> bool:
 		notice.emit("全局暂停中：可以查看和预览，恢复后再确认操作。")
 		return false
 	if not _remote_placing:
-		notice.emit("按 B 进入远程器官芽放置")
+		notice.emit("按 B 进入远程设施花苞放置")
 		return false
 	var preview: Dictionary = preview_remote_at(world_position)
 	if not bool(preview.get("valid", false)):
@@ -416,14 +416,14 @@ func place_remote_target(world_position: Vector2) -> bool:
 	var request_id: int = remote_cultivation_system.request_remote(start, world_position, _remote_kind())
 	if request_id <= 0:
 		marker.free()
-		notice.emit("远程器官芽创建失败；请检查当前任务、连接和器官槽位")
+		notice.emit("远程设施花苞创建失败；请检查当前任务、连接和设施槽位")
 		refresh()
 		return false
 	_remote_quote = preview.duplicate(true)
 	_replace_remote_marker(marker)
 	exit_remote_placement_mode()
 	refresh()
-	notice.emit("已创建远程器官芽：先延伸菌路，再供养攻击芽")
+	notice.emit("已创建远程设施花苞：先延伸花径，再补给炮台花苞")
 	return true
 
 
@@ -438,14 +438,14 @@ func _configuration_is_valid() -> bool:
 
 func _remote_configuration_error() -> String:
 	if not _is_live_node(remote_cultivation_system):
-		return "远程培育系统尚未配置"
+		return "远程建造系统尚未配置"
 	if not _configuration_is_valid() or not _is_live_node(growth_system):
 		return String(REASON_TEXT[&"invalid_configuration"])
 	if remote_cultivation_system.growth_system != growth_system \
 			or remote_cultivation_system.cultivation_system != cultivation_system \
 			or remote_cultivation_system.cultivation_supply_system != cultivation_supply_system \
 			or growth_system.network_system != network_system:
-		return "预览与远程建造必须使用同一生长、培育和供养配置"
+		return "预览与远程建造必须使用同一生长、建造和补给配置"
 	if not _is_live_node(target_container):
 		return "远程目标容器尚未配置"
 	return ""
@@ -519,7 +519,7 @@ func _continue_remote_bud() -> bool:
 	var request_id: int = remote_cultivation_system.continue_request()
 	if request_id <= 0:
 		marker.free()
-		notice.emit("远程培育芽暂时无法继续；请检查连接和退款结算")
+		notice.emit("远程建造芽暂时无法继续；请检查连接和退款结算")
 		refresh()
 		return false
 	exit_remote_placement_mode()
@@ -527,7 +527,7 @@ func _continue_remote_bud() -> bool:
 		growth_input_controller.exit_placement_mode()
 	_replace_remote_marker(marker)
 	refresh()
-	notice.emit("已继续远程器官芽，保留已建菌路与已付结构")
+	notice.emit("已继续远程设施花苞，保留已建花径与已付结构")
 	return true
 
 
@@ -549,11 +549,11 @@ func _make_remote_preview(world_position: Vector2) -> Dictionary:
 		preview["error"] = "目标必须位于可生长区域内"
 		return preview
 	if mother_core.health <= 0:
-		preview["error"] = "母核不可用，无法放置远程器官芽"
+		preview["error"] = "小画家不可用，无法放置远程设施花苞"
 		return preview
 	var terrain: TerrainNavigation = growth_system.planner.terrain_navigation
 	if is_instance_valid(terrain) and not terrain.is_point_walkable(world_position, 10.0):
-		preview["error"] = "目标在岩石或战场边界内，无法生长；未扣除营养"
+		preview["error"] = "目标在障碍物或战场边界内，无法生长；未扣除创作能量"
 		return preview
 	var start: Node2D = null
 	var nearest_distance: float = INF
@@ -561,7 +561,7 @@ func _make_remote_preview(world_position: Vector2) -> Dictionary:
 		if not _is_live_node(node) or not (node is MotherCore or node is HyphaNode):
 			continue
 		if _overlaps_existing_host(node, world_position):
-			preview["error"] = "目标在已有母核、菌结或器官的 24 像素范围内；请选择已有菌结后按 C 培育"
+			preview["error"] = "目标在已有小画家、花朵或设施的 24 像素范围内；请选择已有花朵后按 C 建造"
 			return preview
 		if not node.global_position.is_finite() or not network_system.is_available_connected_to_core(node):
 			continue
@@ -577,7 +577,7 @@ func _make_remote_preview(world_position: Vector2) -> Dictionary:
 			start = node
 			nearest_distance = distance
 	if start == null:
-		preview["error"] = "没有与存活母核连通的成熟生长起点"
+		preview["error"] = "没有与存活小画家连通的已开放的延伸起点"
 		return preview
 	if is_instance_valid(construction_coordinator):
 		preview = construction_coordinator.preview(&"remote_cultivation", {

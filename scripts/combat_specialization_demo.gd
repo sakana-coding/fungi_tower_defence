@@ -6,10 +6,10 @@ signal combat_demo_changed(snapshot: Dictionary)
 
 const BATCH_KINDS: Array[StringName] = [&"normal", &"swarm", &"armored", &"mixed"]
 const BATCH_TITLES: Dictionary = {
-	&"normal": "普通 ×6｜左右轮换",
-	&"swarm": "小型 ×3｜右翼进入，推荐右翼散射",
-	&"armored": "重甲 ×1｜左翼进入，推荐左翼破甲",
-	&"mixed": "混合 ×6｜普通轮换、小型右翼、重甲左翼",
+	&"normal": "涂鸦羊 ×6｜左右轮换",
+	&"swarm": "小涂鸦羊 ×3｜右翼进入，推荐右翼喷漆炮台",
+	&"armored": "重甲花羊 ×1｜左翼进入，推荐左翼橡皮炮台",
+	&"mixed": "混合 ×6｜涂鸦羊轮换、小涂鸦羊右翼、重甲花羊左翼",
 }
 
 @export var normal_batch_entries: Array[EnemySpawnEntry] = []
@@ -61,7 +61,7 @@ func _ready() -> void:
 		enemy_spawner, supply_system, self)
 	_refresh_combat_demo()
 	hud.show_combat_hint(combat_hint_controller.get_snapshot())
-	hud.show_notice("先回收两处尸骸并真实回流至成熟；推荐左翼破甲、右翼散射，再选择验证批次并开始")
+	hud.show_notice("先回收两处画架并真实回收至成形阶段；推荐左翼橡皮炮台、右翼喷漆炮台，再选择验证批次并开始")
 
 
 func _process(delta: float) -> void:

@@ -49,7 +49,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.9, 0.92, 0.6, 1)
 theme_override_font_sizes/font_size = 14
-text = "攻击器官分化"
+text = "炮台改装"
 mouse_filter = 2
 
 [node name="RulesButton" type="Button" parent="Margin/Content/Heading"]
@@ -57,13 +57,13 @@ unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
 text = "规则"
-tooltip_text = "查看成熟门槛、分化供养、取消退款与继续规则"
+tooltip_text = "查看成形阶段门槛、改装补给、取消退款与继续规则"
 
 [node name="TypeInfoLabel" type="Label" parent="Margin/Content"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-text = "普通：单体，每轮1营养；破甲：无视护甲，每轮2。\n散射：至多3目标，整轮1营养。"
+text = "铅笔：单体，每轮1；橡皮：无视护甲，每轮2。\n喷漆：至多3个不同目标，整轮1。消耗均为创作能量。"
 autowrap_mode = 3
 
 [node name="StatusLabel" type="Label" parent="Margin/Content"]
@@ -71,7 +71,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 49)
 layout_mode = 2
 mouse_filter = 2
-text = "请选择承载攻击器官的成熟菌结。"
+text = "请选择承载文具炮台的已开放花朵。"
 autowrap_mode = 3
 max_lines_visible = 3
 
@@ -92,8 +92,8 @@ custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
-text = "破甲"
-tooltip_text = "分化为破甲：无视护甲，每轮消耗2弹药营养"
+text = "橡皮炮台"
+tooltip_text = "改装为橡皮炮台：无视护甲，每轮消耗2创作能量"
 disabled = true
 
 [node name="ScatterButton" type="Button" parent="Margin/Content/Actions"]
@@ -101,8 +101,8 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
-text = "散射"
-tooltip_text = "分化为散射：至多3目标，整轮消耗1弹药营养"
+text = "喷漆炮台"
+tooltip_text = "改装为喷漆炮台：至多3目标，整轮消耗1创作能量"
 disabled = true
 
 [node name="PauseButton" type="Button" parent="Margin/Content/Actions"]
@@ -111,7 +111,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "暂停"
-tooltip_text = "暂停所选器官的分化；保留进度，仍停止射击与新弹药供养"
+tooltip_text = "暂停所选设施的改装；保留进度，仍停止射击与新弹药补给"
 disabled = true
 
 [node name="ContinueButton" type="Button" parent="Margin/Content/Actions"]
@@ -120,7 +120,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "继续"
-tooltip_text = "恢复暂停，或沿取消前已锁定的方向继续分化"
+tooltip_text = "恢复暂停，或沿取消前已锁定的方向继续改装"
 disabled = true
 
 [node name="CancelButton" type="Button" parent="Margin/Content/Actions"]
@@ -129,7 +129,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 text = "取消"
-tooltip_text = "退回未使用材料；已付进度与方向保留，普通攻击重新等待完整冷却"
+tooltip_text = "退回未使用材料；已付进度与方向保留，铅笔炮台重新等待完整冷却"
 disabled = true
 
 [node name="RulesScroll" type="ScrollContainer" parent="Margin/Content"]
@@ -145,5 +145,5 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.74, 0.81, 0.72, 1)
-text = "成熟（累计回收≥160）后，普通攻击器官可分化。\n分化需8材料营养、至少5秒有效时间。\n分化与暂停均停火；取消保留方向和已付进度。\n点击「规则」查看供养、取消与继续规则。"
+text = "成形阶段（累计回收≥160）解锁炮台改装。\n铅笔炮台可改装为橡皮炮台或喷漆炮台。\n消耗8创作能量，至少工作5秒；改装与暂停期间均停火。\n取消保留方向和已付进度；点击「规则」查看详情。"
 autowrap_mode = 3
