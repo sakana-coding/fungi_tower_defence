@@ -115,10 +115,18 @@ func _input(event: InputEvent) -> void:
 	super._input(event)
 
 
+func _on_camera_view_changed() -> void:
+	super._on_camera_view_changed()
+	if _operation_mode != &"" and is_instance_valid(_operation_view):
+		_update_operation_preview(get_global_mouse_position())
+	if is_instance_valid(frontier_status):
+		frontier_status.queue_redraw()
+
+
 func choose_organ(kind: StringName) -> void:
 	cultivation_input_controller.set_organ_kind(kind)
 	_refresh_operations_status()
-	hud.show_notice("已选择胃囊：原位8营养全计结构；远处另付真实网络费用。" if kind == &"digestive" else "已选择攻击器官：原位12＝8结构＋4启动库存；远处另付网络费用。")
+	hud.show_notice("已选择回收碎纸机：原位8创作能量全计结构；远处另付真实网络费用。" if kind == &"digestive" else "已选择文具炮台：原位12＝8结构＋4启动库存；远处另付网络费用。")
 
 
 func begin_retarget() -> bool:
@@ -126,7 +134,7 @@ func begin_retarget() -> bool:
 	var request: Dictionary = construction_coordinator.get_request(selected)
 	if request.is_empty() or request.get("kind") not in [&"growth", &"remote_cultivation"] \
 			or request.get("state") in ConstructionQueue.TERMINAL_STATES or request.get("phase") == &"maturing":
-		hud.show_notice("先点击队列中的 G/B 目标，再按 T；已进入成熟的器官不能改宿主。")
+		hud.show_notice("先点击队列中的 G/B 目标，再按 T；已进入成形阶段的设施不能更换所在花朵。")
 		return false
 	_exit_other_placement()
 	_retarget_id = selected
@@ -139,7 +147,7 @@ func begin_retarget() -> bool:
 func begin_transplant() -> bool:
 	var organ: AttackOrgan = selected_node.get_organ_occupant() as AttackOrgan if is_instance_valid(selected_node) else null
 	if organ == null or transplant_system.has_active_task():
-		hud.show_notice("选中成熟攻击器官后按 M，再点击连通的空菌结；同时最多一项移植。")
+		hud.show_notice("选中已建成的文具炮台后按 M，再点击连通的空花朵；同时最多一项搬迁。")
 		return false
 	_exit_other_placement()
 	_transplant_source = organ
@@ -156,7 +164,7 @@ func commit_operation_at(point: Vector2) -> bool:
 		return false
 	_update_operation_preview(point)
 	if not bool(_operation_preview.get("valid", false)):
-		hud.show_notice(String(_operation_preview.get("error", "请选择合法的目标菌结。")))
+		hud.show_notice(String(_operation_preview.get("error", "请选择合法的目标花朵。")))
 		return false
 	var accepted: bool = false
 	if _operation_mode == &"retarget":
@@ -164,7 +172,7 @@ func commit_operation_at(point: Vector2) -> bool:
 	elif _operation_mode == &"transplant":
 		accepted = transplant_system.request_transplant(_transplant_source, _node_near(point)) > 0
 	if accepted:
-		hud.show_notice("改向已接受：保留原编号、已付段和已形成网络。" if _operation_mode == &"retarget" else "目的地已预留：6营养送抵源器官后出发；准备阶段可按Y取消。")
+		hud.show_notice("改向已接受：保留原编号、已付段和已形成网络。" if _operation_mode == &"retarget" else "目的地已预留：6创作能量送抵源设施后出发；准备阶段可按Y取消。")
 		var was_transplant: bool = _operation_mode == &"transplant"
 		_end_operation_mode()
 		if was_transplant:
@@ -177,7 +185,7 @@ func cancel_transplant_preparation() -> bool:
 		hud.show_notice("全局暂停中：预览保留，恢复后重新确认。")
 		return false
 	var cancelled: bool = transplant_system.cancel_task()
-	hud.show_notice("移植准备已取消，可返还材料按原账目结算。" if cancelled else "正式出发后目的地锁定，不能取消或换目标。")
+	hud.show_notice("搬迁准备已取消，可返还材料按原账目结算。" if cancelled else "正式出发后目的地锁定，不能取消或换目标。")
 	return cancelled
 
 
@@ -234,11 +242,11 @@ func _build_operations_panel() -> void:
 	theme.default_font_size = 14
 	_operations_panel.theme = theme
 	hud.add_child(_operations_panel)
-	_attack_choice = _operation_button("攻击器官 12", 10, choose_organ.bind(&"attack"))
-	_stomach_choice = _operation_button("胃囊 8", 165, choose_organ.bind(&"digestive"))
+	_attack_choice = _operation_button("文具炮台 12", 10, choose_organ.bind(&"attack"))
+	_stomach_choice = _operation_button("回收碎纸机 8", 165, choose_organ.bind(&"digestive"))
 	_operation_button("T 目标改向", 320, begin_retarget)
-	_operation_button("M 移植 6", 475, begin_transplant)
-	_cancel_transplant = _operation_button("Y 取消移植准备", 630, cancel_transplant_preparation)
+	_operation_button("M 搬迁 6", 475, begin_transplant)
+	_cancel_transplant = _operation_button("Y 取消搬迁准备", 630, cancel_transplant_preparation)
 	_add_operations_extras()
 	_operations_status = Label.new()
 	_operations_status.position = Vector2(12, 45)
@@ -264,7 +272,7 @@ func _refresh_operations_status() -> void:
 	var stomach_selected: bool = cultivation_input_controller.selected_organ_kind == &"digestive"
 	_attack_choice.modulate = Color(0.6, 0.7, 0.65) if stomach_selected else Color(1, 0.88, 0.5)
 	_stomach_choice.modulate = Color(1, 0.88, 0.5) if stomach_selected else Color(0.6, 0.7, 0.65)
-	hud.remote_cultivation_button.text = "B 退出" if cultivation_input_controller.is_remote_placing() else ("B 种胃囊" if stomach_selected else "B 种攻击芽")
+	hud.remote_cultivation_button.text = "B 退出" if cultivation_input_controller.is_remote_placing() else ("B 种回收碎纸机" if stomach_selected else "B 建造炮台")
 	var status: Dictionary = transplant_system.get_task_snapshot()
 	_cancel_transplant.disabled = not bool(status.get("can_cancel", false))
 	if _operation_mode == &"retarget":
@@ -277,17 +285,17 @@ func _refresh_operations_status() -> void:
 		else:
 			_operations_status.text = "改向：" + String(_operation_preview.get("error", "请指定新落点")) + "\n原任务保持有效；右键/Esc退出。"
 	elif _operation_mode == &"transplant":
-		_operations_status.text = "移植：点击连通、存活且空闲的成熟菌结。6营养送抵源器官后出发，到达后至少3秒展开。\n" + ("目的地有效 · 左键确认" if bool(_operation_preview.get("valid", false)) else String(_operation_preview.get("reason", "选择目标菌结")))
+		_operations_status.text = "搬迁：点击连通、存活且空闲的已开放花朵。6创作能量送抵源设施后出发，到达后至少3秒展开。\n" + ("目的地有效 · 左键确认" if bool(_operation_preview.get("valid", false)) else String(_operation_preview.get("reason", "选择目标花朵")))
 	else:
-		var names: Dictionary = {&"idle": "无", &"preparing": "准备供养", &"waiting": "等待", &"migrating": "沿菌丝迁移", &"unfolding": "重新展开", &"completed": "完成", &"cancelled": "已取消", &"failed": "已终止"}
+		var names: Dictionary = {&"idle": "无", &"preparing": "准备补给", &"waiting": "等待", &"migrating": "沿花径迁移", &"unfolding": "重新展开", &"completed": "完成", &"cancelled": "已取消", &"failed": "已终止"}
 		var state: StringName = status.get("state", &"idle")
 		var count: int = get_digestive_organs().size()
-		_operations_status.text = "培育类型：%s · C原位 / B远处｜胃囊 %d处独立容量、共用回收和绿色回流｜尸体地面暴露55秒腐坏\n移植：%s · 2通行单位 · 不重置生命/弹药/分化｜休眠：射程内12秒无活敌，接近立即唤醒。" % [
-			"胃囊（8结构）" if stomach_selected else "攻击（8结构＋4启动库存）", count, names.get(state, String(state))]
+		_operations_status.text = "建造类型：%s · C原位 / B远处｜回收碎纸机 %d处独立容量、共用回收和补给回运｜回收物地面暴露55秒消散\n搬迁：%s · 2通行单位 · 不重置生命/弹药/改装｜待机：射程内12秒无活敌，接近立即唤醒。" % [
+			"回收碎纸机（8结构）" if stomach_selected else "攻击（8结构＋4启动库存）", count, names.get(state, String(state))]
 		if transplant_system.has_active_task():
-			var reason_names: Dictionary = {&"nutrition": "等待材料", &"in_transit": "材料在途", &"queued": "FIFO排队", &"no_route": "断路等候", &"withered": "等待菌结恢复", &"disconnected": "等待接通", &"edge_closed": "菌丝停运", &"": "正常推进"}
-			_operations_status.text = "移植 #%d · %s · %s｜费用缓存%d/6 · 在途%d · 已消费%d
-目的地已锁定 · 2单位共用FIFO · 展开 %.1f/3.0秒；准备阶段可Y取消，出发后保留同一器官。" % [
+			var reason_names: Dictionary = {&"nutrition": "等待材料", &"in_transit": "材料在途", &"queued": "FIFO排队", &"no_route": "断路等候", &"withered": "等待花朵恢复", &"disconnected": "等待接通", &"edge_closed": "花径停运", &"": "正常推进"}
+			_operations_status.text = "搬迁 #%d · %s · %s｜费用缓存%d/6 · 在途%d · 已消费%d
+目的地已锁定 · 2单位共用FIFO · 展开 %.1f/3.0秒；准备阶段可Y取消，出发后保留同一设施。" % [
 				int(status.get("task_id", 0)), names.get(state, String(state)), reason_names.get(status.get("wait_reason"), String(status.get("wait_reason", ""))),
 				int(status.get("buffered_nutrition", 0)), int(status.get("in_transit_nutrition", 0)), int(status.get("consumed_nutrition", 0)), float(status.get("effective_time", 0.0))]
 
@@ -344,10 +352,10 @@ func _sync_differentiation_presentation() -> void:
 
 func _on_transplant_completed(_task_id: int) -> void:
 	if not _operations_closing:
-		hud.show_notice("移植展开完成：原器官已就位，生命、弹药与分化保留；敌人接近即可唤醒战斗。")
+		hud.show_notice("搬迁展开完成：原设施已就位，生命、弹药与改装保留；敌人接近即可唤醒战斗。")
 
 
 func _on_transplant_failed(_task_id: int, reason: StringName) -> void:
 	if not _operations_closing:
 		var reasons: Dictionary = {&"organ_destroyed": "本体被毁", &"destination_removed": "目的地被永久移除", &"transport_lost": "运输终止"}
-		hud.show_notice("移植已终止：%s，预留与损失已按原身份结算。" % reasons.get(reason, String(reason)))
+		hud.show_notice("搬迁已终止：%s，预留与损失已按原身份结算。" % reasons.get(reason, String(reason)))

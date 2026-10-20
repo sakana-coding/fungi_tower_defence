@@ -31,7 +31,7 @@ color = Color(0.929, 0.906, 0.859, 1)
 
 [node name="HyphaNode" parent="World/Colony/Nodes" unique_id=1801727760 instance=ExtResource("3_node")]
 position = Vector2(440, 380)
-display_name = "左翼菌结"
+display_name = "左翼花朵"
 
 [node name="AttackOrgan" parent="World/Colony/Nodes/HyphaNode" instance=ExtResource("5_organ")]
 
@@ -46,7 +46,7 @@ attack_range = 100.0
 
 [node name="RightNode" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(780, 400)
-display_name = "右翼菌结"
+display_name = "右翼花朵"
 
 [node name="AttackOrgan" parent="World/Colony/Nodes/RightNode" instance=ExtResource("5_organ")]
 
@@ -61,7 +61,7 @@ attack_range = 100.0
 
 [node name="RearNode" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(750, 590)
-display_name = "消化菌结"
+display_name = "回收花朵"
 
 [node name="DigestiveOrgan" parent="World/Colony/Nodes/RearNode" node_paths=PackedStringArray("mother_core", "core_edge", "colony_capabilities") instance=ExtResource("11_digestive")]
 mother_core = NodePath("../../../MotherCore")
@@ -97,7 +97,7 @@ mouse_filter = 2
 theme_override_fonts/font = SubResource("Font_demo")
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.80, 0.88, 0.66, 1)
-text = "域外尸体 4 · 按 G 向这里伸展"
+text = "域外回收物 4 · 按 G 向这里伸展"
 horizontal_alignment = 2
 
 [node name="Marker" type="Line2D" parent="World/Remains/ExpansionRemains"]

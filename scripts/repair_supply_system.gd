@@ -434,7 +434,7 @@ func _dispatch_one() -> Shipment:
 		_reject("修复供给缺少可用的共享运输配置")
 		return null
 	if account.source.get_nutrition_reservation(account.budget_key) < PACKET_NUTRITION:
-		_reject("修复营养预留正在等待真实营养收入")
+		_reject("修复创作能量预留正在等待真实创作能量收入")
 		return null
 	if _next_shipment_serial >= MAX_SERIAL or not _is_live(account.point) or not _is_live(account.target):
 		return null
@@ -450,7 +450,7 @@ func _dispatch_one() -> Shipment:
 	if not instance is NutrientPacket:
 		if is_instance_valid(instance):
 			instance.free()
-		_reject("修复营养包场景类型不正确")
+		_reject("修复补给包场景类型不正确")
 		return null
 	var packet: NutrientPacket = instance as NutrientPacket
 	packet.traffic_required = required

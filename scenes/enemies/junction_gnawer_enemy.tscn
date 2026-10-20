@@ -9,4 +9,4 @@ archetype = 5
 modulate = Color(0.82, 0.58, 0.91, 1)
 
 [node name="ArtRole" parent="Visuals"]
-text = "结"
+text = "花"

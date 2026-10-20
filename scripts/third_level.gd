@@ -60,9 +60,10 @@ func _ready() -> void:
 	add_child(compact_hud)
 	compact_hud.configure(self)
 	_third_ready = true
+	initialize_level_camera(compact_hud, _camera_input_allowed)
 	_refresh_third_hud()
 	first_guide.record_event(&"opening")
-	hud.show_notice("第三关：用连通母核的菌域覆盖三个碎片，各收集5秒；大型尸骸支持探索与防守。")
+	hud.show_notice("第三关：保护小画家，让连通的花海覆盖三块记忆碎片，各累计收集5秒。公文包提供探索和防守所需的回收材料。")
 
 
 func _process(delta: float) -> void:
@@ -75,6 +76,10 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if _handle_camera_input(event):
+		return
+	if event is InputEventKey and get_viewport().gui_get_focus_owner() != null:
+		return
 	if not _third_ready or _restart_pending:
 		return
 	if is_instance_valid(compact_hud) and compact_hud.level_menu.is_open():
@@ -89,7 +94,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		compact_hud.close_drawer()
-	if event is InputEventMouse and (compact_hud.is_pointer_over_ui(event.position) \
+	if (event is InputEventMouse or event is InputEventGesture) and (compact_hud.is_pointer_over_ui(event.position) \
 			or flow_hud.is_pointer_over_panel(event.position)):
 		return
 	if event.is_action_pressed("debug_damage_core") or event.is_action_pressed("debug_consume_nutrition"):
@@ -99,12 +104,14 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and get_viewport().gui_get_focus_owner() != null:
+		return
 	if not _third_ready or _restart_pending:
 		return
 	if is_instance_valid(compact_hud) and compact_hud.level_menu.is_open():
 		get_viewport().set_input_as_handled()
 		return
-	if event is InputEventMouse and (compact_hud.is_pointer_over_ui(event.position) \
+	if (event is InputEventMouse or event is InputEventGesture) and (compact_hud.is_pointer_over_ui(event.position) \
 			or flow_hud.is_pointer_over_panel(event.position)):
 		return
 	if get_tree().paused and event.is_action_pressed("request_supply"):
@@ -200,3 +207,9 @@ func _draw_spawn_warnings() -> void:
 		_objective_overlay.draw_arc(point, 26, 0, TAU, 24, color, 2, true)
 		_objective_overlay.draw_string(_preview_font, point + Vector2(-55, -36),
 			"来袭 %.0fs" % float(source.remaining) if warning else "敌人入口", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, color)
+
+
+func _camera_input_allowed() -> bool:
+	return _third_ready and not _restart_pending and not _stopping_announced \
+		and mother_core.health > 0 and _result_snapshot.is_empty() \
+		and is_instance_valid(compact_hud) and not compact_hud.level_menu.is_open()

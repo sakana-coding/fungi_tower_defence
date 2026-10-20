@@ -62,12 +62,12 @@ func _initial_and_real_attack() -> void:
 	_check(level.get_node("World/Remains").get_child_count() == 2, "two eighty-nutrient sources are present")
 	_check(level.compact_hud.visible and not level.compact_hud.drawer.visible,
 		"existing compact interface starts with details collapsed")
-	_check(level.compact_hud.wave_button.text == "摧毁 AI 0/3" and not level.compact_hud.pages.has(&"development"),
+	_check(level.compact_hud.wave_button.text == "摧毁终端 0/3" and not level.compact_hud.pages.has(&"development"),
 		"objective replaces finite-wave display without development entries")
 	level.compact_hud.open_page(&"wave")
 	_check(level.compact_hud._objective_buttons.size() == 3, "objective drawer offers all three selectable targets")
 	level.compact_hud.close_drawer()
-	_check((level.get_attack_preview(Vector2(330, 440)).covered as PackedStringArray).has("左侧AI"),
+	_check((level.get_attack_preview(Vector2(330, 440)).covered as PackedStringArray).has("左侧绘图终端"),
 		"remote attack preview identifies a covered facility")
 	_check((level.get_attack_preview(level.mother_core.global_position).covered as PackedStringArray).is_empty(),
 		"initial rear location does not pretend to reach facilities")

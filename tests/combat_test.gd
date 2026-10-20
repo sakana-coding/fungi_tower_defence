@@ -188,7 +188,7 @@ func _test_defeat_and_restart() -> void:
 			break
 		await physics_frame
 	_check(level.mother_core.health == 0, "Enemy did not cause defeat")
-	_check(level.hud.battle_label.text.contains("母核已被摧毁"), "Defeat result was missing")
+	_check(level.hud.battle_label.text.contains("小画家倒下了"), "Defeat result was missing")
 	_check(level.get_node("World").process_mode == Node.PROCESS_MODE_DISABLED, "World continued after defeat")
 	_check(level.enemy_spawner.spawn_timer.is_stopped(), "Spawner continued after defeat")
 	await _wait_frames(200)

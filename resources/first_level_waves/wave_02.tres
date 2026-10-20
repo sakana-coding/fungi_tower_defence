@@ -32,4 +32,4 @@ spawn_point_index = 0
 script = ExtResource("1_wave")
 entries = Array[ExtResource("2_entry")]([SubResource("Entry_01"), SubResource("Entry_02"), SubResource("Entry_03")])
 title = "第二波 · 侧前骚动"
-direction_text = "普通敌人来自正面，小型群体从侧前方插入。"
+direction_text = "涂鸦羊从正面推进，小涂鸦羊群从侧前方插入。"

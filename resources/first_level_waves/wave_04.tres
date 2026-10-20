@@ -61,4 +61,4 @@ spawn_point_index = 0
 script = ExtResource("1_wave")
 entries = Array[ExtResource("2_entry")]([SubResource("Entry_01"), SubResource("Entry_02"), SubResource("Entry_03"), SubResource("Entry_04"), SubResource("Entry_05"), SubResource("Entry_06"), SubResource("Entry_07")])
 title = "第四波 · 重甲推进"
-direction_text = "正面普通与重甲交替推进，侧前方有小型群体和重甲。"
+direction_text = "正面涂鸦羊与重甲花羊交替推进，侧前方还有小涂鸦羊和重甲花羊。"

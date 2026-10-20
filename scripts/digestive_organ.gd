@@ -942,7 +942,7 @@ func _play_gain_feedback(nutrition: int) -> void:
 		return
 	if _gain_tween != null and _gain_tween.is_valid():
 		_gain_tween.kill()
-	gain_label.text = "产出 %d 营养" % nutrition
+	gain_label.text = "产出 %d 创作能量" % nutrition
 	gain_feedback.position = Vector2(0, -66)
 	gain_feedback.modulate.a = 1.0
 	gain_feedback.show()

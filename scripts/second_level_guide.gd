@@ -2,13 +2,13 @@ class_name SecondLevelGuide
 extends FirstEventGuide
 
 const SECOND_TEXTS: Dictionary = {
-	&"remains_returned": "尸骸已送到胃囊。前沿扩张仍要保护回收与供养路线。",
-	&"nutrition_returned": "回收营养已入账。两侧80尸骸可支持向AI设施推进。",
-	&"facility_destroyed": "AI已停产，已出生敌人仍会行动。其余设施至少留出20秒整备。",
-	&"silk_gnawer": "菌丝啃食者只直接攻击菌丝。保护运输线路，必要时修复或建立旁路。",
-	&"junction_gnawer": "菌结啃食者只直接攻击菌结。保护据点，器官失联后无法正常工作。",
-	&"swarm": "小型敌人成组靠近。成熟后可用散射分化增加应对能力。",
-	&"armored": "重甲敌人会抵扣普通伤害。成熟后可用破甲分化应对。",
+	&"remains_returned": "回收物已送到碎纸机。向前建设时，请保护回收和补给路线。",
+	&"nutrition_returned": "创作能量已入账。两侧数位板各有80可回收能量，可支持向AI绘图终端推进。",
+	&"facility_destroyed": "这台AI绘图终端已停止生成，已出现的敌人仍会行动。其余终端至少留出20秒整备。",
+	&"silk_gnawer": "侵蚀大脑·断线型只直接攻击花径。保护运输路线，及时修复，或连接另一条道路。",
+	&"junction_gnawer": "侵蚀大脑·摧花型只直接攻击花朵。保护节点，避免节点受损影响其上的设施。",
+	&"swarm": "拼贴面孔正在成群靠近。进入成形阶段后，可把铅笔炮台改装为喷漆炮台，一轮拦截多个目标。",
+	&"armored": "重装绘图机的护甲会削减普通和散射伤害。进入成形阶段后，可用橡皮炮台无视护甲的攻击应对。",
 }
 
 

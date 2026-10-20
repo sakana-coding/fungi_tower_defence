@@ -41,7 +41,7 @@ offset_bottom = 282.0
 mouse_filter = 2
 theme = SubResource("Theme_demo")
 theme_override_colors/font_color = Color(0.92, 0.79, 0.57, 1)
-text = "网络验证 · 测试伤害不代表敌人啃食 · 归零断路，真实营养修复 · F6 返回原演示"
+text = "网络验证 · 测试伤害不代表敌人啃食 · 归零断路，真实创作能量修复 · F6 返回原演示"
 
 [node name="Buttons" type="HBoxContainer" parent="RecoveryHUD"]
 offset_left = 24.0
@@ -65,7 +65,7 @@ text = "3 修复选中"
 
 [node name="Supply" type="Button" parent="RecoveryHUD/Buttons"]
 layout_mode = 2
-text = "4 消耗 1 并供养"
+text = "4 消耗 1 并补给"
 
 [node name="Access" type="Button" parent="RecoveryHUD/Buttons"]
 layout_mode = 2

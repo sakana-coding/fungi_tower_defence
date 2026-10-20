@@ -238,7 +238,7 @@ func _test_low_funds_and_controls() -> void:
 		and not controller.handle_input(_key(KEY_C, true)), "Release and keyboard echo do not create tasks")
 	controller.select_node(host)
 	var status: Dictionary = controller.get_selection_status()
-	_check(status.reason == &"insufficient_nutrition" and status.message.contains("营养不足") \
+	_check(status.reason == &"insufficient_nutrition" and status.message.contains("创作能量不足") \
 		and status.can_cultivate, "Low balance is informative and still permits a waiting task")
 	_check(controller.handle_input(_key(KEY_C)), "Configured C input is consumed by cultivation")
 	var task: Dictionary = cultivation.get_task_snapshot()

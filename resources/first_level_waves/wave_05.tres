@@ -68,5 +68,5 @@ spawn_point_index = 0
 [resource]
 script = ExtResource("1_wave")
 entries = Array[ExtResource("2_entry")]([SubResource("Entry_01"), SubResource("Entry_02"), SubResource("Entry_03"), SubResource("Entry_04"), SubResource("Entry_05"), SubResource("Entry_06"), SubResource("Entry_07"), SubResource("Entry_08")])
-title = "第五波 · 啃食绕入"
-direction_text = "正面持续施压，啃食者随小型群体从侧前方逼近组织。"
+title = "第五波 · 啃食花羊绕入"
+direction_text = "正面持续施压，啃食花羊随小涂鸦羊群从侧前方逼近花朵与花径。"

@@ -57,33 +57,33 @@ func preview_connection(first: HyphaNode, second: HyphaNode) -> Dictionary:
 	if growth_system.construction_blocker.is_valid() and bool(growth_system.construction_blocker.call()):
 		return _reject_preview(preview, &"construction_busy", "另一建设任务正在进行")
 	if not _is_live_node(mother_core) or mother_core.health <= 0:
-		return _reject_preview(preview, &"core_unavailable", "母核当前无法供给连接")
+		return _reject_preview(preview, &"core_unavailable", "小画家当前无法供给连接")
 	if not _is_live_node(first) or not _is_live_node(second):
-		return _reject_preview(preview, &"invalid_endpoint", "连接需要两个有效菌结")
+		return _reject_preview(preview, &"invalid_endpoint", "连接需要两个有效花朵")
 	if first == second:
-		return _reject_preview(preview, &"same_node", "请选择另一个菌结")
+		return _reject_preview(preview, &"same_node", "请选择另一个花朵")
 	var network: NetworkSystem = growth_system.network_system
 	var registered: Array[Node2D] = network.get_registered_nodes()
 	if not _is_live_node(first) or not _is_live_node(second) \
 			or not registered.has(first) or not registered.has(second):
 		return _reject_preview(preview, &"unregistered_endpoint", "连接端点必须属于当前网络")
 	if network.get_registered_core() != mother_core:
-		return _reject_preview(preview, &"core_unavailable", "当前网络缺少供给母核")
+		return _reject_preview(preview, &"core_unavailable", "当前网络缺少供给小画家")
 	if not _is_live_node(first) or not _is_live_node(second) or not _is_live_node(mother_core):
-		return _reject_preview(preview, &"invalid_endpoint", "连接端点或母核已失效")
+		return _reject_preview(preview, &"invalid_endpoint", "连接端点或小画家已失效")
 	if network.has_direct_connection(first, second):
-		return _reject_preview(preview, &"already_connected", "两个菌结已有直接连接")
+		return _reject_preview(preview, &"already_connected", "两个花朵已有直接连接")
 	if not _is_live_node(first) or not _is_live_node(second) or not _is_live_node(mother_core):
-		return _reject_preview(preview, &"invalid_endpoint", "连接端点或母核已失效")
+		return _reject_preview(preview, &"invalid_endpoint", "连接端点或小画家已失效")
 	var first_connected: bool = network.find_route(first, mother_core).found
 	if not _is_live_node(first) or not _is_live_node(second) or not _is_live_node(mother_core):
-		return _reject_preview(preview, &"invalid_endpoint", "连接端点或母核已失效")
+		return _reject_preview(preview, &"invalid_endpoint", "连接端点或小画家已失效")
 	var second_connected: bool = network.find_route(second, mother_core).found
 	if not _is_live_node(first) or not _is_live_node(second) \
 			or not _is_live_node(mother_core) or mother_core.health <= 0:
-		return _reject_preview(preview, &"invalid_endpoint", "连接端点或母核已失效")
+		return _reject_preview(preview, &"invalid_endpoint", "连接端点或小画家已失效")
 	if not first_connected and not second_connected:
-		return _reject_preview(preview, &"disconnected", "两个菌结都无法从母核取得供给")
+		return _reject_preview(preview, &"disconnected", "两个花朵都无法从小画家取得供给")
 	var source: HyphaNode = first if first_connected else second
 	var target: HyphaNode = second if first_connected else first
 	preview["start_node"] = source
@@ -95,7 +95,7 @@ func preview_connection(first: HyphaNode, second: HyphaNode) -> Dictionary:
 	if not bool(plan["valid"]):
 		return _reject_preview(preview, &"invalid_plan", String(plan["error"]))
 	if float(plan["distance"]) <= 0.0:
-		return _reject_preview(preview, &"same_position", "重合菌结没有可施工的连接距离")
+		return _reject_preview(preview, &"same_position", "重合花朵没有可施工的连接距离")
 	preview["valid"] = true
 	return preview
 

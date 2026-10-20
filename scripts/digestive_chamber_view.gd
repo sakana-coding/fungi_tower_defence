@@ -100,7 +100,7 @@ func _render_snapshot(snapshot: Dictionary, output: Dictionary) -> void:
 	var expansion_state: StringName = StringName(snapshot["expansion_state"])
 	var is_expanding: bool = expansion_state == &"expanding"
 	var has_two_chambers: bool = int(snapshot["chamber_count"]) == 2
-	var primary_name: String = "一腔" if is_expanding or has_two_chambers else "单腔"
+	var primary_name: String = "通道一" if is_expanding or has_two_chambers else "单通道"
 	_primary_status.text = "%s\n%s" % [primary_name, _state_text(primary)]
 	_primary_status.modulate = _text_color(primary)
 	_primary_progress.value = clampf(float(primary["progress"]), 0.0, 1.0)
@@ -121,11 +121,11 @@ func _render_snapshot(snapshot: Dictionary, output: Dictionary) -> void:
 		var elapsed: float = clampf(duration - float(snapshot["expansion_remaining"]), 0.0, duration)
 		_second_body.scale = Vector2.ONE * lerpf(MIN_EXPANSION_SCALE, 1.0, progress)
 		_second_body.modulate.a = lerpf(0.25, 1.0, progress)
-		_second_status.text = "扩张二腔\n%.1f / %.1f 秒" % [elapsed, duration]
+		_second_status.text = "扩建通道二\n%.1f / %.1f 秒" % [elapsed, duration]
 	else:
 		_second_body.scale = Vector2.ONE
 		_second_body.modulate.a = 1.0
-		_second_status.text = "二腔\n%s" % _state_text(secondary)
+		_second_status.text = "通道二\n%s" % _state_text(secondary)
 
 	# 入库包含正在消化的尸体；输出包含在途产物，括号内仅展示各自预留。
 	_queue_label.text = "入库 %d (+%d)/%d\n输出 %d (+%d)/%d" % [
@@ -160,9 +160,9 @@ func _state_text(chamber: Dictionary) -> String:
 	var state: StringName = StringName(chamber["state"])
 	match state:
 		&"processing":
-			return "消化 %.1f 秒" % maxf(float(chamber["remaining"]), 0.0)
+			return "加工 %.1f 秒" % maxf(float(chamber["remaining"]), 0.0)
 		&"dormant":
-			return "休眠·到货唤醒"
+			return "待机·到货唤醒"
 		&"output_full":
 			return "输出已满"
 		&"output_too_large":
@@ -170,7 +170,7 @@ func _state_text(chamber: Dictionary) -> String:
 		&"stopped":
 			return "已停止"
 		&"host_paused":
-			return "菌结停摆"
+			return "花朵停摆"
 		&"locked":
 			return "尚未解锁"
 		&"expanding":

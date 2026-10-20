@@ -144,10 +144,10 @@ func show_combat_demo(snapshot: Dictionary) -> void:
 	if not _combat_demo_enabled:
 		return
 	var reasons: Dictionary = {
-		&"": "可开始 · 推荐左翼破甲、右翼散射",
-		&"stage_locked": "先真实回收至160成熟，再准备分化火力",
-		&"core_unavailable": "母核不可用 · R 重开",
-		&"differentiating": "分化尚未结束 · 等待完成或取消",
+		&"": "可开始 · 推荐左翼橡皮炮台、右翼喷漆炮台",
+		&"stage_locked": "先累计回收至160，进入成形阶段，再准备改装火力",
+		&"core_unavailable": "小画家不可用 · R 重开",
+		&"differentiating": "改装尚未结束 · 等待完成或取消",
 		&"batch_active": "当前批次进行中",
 		&"enemies_remaining": "先处理场上敌人，再开始下一批",
 		&"invalid_configuration": "批次配置无效",
@@ -171,8 +171,8 @@ func show_combat_demo(snapshot: Dictionary) -> void:
 	(combat_demo_panel.get_node("StopButton") as Button).disabled = phase != &"fighting" \
 		or int(snapshot.get("spawned", 0)) >= int(snapshot.get("planned", 0))
 	var names: Dictionary = {&"preparing": "准备", &"fighting": "战斗验证",
-		&"cleared": "本批结束", &"stopped": "已停止生成", &"defeated": "母核被摧毁"}
-	battle_label.text = "%s · 击败 %d/%d · 场上 %d\n本批实际支出 %d 营养" % [
+		&"cleared": "本批结束", &"stopped": "已停止生成", &"defeated": "小画家被摧毁"}
+	battle_label.text = "%s · 击败 %d/%d · 场上 %d\n本批实际支出 %d 创作能量" % [
 		names.get(phase, "准备"), int(snapshot.get("defeated", 0)), int(snapshot.get("planned", 0)),
 		int(snapshot.get("active", 0)), int(snapshot.get("batch_spent", 0))]
 
@@ -191,7 +191,7 @@ func show_combat_hint(snapshot: Dictionary) -> void:
 	progression_hint_panel.mouse_filter = Control.MOUSE_FILTER_STOP if _combat_hints_enabled else Control.MOUSE_FILTER_IGNORE
 	var showing: bool = _combat_hints_enabled and bool(snapshot.get("visible", false))
 	progression_hint_label.text = String(snapshot.get("text", "")) if showing else (
-		"G 接入两具尸骸 → 回收到160 → 分化火力 → 手动开始验证批次。" if _combat_hints_enabled else "分工提示已关闭。")
+		"G 接入两具回收物 → 回收到160 → 改装火力 → 手动开始验证批次。" if _combat_hints_enabled else "分工提示已关闭。")
 	progression_hint_label.tooltip_text = progression_hint_label.text
 	progression_hint_dismiss.disabled = not showing
 	var pending: int = int(snapshot.get("pending_count", 0))
@@ -243,27 +243,27 @@ func show_repair(preview: Dictionary, task: Dictionary, supply: Dictionary,
 	var active: bool = state in [&"waiting", &"repairing", &"paused"]
 	var selected: Variant = preview.get("target", preview.get("edge"))
 	var has_selection: bool = is_instance_valid(selected)
-	var health_text: String = "修复：按 F 选择受损组织或菌丝"
-	var cost_text: String = "每营养最多恢复 10 生命 · 每秒最多 10"
+	var health_text: String = "修复：按 F 选择受损设施或花径"
+	var cost_text: String = "每创作能量最多恢复 10 生命 · 每秒最多 10"
 	var short_cost: String = ""
 	var point: Variant = preview.get("repair_point")
 	if active:
 		point = task.get("repair_point")
 	if has_selection:
-		health_text = "组织生命 %.1f / %.0f" % [
+		health_text = "生命 %.1f / %.0f" % [
 			float(preview.get("health", 0.0)), float(preview.get("max_health", 35.0))]
-		cost_text = "预计 %d 营养 · 最后不足 10 生命也计 1" % int(preview.get("estimated_cost", 0))
+		cost_text = "预计 %d 创作能量 · 最后不足 10 生命也计 1" % int(preview.get("estimated_cost", 0))
 		short_cost = " · 费用 %d" % int(preview.get("estimated_cost", 0))
 	if active and has_selection and task.get("target", task.get("edge")) == selected:
-		cost_text = "本次预计共 %d 营养 · 尚需 %d（含缓存/在途）" % [
+		cost_text = "本次预计共 %d 创作能量 · 尚需 %d（含缓存/在途）" % [
 			int(task.get("estimated_total_cost", 0)), int(task.get("remaining_cost", 0))]
 		short_cost = " · 共 %d / 尚需 %d" % [int(task.get("estimated_total_cost", 0)), int(task.get("remaining_cost", 0))]
 	var point_name: String = "无可达端" if not is_instance_valid(point) else _traffic_node_name(point)
 	var reason: StringName = supply.get("wait_reason", task.get("wait_reason", &"")) if active else preview.get("reason", &"")
 	var reasons: Dictionary = {
-		&"disconnected": "等待连通", &"work_point_disconnected": "作业端失联", &"nutrition": "等待营养",
-		&"in_transit": "营养在途", &"insufficient_nutrition": "资金不足", &"core_empty": "资金不足",
-		&"paused": "已暂停", &"core_unavailable": "母核不可用", &"invalid_configuration": "配置不可用",
+		&"disconnected": "等待连通", &"work_point_disconnected": "作业端失联", &"nutrition": "等待创作能量",
+		&"in_transit": "创作能量在途", &"insufficient_nutrition": "创作能量不足", &"core_empty": "创作能量不足",
+		&"paused": "已暂停", &"core_unavailable": "小画家不可用", &"invalid_configuration": "配置不可用",
 		&"edge_required": "未选择", &"invalid_edge": "未选择", &"full": "无需修复", &"ready": "可开始修复", &"settlement_pending": "等待结算",
 		&"undamaged": "无需修复", &"healthy": "无需修复", &"busy": "已有修复任务", &"": "",
 	}
@@ -276,11 +276,11 @@ func show_repair(preview: Dictionary, task: Dictionary, supply: Dictionary,
 	var headline: String = health_text + short_cost
 	var vein_detail: String = ""
 	if has_selection and not vein_snapshot.is_empty():
-		headline = "菌脉%d · 通过%d · 容量%d · 生命%.1f/%.0f" % [
+		headline = "花径%d · 通过%d · 容量%d · 生命%.1f/%.0f" % [
 			int(vein_snapshot.get("level", 1)), int(vein_snapshot.get("confirmed_passages", 0)),
 			int(vein_snapshot.get("traffic_capacity", 2)), float(vein_snapshot.get("health", 0.0)),
 			float(vein_snapshot.get("max_health", 35.0))]
-		vein_detail = "\n%s；有效通过量只统计已接收或已使用的独立货物。" % String(vein_snapshot.get("grade_name", "细菌丝"))
+		vein_detail = "\n%s；有效通过量只统计已接收或已使用的独立货物。" % String(vein_snapshot.get("grade_name", "普通花径"))
 		if int(vein_snapshot.get("next_threshold", 0)) > 0:
 			vein_detail += " 下一门槛 %d。" % int(vein_snapshot["next_threshold"])
 	repair_info_label.text = "%s\n作业端：%s  %s\n%s · 已用 %d · 缓存 %d · 在途 %d\n预留 %d / 需求 %d · 其他可花 %d" % [
@@ -374,11 +374,11 @@ func show_cultivation_selection(snapshot: Dictionary) -> void:
 	_cultivation_selection = snapshot
 	cultivation_button.disabled = not (bool(snapshot.get("can_cultivate", false))
 		or bool(snapshot.get("can_continue", false)))
-	cultivation_button.text = "C 继续培育" if bool(snapshot.get("can_continue", false)) else "C 培育"
-	var message: String = String(snapshot.get("message", "选择空菌结培育：12 营养 = 8 结构 + 4 库存"))
+	cultivation_button.text = "C 继续建造" if bool(snapshot.get("can_continue", false)) else "C 建造"
+	var message: String = String(snapshot.get("message", "选择空花朵建造：12 创作能量 = 8 结构 + 4 库存"))
 	if bool(snapshot.get("can_continue", false)) and snapshot.get("reason") != &"insufficient_nutrition":
-		message += " · 尚需 %d 营养" % int(snapshot.get("remaining_cost", 12))
-	cultivation_button.tooltip_text = message + "\n正式配方：攻击12＝8结构＋4库存；胃囊8全计结构；有效培育至少3秒"
+		message += " · 尚需 %d 创作能量" % int(snapshot.get("remaining_cost", 12))
+	cultivation_button.tooltip_text = message + "\n正式配方：攻击12＝8结构＋4库存；回收碎纸机8全计结构；有效建造至少3秒"
 	cultivation_reason_label.text = message
 	cultivation_reason_label.tooltip_text = message
 	_update_growth_label()
@@ -431,8 +431,8 @@ func _update_construction_supply() -> void:
 	if _remote_is_active():
 		cultivation_visible = _remote_snapshot.get("phase", &"") == &"cultivation"
 	var snapshot: Dictionary = _cultivation_supply_snapshot if cultivation_visible else _growth_supply_snapshot
-	growth_supply_label.text = "%s在途 %d · 战斗储备 %d · 可用营养 %d" % [
-		"培育" if cultivation_visible else ("连接" if _connection_visible or _connection_placing else "生长"), int(snapshot.get("in_transit", 0)),
+	growth_supply_label.text = "%s在途 %d · 战斗储备 %d · 可用创作能量 %d" % [
+		"建造" if cultivation_visible else ("连接" if _connection_visible or _connection_placing else "生长"), int(snapshot.get("in_transit", 0)),
 		int(snapshot.get("combat_reserve", 0)), int(snapshot.get("available", 0)),
 	]
 
@@ -443,7 +443,7 @@ func _update_growth_label() -> void:
 	var cultivation_active: bool = _cultivation_is_active()
 	var cultivation: Dictionary = _cultivation_display_snapshot()
 	var current_state: StringName = _cultivation_snapshot.get("state", &"idle") if cultivation_active else state
-	var subject: String = "培育" if cultivation_active else "生长"
+	var subject: String = "建造" if cultivation_active else "生长"
 	if _connection_visible and not cultivation_active:
 		subject = "连接"
 	var remote_active: bool = _remote_is_active()
@@ -451,17 +451,17 @@ func _update_growth_label() -> void:
 		current_state = _remote_snapshot.get("state", &"idle")
 		subject = "建设"
 	growth_mode_button.disabled = active or cultivation_active or remote_active
-	growth_mode_button.text = "G 退出" if _growth_placing else "G 伸展"
+	growth_mode_button.text = "G 退出" if _growth_placing else "G 延伸"
 	remote_cultivation_button.disabled = active or cultivation_active or remote_active
-	remote_cultivation_button.text = "B 退出" if _remote_placing else "B 种器官芽"
+	remote_cultivation_button.text = "B 退出" if _remote_placing else "B 放置设施花苞"
 	connection_mode_button.disabled = active or cultivation_active or remote_active
-	connection_mode_button.text = "L 退出" if _connection_placing else "L 连接菌结"
+	connection_mode_button.text = "L 退出" if _connection_placing else "L 连接花朵"
 	growth_pause_button.disabled = not active and not cultivation_active and not remote_active
 	growth_pause_button.text = "P 恢复" if current_state == &"paused" else "P 暂停"
-	growth_pause_button.tooltip_text = "暂停或恢复当前" + subject + "；已付款的在途营养仍可送达"
+	growth_pause_button.tooltip_text = "暂停或恢复当前" + subject + "；已付款的在途创作能量仍可送达"
 	growth_cancel_button.disabled = not active and not cultivation_active and not remote_active
 	growth_cancel_button.text = "X 取消"
-	growth_cancel_button.tooltip_text = "取消当前" + subject + "；退还未消费营养，保留已投入结构"
+	growth_cancel_button.tooltip_text = "取消当前" + subject + "；退还未消费创作能量，保留已投入结构"
 	if not _construction_queue_snapshot.is_empty():
 		# G/B/L 始终可以预览下一目标，第四个由同一入队接口明确拒绝。
 		growth_mode_button.disabled = false
@@ -485,7 +485,7 @@ func _update_growth_label() -> void:
 			growth_pause_button.tooltip_text = "只操作选中的队列目标 #%d" % int(selected.get("sequence", 0))
 			growth_cancel_button.tooltip_text = growth_pause_button.tooltip_text
 		elif not local_selected:
-			growth_pause_button.tooltip_text = "先选择队列目标或正在就地培育的菌结"
+			growth_pause_button.tooltip_text = "先选择队列目标或正在就地建造的花朵"
 			growth_cancel_button.tooltip_text = growth_pause_button.tooltip_text
 	if bool(_construction_queue_snapshot.get("multi_worker_enabled", false)) \
 			and not _connection_placing and not _growth_placing and not _remote_placing:
@@ -503,17 +503,17 @@ func _update_growth_label() -> void:
 		_show_remote_status_text()
 	elif not cultivation.is_empty() and not active and not _growth_placing:
 		var descriptions: Dictionary = {
-			&"waiting": "等待培育", &"cultivating": "培育中", &"paused": "培育已暂停",
-			&"cancelled": "幼芽已保留，可继续", &"completed": "器官已成熟",
+			&"waiting": "等待建造", &"cultivating": "建造中", &"paused": "建造已暂停",
+			&"cancelled": "幼芽已保留，可继续", &"completed": "设施已建成",
 		}
 		var cultivation_state: StringName = cultivation.get("state", &"idle")
-		var cultivation_title: String = descriptions.get(cultivation_state, "等待培育")
+		var cultivation_title: String = descriptions.get(cultivation_state, "等待建造")
 		if cultivation_state == &"waiting":
 			var waiting_text: Dictionary = {
-				&"nutrition": "等待培育营养", &"in_transit": "等待营养送达",
-				&"core_empty": "营养不足，等待供养", &"combat_reserve": "等待战斗储备释放", &"repair_budget": "营养优先用于修复",
-				&"disconnected": "宿主失联，保留进度", &"core_unavailable": "母核无法供养",
-				&"invalid_configuration": "培育配置不可用", &"occupied": "宿主槽位已占用",
+				&"nutrition": "等待建造创作能量", &"in_transit": "等待创作能量送达",
+				&"core_empty": "创作能量不足，等待补给", &"combat_reserve": "等待战斗储备释放", &"repair_budget": "创作能量优先用于修复",
+				&"disconnected": "所在花朵失联，保留进度", &"core_unavailable": "小画家无法补给",
+				&"invalid_configuration": "建造配置不可用", &"occupied": "花朵槽位已占用",
 			}
 			cultivation_title = waiting_text.get(cultivation.get("wait_reason", &""), cultivation_title)
 		var startup: String = "已转库存 %d" % int(cultivation.get("startup_transferred", 0)) if cultivation_state == &"completed" else (
@@ -528,20 +528,20 @@ func _update_growth_label() -> void:
 	elif _growth_placing:
 		if bool(_growth_preview.get("valid", false)):
 			var plan: Dictionary = _growth_preview.get("plan", {})
-			growth_label.text = "放置目标 · 距离 %.0f · 左键确认\n预计营养 %d · 新菌结 %d · 右键/Esc 退出" % [
+			growth_label.text = "放置目标 · 距离 %.0f · 左键确认\n预计创作能量 %d · 新花朵 %d · 右键/Esc 退出" % [
 				float(plan.get("distance", 0.0)), int(plan.get("total_cost", 0)),
 				plan.get("junction_positions", PackedVector2Array()).size(),
 			]
 		else:
 			growth_label.text = "放置目标 · 在地图内移动鼠标\n" + String(_growth_preview.get("error", "左键确认 · 右键/Esc 退出"))
 	elif state == &"idle":
-		growth_label.text = "按 G 指定伸展目标\n营养沿菌丝送达尖端后，才会开始生长"
+		growth_label.text = "按 G 指定延伸目标\n创作能量沿花径送达延伸花苞后，才会开始生长"
 	else:
 		var reason: StringName = _growth_snapshot.get("wait_reason", &"")
 		var state_text: String = GrowthTarget.STATE_TEXT.get(state, String(state))
 		if reason != &"" and reason != &"paused":
 			state_text += "：" + String(GrowthTarget.WAIT_TEXT.get(reason, String(reason)))
-		growth_label.text = "%s · %d%% · 菌结 %d\n营养投入 %d/%d · 尖端缓存 %d" % [
+		growth_label.text = "%s · %d%% · 花朵 %d\n创作能量投入 %d/%d · 花苞缓存 %d" % [
 			state_text, int(round(float(_growth_snapshot.get("progress", 0.0)) * 100.0)),
 			int(_growth_snapshot.get("formed_junctions", 0)), int(_growth_snapshot.get("consumed_nutrition", 0)),
 			int(_growth_snapshot.get("total_cost", 0)), int(_growth_snapshot.get("buffered_nutrition", 0)),
@@ -550,22 +550,22 @@ func _update_growth_label() -> void:
 
 
 func _connection_node_name(node: Variant) -> String:
-	return node.display_name if is_instance_valid(node) and node is HyphaNode else "菌结"
+	return node.display_name if is_instance_valid(node) and node is HyphaNode else "花朵"
 
 
 func _show_connection_preview_text() -> void:
 	if not bool(_connection_preview.get("valid", false)):
 		var selected: Variant = _connection_preview.get("first_node")
-		var title: String = "已选 %s · 请选第二个菌结" % _connection_node_name(selected) \
-			if is_instance_valid(selected) else "连接菌结 · 请先选择第一个菌结"
-		growth_label.text = title + "\n" + String(_connection_preview.get("error", "依次左键选择两个菌结")) \
+		var title: String = "已选 %s · 请选第二个花朵" % _connection_node_name(selected) \
+			if is_instance_valid(selected) else "连接花朵 · 请先选择第一个花朵"
+		growth_label.text = title + "\n" + String(_connection_preview.get("error", "依次左键选择两个花朵")) \
 			+ "\n右键 / Esc 退出 · 预览不扣款"
 	else:
 		var plan: Dictionary = _connection_preview.get("plan", {})
-		growth_label.text = "%s → %s%s\n菌丝 %d + 中继 %d = %d · 新菌结 %d · 两端免菌结费\n左键确认连接 · 右键 / Esc 退出" % [
+		growth_label.text = "%s → %s%s\n花径 %d + 中继 %d = %d · 新花朵 %d · 两端免花朵费\n左键确认连接 · 右键 / Esc 退出" % [
 			_connection_node_name(_connection_preview.get("start_node")),
 			_connection_node_name(_connection_preview.get("target_node")),
-			"（反向供养）" if bool(_connection_preview.get("reversed", false)) else "",
+			"（反向补给）" if bool(_connection_preview.get("reversed", false)) else "",
 			int(plan.get("extension_cost", 0)), int(plan.get("junction_cost", 0)), int(plan.get("total_cost", 0)),
 			plan.get("junction_positions", PackedVector2Array()).size(),
 		]
@@ -578,22 +578,22 @@ func _show_multi_construction_status() -> void:
 		if request.get("construction_id") == _construction_queue_snapshot.get("selected_id"):
 			selected = request
 	if selected.is_empty():
-		growth_label.text = "尖端 %d/%d · 等待目标 %d · 独立成熟 %d\n选择队列编号或成熟列表，单独暂停、继续或取消" % [
+		growth_label.text = "延伸花苞 %d/%d · 等待目标 %d · 设施成形 %d\n选择队列编号或建造列表，单独暂停、继续或取消" % [
 			int(_construction_queue_snapshot.get("tip_count", 0)), int(_construction_queue_snapshot.get("tip_limit", 1)),
 			int(_construction_queue_snapshot.get("waiting_count", 0)), int(_construction_queue_snapshot.get("maturing_count", 0))]
 		return
-	var kinds: Dictionary = {&"growth": "伸展", &"remote_cultivation": "远处种芽",
-		&"connection": "连接", &"cultivation": "就地培育"}
+	var kinds: Dictionary = {&"growth": "伸展", &"remote_cultivation": "远处建造",
+		&"connection": "连接", &"cultivation": "就地建造"}
 	var detail: Dictionary = selected.get("detail", {})
-	var phase: String = "独立成熟" if selected.get("phase") == &"maturing" else "延伸中"
+	var phase: String = "设施成形" if selected.get("phase") == &"maturing" else "延伸中"
 	if not bool(selected.get("started", false)):
-		phase = "等待开始" if selected.get("phase") == &"maturing" else "等待尖端"
+		phase = "等待开始" if selected.get("phase") == &"maturing" else "等待延伸花苞"
 	if selected.get("state") == &"paused":
 		phase = "已暂停 · " + phase
 	var reason: StringName = selected.get("wait_reason", &"")
-	var reasons: Dictionary = {&"queued": "排队中", &"pipeline_busy": "等待执行位置", &"tip_limit": "等待空闲尖端",
-		&"nutrition": "等待营养", &"in_transit": "营养在途", &"core_empty": "营养不足", &"combat_reserve": "保留战斗营养",
-		&"repair_budget": "营养优先用于修复", &"disconnected": "等待菌路恢复", &"paused": "保持进度与原有在途", &"": "正常推进"}
+	var reasons: Dictionary = {&"queued": "排队中", &"pipeline_busy": "等待执行位置", &"tip_limit": "等待空闲延伸花苞",
+		&"nutrition": "等待创作能量", &"in_transit": "创作能量在途", &"core_empty": "创作能量不足", &"combat_reserve": "保留战斗创作能量",
+		&"repair_budget": "创作能量优先用于修复", &"disconnected": "等待花径恢复", &"paused": "保持进度与原有在途", &"": "正常推进"}
 	var consumed: int = int(detail.get("consumed_nutrition", int(detail.get("structure_consumed", 0))
 		+ int(detail.get("startup_transferred", 0))))
 	growth_label.text = "#%d %s · %s · %d%%\n%s\n已投入 %d · 缓存 %d · 启动库存 %d" % [
@@ -611,7 +611,7 @@ func _show_multi_construction_status() -> void:
 func _show_connection_status_text() -> void:
 	var state: StringName = _growth_snapshot.get("state", &"idle")
 	var titles: Dictionary = {
-		&"waiting": "等待供养", &"extending": "生长中", &"paused": "已暂停",
+		&"waiting": "等待补给", &"extending": "生长中", &"paused": "已暂停",
 		&"completed": "连接完成", &"cancelled": "已取消，保留已付网络",
 	}
 	var title: String = String(titles.get(state, "等待连接"))
@@ -620,7 +620,7 @@ func _show_connection_status_text() -> void:
 		title += " · " + String(GrowthTarget.WAIT_TEXT.get(reason, String(reason)))
 	var heading: String = "连接施工" if not _construction_queue_snapshot.is_empty() else \
 		"连接 #%d" % int(_growth_snapshot.get("task_id", 0))
-	growth_label.text = "%s · %s · %d%%\n%s → %s · 中继 %d\n投入 %d/%d · 缓存 %d · 两端免菌结费" % [
+	growth_label.text = "%s · %s · %d%%\n%s → %s · 中继 %d\n投入 %d/%d · 缓存 %d · 两端免花朵费" % [
 		heading, title,
 		int(round(float(_growth_snapshot.get("progress", 0.0)) * 100.0)),
 		_connection_node_name(_growth_snapshot.get("start_node")),
@@ -632,11 +632,11 @@ func _show_connection_status_text() -> void:
 
 func _show_remote_preview_text() -> void:
 	if not bool(_remote_preview.get("valid", false)):
-		growth_label.text = "种器官芽 · 左键确认 · 右键 / Esc 退出\n" \
+		growth_label.text = "放置设施花苞 · 左键确认 · 右键 / Esc 退出\n" \
 			+ String(_remote_preview.get("error", "请在地图内指定落点"))
 	else:
 		var plan: Dictionary = _remote_preview.get("plan", {})
-		growth_label.text = "种器官芽 · 距离 %.0f · 新菌结 %d\n网络 %d + 器官 %d = %d（攻击12 / 胃囊8）\n左键确认 · 右键 / Esc 退出 · 预览不扣款" % [
+		growth_label.text = "放置设施花苞 · 距离 %.0f · 新花朵 %d\n网络 %d + 设施 %d = %d（攻击12 / 回收碎纸机8）\n左键确认 · 右键 / Esc 退出 · 预览不扣款" % [
 			float(plan.get("distance", 0.0)), plan.get("junction_positions", PackedVector2Array()).size(),
 			int(_remote_preview.get("network_cost", 0)), int(_remote_preview.get("organ_cost", 12)),
 			int(_remote_preview.get("total_cost", 0)),
@@ -647,22 +647,22 @@ func _show_remote_status_text() -> void:
 	var state: StringName = _remote_snapshot.get("state", &"idle")
 	var phase: StringName = _remote_snapshot.get("phase", &"")
 	var descriptions: Dictionary = {
-		&"waiting": "等待供养", &"extending": "延伸网络", &"connected": "已接通，交接培育",
-		&"cultivating": "培育器官芽", &"paused": "已暂停", &"completed": "器官已成熟",
+		&"waiting": "等待补给", &"extending": "延伸网络", &"connected": "已接通，交接建造",
+		&"cultivating": "建造设施花苞", &"paused": "已暂停", &"completed": "设施已建成",
 		&"cancelled": "已取消，保留已付结构",
 	}
 	var title: String = String(descriptions.get(state, "等待建设"))
 	if state == &"paused":
-		title += "（培育）" if phase == &"cultivation" else "（延伸 / 接通）"
+		title += "（建造）" if phase == &"cultivation" else "（延伸 / 接通）"
 	var reason: StringName = _remote_snapshot.get("wait_reason", &"")
 	if reason != &"" and reason != &"paused":
 		title += " · " + String(GrowthTarget.WAIT_TEXT.get(reason, String(reason)))
 	var startup: int = int(_remote_snapshot.get("startup_transferred", 0)) if state == &"completed" \
 		else int(_remote_snapshot.get("startup_reserved", 0))
 	# 正式队列只在列表和地图展示外部编号，避免把内部远处请求号误认作目标编号。
-	var heading: String = "远处培育" if not _construction_queue_snapshot.is_empty() else \
+	var heading: String = "远处建造" if not _construction_queue_snapshot.is_empty() else \
 		"建设 #%d" % int(_remote_snapshot.get("request_id", 0))
-	growth_label.text = "%s · %s\n网络 %d + 器官 %d = %d · 已投入 %d · 剩余需求 %d\n器官结构 %d/8 · 启动库存 %d · 缓存 %d" % [
+	growth_label.text = "%s · %s\n网络 %d + 设施 %d = %d · 已投入 %d · 剩余需求 %d\n设施结构 %d/8 · 启动库存 %d · 缓存 %d" % [
 		heading, title,
 		int(_remote_snapshot.get("network_cost", 0)), int(_remote_snapshot.get("organ_cost", 12)),
 		int(_remote_snapshot.get("total_cost", 0)), int(_remote_snapshot.get("consumed_nutrition", 0)),
@@ -672,7 +672,7 @@ func _show_remote_status_text() -> void:
 
 
 func show_selection(display_name: String) -> void:
-	selection_label.text = "未选择菌结" if display_name.is_empty() else "已选择：%s" % display_name
+	selection_label.text = "未选择花朵" if display_name.is_empty() else "已选择：%s" % display_name
 
 
 func show_core_nutrition(current: int) -> void:
@@ -688,13 +688,13 @@ func show_organ_inventory(stored: int, incoming: int, capacity: int) -> void:
 
 
 func show_colony_inventory(stored: int, incoming: int, capacity: int, count: int) -> void:
-	colony_label.text = "攻击器官：%d · 总库存：%d/%d · 在途供养：%d" % [
+	colony_label.text = "文具炮台：%d · 总库存：%d/%d · 在途补给：%d" % [
 		count, stored, capacity, incoming
 	]
 
 
 func show_transport(in_transit: int, delivered: int, interrupted: int) -> void:
-	transport_label.text = "营养包：在途 %d · 已到达 %d · 中止 %d" % [
+	transport_label.text = "补给包：在途 %d · 已到达 %d · 中止 %d" % [
 		in_transit, delivered, interrupted
 	]
 
@@ -714,7 +714,7 @@ func show_battle(spawned: int, defeated: int, active: int, total: int) -> void:
 
 
 func show_battle_result(won: bool) -> void:
-	_battle_result = "本轮防守成功" if won else "母核已被摧毁"
+	_battle_result = "本轮防守成功" if won else "小画家倒下了"
 	battle_label.text = _battle_result + "\n按 R 重新开始"
 	battle_label.modulate = Color("c2dc9a") if won else Color("e6a099")
 
@@ -754,9 +754,9 @@ func show_growth_stage(stage_name: String, total_recovered: int, next_threshold:
 	if next_threshold > 0:
 		next_text = "下一门槛 %d（还差 %d）" % [
 			next_threshold, maxi(next_threshold - total_recovered, 0)]
-	stage_label.text = "成长：%s · 累计回收 %d · %s" % [
+	stage_label.text = "创作阶段：%s · 累计回收 %d · %s" % [
 		stage_name, total_recovered, next_text]
-	stage_label.tooltip_text = stage_label.text + "\n只累计真实抵达母核的回流；消费和组织损失不会降低阶段。"
+	stage_label.tooltip_text = stage_label.text + "\n只累计送抵小画家的回收补给；消费和设施损失不会降低阶段。"
 
 
 func show_digestive_output(snapshot: Dictionary) -> void:
@@ -780,22 +780,22 @@ func _update_recovery_label() -> void:
 	if _output_snapshot.get("wait_reason", &"") == &"output_full":
 		waiting = " · 输出已满"
 	elif _output_snapshot.get("wait_reason", &"") == &"output_too_large":
-		waiting = " · 产物超限"
-	var stomach_text: String = "胃囊：待处理 %d（含消化中）· 待送达 %d" % [
+		waiting = " · 补给超限"
+	var stomach_text: String = "回收碎纸机：待处理 %d（含加工中）· 待送达 %d" % [
 		_digestive_queued, _digestive_incoming]
 	if not _digestion_snapshot.is_empty():
-		stomach_text = "胃囊：处理 %d/%d · 等待 %d · 待送达 %d" % [
+		stomach_text = "回收碎纸机：处理 %d/%d · 等待 %d · 待送达 %d" % [
 			int(_digestion_snapshot.get("active_count", 0)), int(_digestion_snapshot.get("chamber_count", 1)),
 			int(_digestion_snapshot.get("waiting_count", 0)), _digestive_incoming]
 		if not bool(_digestion_snapshot.get("enabled", true)):
 			stomach_text += " · 已停止"
 		elif _digestion_snapshot.get("expansion_state", &"locked") == &"expanding":
-			stomach_text += " · 二腔展开 %.1fs" % float(_digestion_snapshot.get("expansion_remaining", 0.0))
+			stomach_text += " · 第二通道扩建 %.1fs" % float(_digestion_snapshot.get("expansion_remaining", 0.0))
 	recovery_label.text = (
-		"尸体：在途 %d · 已送达 %d · 中断 %d\n" +
+		"回收物：在途 %d · 已送达 %d · 中断 %d\n" +
 		"%s\n" +
-		"输出：%d (+%d预留)/2 · 营养 %d (+%d)/20%s\n" +
-		"绿色回流：在途 %d 包 / %d 营养\n累计回收：+%d · 已到达 %d 份 · 已消化 %d"
+		"输出：%d (+%d预留)/2 · 创作能量 %d (+%d)/20%s\n" +
+		"补给回运：在途 %d 包 / %d 创作能量\n累计回收：+%d · 已到达 %d 份 · 已加工 %d"
 	) % [
 		_recycling_in_transit, _recycling_delivered, _recycling_interrupted,
 		stomach_text,
@@ -806,7 +806,7 @@ func _update_recovery_label() -> void:
 
 
 func _update_stock_label() -> void:
-	stock_label.text = "母核营养：%d · 器官库存：%d/%d · 在途供养：%d" % [
+	stock_label.text = "小画家创作能量：%d · 设施库存：%d/%d · 在途补给：%d" % [
 		_core_nutrition, _organ_nutrition, _organ_capacity, _incoming_nutrition
 	]
 
@@ -839,7 +839,7 @@ func show_traffic(snapshot: Dictionary) -> void:
 		if score > busiest_score:
 			busiest_score = score
 			busiest = row
-	var detail: String = "菌丝空闲 · 每条默认容量 2（双向共用）"
+	var detail: String = "花径空闲 · 每条默认容量 2（双向共用）"
 	if not busiest.is_empty() and busiest_score > 0:
 		var strand: HyphaEdge = busiest.get("edge") as HyphaEdge
 		if is_instance_valid(strand):
@@ -848,7 +848,7 @@ func show_traffic(snapshot: Dictionary) -> void:
 				int(busiest.get("occupied_units", 0)), int(busiest.get("capacity", 0)),
 				busiest.get("queue", []).size(),
 			]
-	traffic_label.text = "通行占用 %d/%d · 容量排队 %d 包\n%s\n排队：黄 %d · 绿 %d · 紫 %d（紫包占 2）\n菌结等候 %d · 段内停留 %d" % [
+	traffic_label.text = "通行占用 %d/%d · 容量排队 %d 包\n%s\n排队：补给 %d · 回运 %d · 回收物 %d（回收包占 2）\n花朵等候 %d · 段内停留 %d" % [
 		int(snapshot.get("occupied_units", 0)), capacity, int(snapshot.get("queued_count", 0)), detail,
 		int(waiting_by_kind[&"supply"]), int(waiting_by_kind[&"return"]), int(waiting_by_kind[&"remains"]),
 		_node_waiting_count, _edge_blocked_count,
@@ -860,9 +860,9 @@ func _traffic_node_name(node: Variant) -> String:
 	if not is_instance_valid(node):
 		return "节点"
 	if node is MotherCore:
-		return "母核"
+		return "小画家"
 	if node is HyphaNode:
 		return node.display_name
 	if node is GrowthTip:
-		return "生长尖端"
+		return "延伸花苞"
 	return "节点"

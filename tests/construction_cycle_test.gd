@@ -699,12 +699,12 @@ func _assert_terminal_remote_hud(level: Node2D, request_id: int, state: StringNa
 	var label: Label = level.hud.growth_label as Label
 	var pause_button: Button = level.hud.growth_pause_button as Button
 	var cancel_button: Button = level.hud.growth_cancel_button as Button
-	var title: String = "攻击器官已成熟" if state == &"completed" else "已取消，保留已付结构"
+	var title: String = "设施已建成" if state == &"completed" else "已取消，保留已付结构"
 	_check(int(snapshot["request_id"]) == request_id and snapshot["state"] == state,
 		"HUD regression observes the exact current terminal remote request")
-	_check(label.text.begins_with("远处培育 · ") and label.text.contains(title),
+	_check(label.text.begins_with("远处建造 · ") and label.text.contains(title),
 		"Visible HUD reports the current remote %s state without confusing its internal ID with queue identity" % state)
-	_check(label.text.contains("网络 16 + 器官 12 = 28"),
+	_check(label.text.contains("网络 16 + 设施 12 = 28"),
 		"Visible terminal HUD preserves full network16 + organ12 =28 instead of selected C's organ-only budget")
 	_check(pause_button.disabled and cancel_button.disabled,
 		"Terminal remote HUD disables current P pause and X cancel buttons")

@@ -10,7 +10,7 @@ signal tissue_destroyed(tissue: Node2D)
 const VEIN_THRESHOLDS: Array[int] = [20, 60]
 const VEIN_CAPACITIES: Array[int] = [2, 3, 4]
 const VEIN_MAX_HEALTH: Array[float] = [35.0, 50.0, 65.0]
-const VEIN_GRADE_NAMES: Array[String] = ["细菌丝", "加粗菌脉", "成熟主脉"]
+const VEIN_GRADE_NAMES: Array[String] = ["普通花径", "加宽花径", "主干花径"]
 const VEIN_WIDTH_STEP: float = 2.0
 
 @export var start_node: Node2D

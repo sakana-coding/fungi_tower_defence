@@ -11,7 +11,7 @@ func _ready() -> void:
 	_add_frontier_batch_button()
 	combat_hint_controller.set_enabled(false)
 	select_test_batch(&"gnawer")
-	hud.show_notice("第九阶段｜先 G 接通80/120资源并成长，再开始前沿批次；F选组织、J付费修复，空菌结C重建")
+	hud.show_notice("第九阶段｜先 G 接通80/120资源并成长，再开始前沿批次；F选对象、J付费修复，空花朵C重建")
 
 
 
@@ -31,7 +31,7 @@ func _is_batch_kind(kind: StringName) -> bool:
 
 
 func _get_batch_title(kind: StringName) -> String:
-	return "前沿危机 ×3｜1啃食者从右下入口，2普通轮换" if kind == &"gnawer" else super._get_batch_title(kind)
+	return "前沿危机 ×3｜1啃食花羊从右下入口，2涂鸦羊轮换" if kind == &"gnawer" else super._get_batch_title(kind)
 
 
 func _get_batch_entries(kind: StringName) -> Array[EnemySpawnEntry]:

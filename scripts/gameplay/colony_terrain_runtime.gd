@@ -46,4 +46,4 @@ func _on_tissue_lost(identity: int, kind: StringName, point: Vector2) -> void:
 	_last_loss = {"id": identity, "kind": kind, "position": point}
 	if kind in [&"菌结", &"菌丝"]:
 		network_break_count += 1
-		hud.show_notice("%s受损失效：物流会等待或改道。保护前沿，F选择目标后按J修复；也可L建立旁路" % kind)
+		hud.show_notice("%s受损失效：物流会等待或改道。保护前沿，F选择目标后按J修复；也可L建立旁路" % GameplayCopy.tissue_name(kind))

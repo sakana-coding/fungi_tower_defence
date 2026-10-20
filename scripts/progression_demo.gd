@@ -157,11 +157,11 @@ func _refresh_resource_guides() -> void:
 			guide.text = "推荐点规划不可用，请查看伸展预览"
 			continue
 		var network_cost: int = int(plan["total_cost"])
-		var title: String = "① 尸骸80｜右翼菌结" if resource_offset == 0 \
-			else "② 尸骸120｜左翼菌结"
+		var title: String = "① 回收物80｜右翼花朵" if resource_offset == 0 \
+			else "② 回收物120｜左翼花朵"
 		var target: Vector2 = RECOMMENDED_TARGETS[resource_offset]
-		var cycle_text: String = "实际回流满60 → 展开，解锁双尖端" if resource_offset == 0 \
-			else "实际回流满160 → 成熟，可扩第二胃室"
+		var cycle_text: String = "实际回运满60 → 展开，解锁双尖端" if resource_offset == 0 \
+			else "实际回运满160 → 成形，可扩建第二处理通道"
 		guide.text = "%s → 十字(%d,%d)\nG %d｜B %d+%d=%d｜每批10\n%s" % [
 			title, int(target.x), int(target.y), network_cost, network_cost, CULTIVATION_COST,
 			network_cost + CULTIVATION_COST, cycle_text,

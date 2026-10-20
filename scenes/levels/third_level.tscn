@@ -21,6 +21,8 @@
 
 [node name="ThirdLevel" instance=ExtResource("1_base")]
 script = ExtResource("2_level")
+free_camera_enabled = true
+camera_bounds = Rect2(-580, -420, 2360, 1840)
 normal_weapon_profile = ExtResource("9_weapon_profile")
 
 [node name="WorldArt" parent="."]
@@ -40,7 +42,7 @@ initial_nutrition = 100
 
 [node name="LeftGuard" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(450, 510)
-display_name = "左侧探索菌结"
+display_name = "左侧探索花朵"
 
 [node name="AttackOrgan" parent="World/Colony/Nodes/LeftGuard" instance=ExtResource("5_attack")]
 initial_nutrition = 4
@@ -55,7 +57,7 @@ targeting_required = true
 
 [node name="UpperGuard" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(680, 510)
-display_name = "右上探索菌结"
+display_name = "右上探索花朵"
 
 [node name="AttackOrgan" parent="World/Colony/Nodes/UpperGuard" instance=ExtResource("5_attack")]
 initial_nutrition = 4
@@ -70,7 +72,7 @@ targeting_required = true
 
 [node name="LowerGuard" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(700, 640)
-display_name = "右下探索菌结"
+display_name = "右下探索花朵"
 
 [node name="AttackOrgan" parent="World/Colony/Nodes/LowerGuard" instance=ExtResource("5_attack")]
 initial_nutrition = 4
@@ -85,7 +87,7 @@ targeting_required = true
 
 [node name="StomachHost" parent="World/Colony/Nodes" instance=ExtResource("3_node")]
 position = Vector2(480, 630)
-display_name = "后方消化菌结"
+display_name = "后方回收花朵"
 
 [node name="DigestiveOrgan" parent="World/Colony/Nodes/StomachHost" node_paths=PackedStringArray("mother_core", "core_edge", "colony_capabilities") instance=ExtResource("7_stomach")]
 mother_core = NodePath("../../../MotherCore")

@@ -92,7 +92,7 @@ func _draw() -> void:
 	var point: Node2D = preview.get("repair_point") as Node2D
 	if _is_live_node(point):
 		draw_circle(point.global_position, 13.0, WORK_POINT_COLOR, false, 2.0, true)
-	var caption: String = "HP %.1f / %.1f | %d 营养" % [
+	var caption: String = "HP %.1f / %.1f | %d 创作能量" % [
 		float(health.get("health", 0.0)), float(health.get("max_health", 0.0)),
 		int(preview.get("estimated_cost", 0)),
 	]
@@ -138,7 +138,7 @@ func enter_selection_mode() -> bool:
 		set_process(true)
 		mode_changed.emit(true)
 	_publish_preview()
-	notice.emit("左键选择组织或菌丝；J 开始维修，K 暂停 / 继续，Backspace 取消维修；Esc / 右键退出选择")
+	notice.emit("左键选择设施或花径；J 开始维修，K 暂停 / 继续，Backspace 取消维修；Esc / 右键退出选择")
 	return true
 
 
@@ -164,7 +164,7 @@ func select_target(target: Node2D) -> bool:
 		notice.emit("按 F 进入维修选择")
 		return false
 	if not _is_selectable_target(target):
-		_publish_failure(&"invalid_target", "请选择当前网络中可修复的组织")
+		_publish_failure(&"invalid_target", "请选择当前网络中可修复的对象")
 		return false
 	if _selected_target != target:
 		_disconnect_selected_target()
@@ -186,7 +186,7 @@ func select_at(world_position: Vector2) -> bool:
 		_publish_failure(&"invalid_coordinates", "选择坐标必须有限")
 		return false
 	if not placement_bounds.has_point(world_position):
-		_publish_failure(&"outside_bounds", "请在可生长区域内选择组织")
+		_publish_failure(&"outside_bounds", "请在可生长区域内选择对象")
 		return false
 	var target: Node2D = _tissue_at(world_position)
 	var edge: HyphaEdge = _edge_at(world_position)
@@ -199,7 +199,7 @@ func select_at(world_position: Vector2) -> bool:
 				< world_position.distance_squared_to(_tissue_pick_point(target)):
 			target = edge
 	if target == null:
-		_publish_failure(&"target_required", "请点击菌结、器官或菌丝附近")
+		_publish_failure(&"target_required", "请点击花朵、设施或花径附近")
 		return false
 	return select_target(target)
 
@@ -227,7 +227,7 @@ func request_repair() -> int:
 		return 0
 	var target: Node2D = get_selected_target()
 	if target == null:
-		_publish_failure(&"target_required", "请先按 F 并选择受损组织")
+		_publish_failure(&"target_required", "请先按 F 并选择受损对象")
 		return 0
 	var preview: Dictionary = repair_system.preview_repair(target)
 	if not bool(preview.get("valid", false)):
@@ -239,13 +239,13 @@ func request_repair() -> int:
 	_publish_status()
 	if task_id > 0:
 		var task: Dictionary = repair_system.get_task_snapshot()
-		notice.emit("维修任务 #%d 已确认，HP %.1f / %.1f，预计 %d 营养；%s" % [
+		notice.emit("维修任务 #%d 已确认，HP %.1f / %.1f，预计 %d 创作能量；%s" % [
 			task_id, float(task.get("health", 0.0)), float(task.get("max_health", 0.0)),
 			int(task.get("estimated_total_cost", preview.get("estimated_cost", 0))),
 			_describe_access(task),
 		])
 	else:
-		notice.emit("维修请求未接受；请重新确认所选组织与当前维修任务")
+		notice.emit("维修请求未接受；请重新确认所选对象与当前维修任务")
 	return task_id
 
 
@@ -276,7 +276,7 @@ func cancel_repair() -> bool:
 	if changed:
 		_publish_preview()
 		_publish_status()
-		notice.emit("维修已取消，已恢复生命保留；未消耗营养由维修供养系统退回")
+		notice.emit("维修已取消，已恢复生命保留；未消耗创作能量由维修补给系统退回")
 	return changed
 
 
@@ -385,11 +385,11 @@ func _clear_selection() -> void:
 func _configuration_error() -> String:
 	if not _is_live_node(repair_system) or not _is_live_node(repair_supply_system) \
 			or not _is_live_node(network_system):
-		return "维修系统、维修供养与网络尚未配置"
+		return "维修系统、维修补给与网络尚未配置"
 	if repair_system.network_system != network_system \
 			or repair_supply_system.repair_system != repair_system \
 			or repair_supply_system.network_system != network_system:
-		return "维修控制器与维修供养必须使用同一个维修系统和网络"
+		return "维修控制器与维修补给必须使用同一个维修系统和网络"
 	return ""
 
 
@@ -448,15 +448,15 @@ func _publish_status() -> void:
 func _describe_preview(snapshot: Dictionary) -> String:
 	var target: Node2D = snapshot.get("target", snapshot.get("edge")) as Node2D
 	if not _is_live_node(target):
-		return "按 F 并左键选择组织或菌丝，预览生命和维修费用"
+		return "按 F 并左键选择设施或花径，预览生命和维修费用"
 	var health: float = float(snapshot.get("health", 0.0))
 	var maximum: float = float(snapshot.get("max_health", 0.0))
 	var price: int = int(snapshot.get("estimated_cost", 0))
-	var result: String = "HP %.1f / %.1f，预计 %d 营养；%s" % [
+	var result: String = "HP %.1f / %.1f，预计 %d 创作能量；%s" % [
 		health, maximum, price, _describe_access(snapshot),
 	]
 	if float(snapshot.get("missing_health", 0.0)) <= 0.0:
-		result += "；组织健康，无需维修"
+		result += "；对象完好，无需维修"
 	elif _is_live_node(repair_system) and repair_system.has_active_task():
 		result += "；已有维修任务，可用 K 暂停 / 继续，Backspace 取消"
 	return result
@@ -465,7 +465,7 @@ func _describe_preview(snapshot: Dictionary) -> String:
 func _describe_access(snapshot: Dictionary) -> String:
 	var point: Node2D = snapshot.get("repair_point") as Node2D
 	if not _is_live_node(point):
-		return "等待可达工作点，当前不支付维修营养"
+		return "等待可达工作点，当前不支付维修创作能量"
 	if not bool(snapshot.get("supply_reachable", false)):
 		return "工作点 %s 暂时断连，等待恢复" % point.name
 	return "工作点 %s 可达" % point.name

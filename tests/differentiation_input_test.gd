@@ -71,9 +71,9 @@ func _fixture(initial_balance: int = 12, mature: bool = true) -> Dictionary:
 		"enemies": enemies, "projectiles": projectiles, "core": core,
 		"progress": progress, "capabilities": capabilities, "network": network,
 	}
-	var host: HyphaNode = _add_host(fixture, Vector2(180, 400), "主菌结")
-	var other: HyphaNode = _add_host(fixture, Vector2(240, 440), "副菌结")
-	var disconnected: HyphaNode = _add_host(fixture, Vector2(320, 500), "未连接菌结")
+	var host: HyphaNode = _add_host(fixture, Vector2(180, 400), "主花朵")
+	var other: HyphaNode = _add_host(fixture, Vector2(240, 440), "副花朵")
+	var disconnected: HyphaNode = _add_host(fixture, Vector2(320, 500), "未连接花朵")
 	fixture["edge"] = _add_edge(fixture, core, host)
 	_add_edge(fixture, core, other)
 	fixture["host"] = host
@@ -218,7 +218,7 @@ func _test_panel_and_maturity_boundary() -> void:
 		"UNIT maturity fixture is not claimed as a paid digestion receipt")
 	_check(panel.type_info_label.text.contains("每轮2") and panel.type_info_label.text.contains("整轮1"),
 		"Visible type information distinguishes whole-round ammo costs")
-	_check(panel.rules_label.text.contains("160") and panel.rules_label.text.contains("8材料") and panel.rules_label.text.contains("5秒"),
+	_check(panel.rules_label.text.contains("160") and panel.rules_label.text.contains("8创作能量") and panel.rules_label.text.contains("5秒"),
 		"Visible rules state the maturity threshold, material fee and effective time")
 	await process_frame
 	_check(panel.size.x <= 374.0 and panel.size.y <= 294.0, "Normal panel fits the parent 374 by 294 dock")
@@ -227,8 +227,8 @@ func _test_panel_and_maturity_boundary() -> void:
 	var rules_button := panel.get_node("%RulesButton") as Button
 	rules_button.pressed.emit()
 	await process_frame
-	_check(panel.rules_label.text.contains("0.625") and panel.rules_label.text.contains("不会赠送弹药") \
-		and panel.rules_label.text.contains("完整射击冷却"), "Expanded help states paid timing, ammo preservation and cancellation cooldown")
+	_check(panel.rules_label.text.contains("0.625") and panel.rules_label.text.contains("不赠送弹药") \
+		and panel.rules_label.text.contains("完整冷却"), "Expanded help states paid timing, ammo preservation and cancellation cooldown")
 	_check(panel.size.y <= 294.0, "Rules expand in a bounded scroll area without enlarging the dock")
 	_check(InputMap.get_actions() == actions_before and InputMap.has_action("growth_pause") and InputMap.has_action("growth_cancel"),
 		"Panel adds no keyboard shortcuts and preserves the existing construction P/X actions")
@@ -241,7 +241,7 @@ func _test_eligibility_and_reasons() -> void:
 	var system: DifferentiationSystem = fixture["system"]
 	var supply: DifferentiationSupplySystem = fixture["supply"]
 	var core: MotherCore = fixture["core"]
-	var empty: HyphaNode = _add_host(fixture, Vector2(400, 400), "空菌结")
+	var empty: HyphaNode = _add_host(fixture, Vector2(400, 400), "空花朵")
 	panel.select_node(empty)
 	_check(panel.get_status().availability == &"not_mature_organ" and panel.get_selected_organ() == null,
 		"An empty mature host does not advertise completed attack differentiation")
@@ -257,7 +257,7 @@ func _test_eligibility_and_reasons() -> void:
 		"Only armor piercing and scatter are valid new differentiation directions")
 	core.health = 0
 	panel.refresh()
-	_check(panel.get_status().availability == &"core_unavailable" and panel.status_label.text.contains("母核"),
+	_check(panel.get_status().availability == &"core_unavailable" and panel.status_label.text.contains("小画家"),
 		"A dead core is shown as unavailable rather than ready")
 	core.health = core.max_health
 	panel.configure(null, null)
@@ -301,7 +301,7 @@ func _test_waiting_pause_and_wrong_selection() -> void:
 	_check(system.get_task_snapshot().task_id == task_id and system.has_active_task(),
 		"Rejected wrong-selection actions preserve the global task identity")
 	panel.select_node(null)
-	_check(panel.visible and not panel.get_status().can_cancel and panel.status_label.text.contains("主菌结"),
+	_check(panel.visible and not panel.get_status().can_cancel and panel.status_label.text.contains("主花朵"),
 		"Active task remains visible with guidance after selection is cleared")
 	panel.select_node(fixture["host"])
 	panel.pause_button.pressed.emit()

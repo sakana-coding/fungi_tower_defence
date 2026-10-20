@@ -9,7 +9,7 @@ signal maturation_started(request_id: int, growth_task_id: int, cultivation_task
 
 const MAX_REQUEST_ID: int = 9223372036854775807
 const EXISTING_NODE_RADIUS: float = 24.0
-const EXISTING_NODE_REASON: String = "目标附近已有成熟菌结或器官，请选中已有节点并按 C 培育或继续培育。"
+const EXISTING_NODE_REASON: String = "目标附近已有已开放花朵或设施，请选中已有节点并按 C 建造或继续建造。"
 
 @export var growth_system: GrowthSystem
 @export var cultivation_system: CultivationSystem
@@ -192,13 +192,13 @@ func preview_request(start_node: Node2D, target_position: Vector2, organ_kind: S
 		"organ_kind": organ_kind, "organ_cost": organ_cost, "total_cost": 0, "remaining_cost": 0,
 	}
 	if recipe.is_empty():
-		result["error"] = "器官类型无效。"
+		result["error"] = "设施类型无效。"
 		return result
 	if not _configuration_is_valid():
-		result["error"] = "远程培育系统配置尚未就绪。"
+		result["error"] = "远程建造系统配置尚未就绪。"
 		return result
 	if not _node_is_available(start_node) or not (start_node is HyphaNode or start_node is MotherCore):
-		result["error"] = "请从已连接母核的成熟菌结或母核开始。"
+		result["error"] = "请从已连接小画家的已开放花朵或小画家开始。"
 		return result
 	if not target_position.is_finite():
 		result["error"] = "目标坐标无效。"
@@ -207,7 +207,7 @@ func preview_request(start_node: Node2D, target_position: Vector2, organ_kind: S
 		result["error"] = EXISTING_NODE_REASON
 		return result
 	if not growth_system.network_system.is_connected_to_core(start_node):
-		result["error"] = "起点未连接母核。"
+		result["error"] = "起点未连接小画家。"
 		return result
 	var plan: Dictionary = growth_system.preview_target(start_node, target_position)
 	result["plan"] = plan
@@ -841,7 +841,7 @@ func _organ_matches_recipe(organ: Variant) -> bool:
 
 func preview_retarget(position: Vector2) -> Dictionary:
 	if not has_active_request() or _phase != &"growth" or _transitioning or _resetting:
-		return {"valid": false, "error": "已接通或正在成熟的器官不能更换宿主。"}
+		return {"valid": false, "error": "已接通或正在成形的设施不能更换所在花朵。"}
 	if not position.is_finite() or _target_is_near_existing_node(position):
 		return {"valid": false, "error": EXISTING_NODE_REASON}
 	var result: Dictionary = _request_growth.preview_retarget(position)

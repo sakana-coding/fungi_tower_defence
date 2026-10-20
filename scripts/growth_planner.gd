@@ -135,7 +135,7 @@ func plan_growth(
 				continue
 			if is_instance_valid(start_node) and network.has_direct_connection(start_node, candidate):
 				if distance == 0.0:
-					return _empty_result(start_position, requested_position, "两个菌结已有连接；未重复建设。")
+					return _empty_result(start_position, requested_position, "两个花朵已有连接；未重复建设。")
 				continue
 			if not _join_node_is_usable(candidate, start_position, start_node) or not network.is_node_registered(candidate):
 				continue
@@ -263,9 +263,9 @@ func _plan_terrain(start_position: Vector2, end_position: Vector2, endpoint_exis
 	if not is_instance_valid(terrain_navigation) or terrain_navigation.is_queued_for_deletion():
 		return _empty_result(start_position, end_position, "地形规划不可用。")
 	if not terrain_navigation.is_point_walkable(start_position, TERRAIN_CLEARANCE):
-		return _empty_result(start_position, end_position, "起点在岩石内或战场边界外。")
+		return _empty_result(start_position, end_position, "起点在障碍物内或战场边界外。")
 	if not terrain_navigation.is_point_walkable(end_position, TERRAIN_CLEARANCE):
-		return _empty_result(start_position, end_position, "目标在岩石内或战场边界外；未扣款。")
+		return _empty_result(start_position, end_position, "目标在障碍物内或战场边界外；未扣款。")
 	var path: PackedVector2Array = terrain_navigation.find_path(start_position, end_position, TERRAIN_CLEARANCE)
 	if path.is_empty() or path[0] != start_position or path[-1] != end_position:
 		return _empty_result(start_position, end_position, "没有可行的绕行路径；未扣款。")

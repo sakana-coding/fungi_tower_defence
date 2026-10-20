@@ -111,7 +111,7 @@ func _run() -> void:
 	_key(KEY_ESCAPE)
 	ui.open_page(&"differentiation")
 	await _frames(2)
-	_check(_button(ui.pages[&"differentiation"], "破甲").disabled,
+	_check(_button(ui.pages[&"differentiation"], "橡皮炮台").disabled,
 		"locked differentiation mirrors the real growth gate")
 	ui.close_drawer()
 	_key(KEY_F)

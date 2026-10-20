@@ -49,7 +49,7 @@ mouse_filter = 2
 theme_override_fonts/font = SubResource("Font_guide")
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.9, 0.88, 0.7, 1)
-text = "① 尸骸80｜右翼菌结 → 十字(970,440)\nG 11｜B 11+12=23｜每批10\n实际回流满60 → 展开，解锁双尖端"
+text = "① 回收物80｜右翼花朵 → 十字(970,440)\nG 11｜B 11+12=23｜每批10\n实际回运满60 → 展开，解锁双尖端"
 
 [node name="SecondResourceGuide" type="Node2D" parent="World"]
 position = Vector2(180, 450)
@@ -75,4 +75,4 @@ mouse_filter = 2
 theme_override_fonts/font = SubResource("Font_guide")
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.74, 0.87, 0.9, 1)
-text = "② 尸骸120｜左翼菌结 → 十字(180,450)\nG 16｜B 16+12=28｜每批10\n实际回流满160 → 成熟，可扩第二胃室"
+text = "② 回收物120｜左翼花朵 → 十字(180,450)\nG 16｜B 16+12=28｜每批10\n实际回运满160 → 成形，可扩建第二处理通道"

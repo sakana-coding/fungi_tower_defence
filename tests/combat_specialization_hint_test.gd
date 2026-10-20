@@ -382,7 +382,7 @@ func _test_false_payloads_and_copies() -> void:
 	_check(fixture.progress.record_arrival("unit:hint:160", 1), "UNIT reaches the exact maturity boundary")
 	var snapshot: Dictionary = fixture.controller.get_snapshot()
 	_check(snapshot["id"] == &"mature_unlocked" and String(snapshot["text"]).contains("8材料")
-		and String(snapshot["text"]).contains("5秒") and String(snapshot["text"]).contains("破甲"),
+		and String(snapshot["text"]).contains("5秒") and String(snapshot["text"]).contains("橡皮炮台"),
 		"Actual current MATURE unlocks the brief rule hint with the official armor-breaking name")
 	snapshot["seen_ids"].append(&"ammunition_wait")
 	snapshot["text"] = "changed outside controller"
@@ -452,7 +452,7 @@ func _test_all_eight_and_real_task_states() -> void:
 	_check(fixture.organs[0].has_completed_differentiation() and fixture.organs[0].get_attack_type() == PIERCING,
 		"Actual paid record and actual weapon type prove piercing completion")
 	_check(String(fixture.controller.get_snapshot()["text"]).contains("每轮2")
-		and String(fixture.controller.get_snapshot()["text"]).contains("破甲分化完成"),
+		and String(fixture.controller.get_snapshot()["text"]).contains("橡皮炮台改装完成"),
 		"Piercing text uses the official armor-breaking name and actual whole-round fee")
 	shown.append_array(_drain(fixture))
 	var scatter_id: int = _unit_start(fixture, fixture.organs[1], SCATTER)

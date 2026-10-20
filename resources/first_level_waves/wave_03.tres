@@ -47,5 +47,5 @@ spawn_point_index = 0
 [resource]
 script = ExtResource("1_wave")
 entries = Array[ExtResource("2_entry")]([SubResource("Entry_01"), SubResource("Entry_02"), SubResource("Entry_03"), SubResource("Entry_04"), SubResource("Entry_05")])
-title = "第三波 · 群体穿插"
-direction_text = "正面连续来袭，两组小型敌人交错从侧前方进入。"
+title = "第三波 · 羊群穿插"
+direction_text = "正面涂鸦羊连续来袭，两组小涂鸦羊交错从侧前方进入。"

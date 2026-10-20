@@ -296,16 +296,16 @@ func reset() -> void:
 
 func _dispatch_one(generation: int) -> bool:
 	if get_digestive_organs().is_empty():
-		return _reject(&"source_unavailable", "胃囊已退出，无法回流营养")
+		return _reject(&"source_unavailable", "回收碎纸机已退出，无法回运创作能量")
 	if not _is_alive_core(mother_core) or not mother_core.is_inside_tree():
-		return _reject(&"core_unavailable", "母核无法接收回流营养")
+		return _reject(&"core_unavailable", "小画家无法接收回运创作能量")
 	if not _is_live_node(network_system):
-		return _reject(&"network_unavailable", "回流网络不可用")
+		return _reject(&"network_unavailable", "回运网络不可用")
 	if not _is_live_node(packet_container) or not packet_container.is_inside_tree() or packet_scene == null:
-		return _reject(&"packet_unavailable", "回流系统缺少营养包配置")
+		return _reject(&"packet_unavailable", "回运系统缺少补给包配置")
 
 	if not _traffic_configuration_is_valid(network_system, traffic_system, traffic_required):
-		return _reject(&"traffic_unavailable", "回流缺少有效的共享交通调度器")
+		return _reject(&"traffic_unavailable", "回运缺少有效的共享交通调度器")
 
 	# 固定本次运输依赖；导出引用修改只能影响之后的派遣。
 	var core: MotherCore = mother_core
@@ -329,7 +329,7 @@ func _dispatch_one(generation: int) -> bool:
 	var instance: Node = scene.instantiate()
 	if not instance is NutrientPacket:
 		instance.free()
-		return _reject(&"packet_unavailable", "回流营养包场景类型不正确")
+		return _reject(&"packet_unavailable", "回运补给包场景类型不正确")
 	var packet: NutrientPacket = instance as NutrientPacket
 	packet.traffic_required = require_traffic
 	if not _traffic_configuration_is_valid(network, dispatcher, require_traffic):
@@ -497,7 +497,7 @@ func _settle_attempt(attempt_id: String, arrived: bool) -> void:
 		_wait_reason = &"ready" if not received else &"empty"
 		_emit_return_changed()
 		if _is_current_generation(generation):
-			notice.emit("营养已回流母核" if received else "回流中断，产物保留在胃囊")
+			notice.emit("创作能量已回运小画家" if received else "回运中断，补给保留在回收碎纸机")
 
 
 func _release_product(shipment: Shipment, received: bool) -> void:

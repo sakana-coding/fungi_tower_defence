@@ -15,4 +15,4 @@ spawn_point_index = 0
 script = ExtResource("1_wave")
 entries = Array[ExtResource("2_entry")]([SubResource("Entry_01")])
 title = "第一波 · 正面试探"
-direction_text = "敌人从正面入口来袭。"
+direction_text = "涂鸦羊从正面入口来袭。"

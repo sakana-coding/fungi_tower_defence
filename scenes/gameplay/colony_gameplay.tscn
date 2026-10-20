@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/gameplay/colony_level_runtime.gd" id="1_i2aat"]
+[ext_resource type="Script" path="res://scripts/gameplay/colony_camera.gd" id="colony_camera"]
 [ext_resource type="PackedScene" path="res://scenes/audio/game_audio.tscn" id="audio_feedback"]
 [ext_resource type="Script" path="res://scripts/visuals/world_art.gd" id="world_art"]
 [ext_resource type="Resource" path="res://resources/art/chapter_1.tres" id="chapter_art"]
@@ -52,6 +53,11 @@ script = ExtResource("1_i2aat")
 [node name="WorldArt" type="Node" parent="."]
 script = ExtResource("world_art")
 theme = ExtResource("chapter_art")
+
+[node name="ColonyCamera" type="Camera2D" parent="."]
+process_mode = 3
+enabled = false
+script = ExtResource("colony_camera")
 
 [node name="World" type="Node2D" parent="."]
 y_sort_enabled = true

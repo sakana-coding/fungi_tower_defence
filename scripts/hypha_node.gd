@@ -6,7 +6,7 @@ signal organ_slot_changed
 signal health_changed(current: float, maximum: float)
 signal tissue_destroyed(tissue: Node2D)
 
-@export var display_name: String = "菌结"
+@export var display_name: String = "花朵"
 @export var max_health: float = 45.0:
 	set(value):
 		if not is_finite(value) or value <= 0.0 or max_health == value:

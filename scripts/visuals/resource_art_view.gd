@@ -24,6 +24,9 @@ func _ready() -> void:
 	if kind == Kind.LARGE_RESOURCE:
 		var source := get_parent() as LargeCarcass
 		if source != null:
+			var title := source.get_node_or_null("TitleLabel") as Label
+			if title != null and _theme != null:
+				title.text = GameplayCopy.resource_name(_theme.chapter)
 			source.resources_changed.connect(_on_resources_changed)
 			_refresh_stock(source.get_snapshot())
 

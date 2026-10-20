@@ -8,23 +8,23 @@ const ROW_LIMIT: int = 3
 const MARKER_RADIUS: float = 15.0
 const MARKER_PICK_RADIUS: float = 22.0
 const KIND_TEXT: Dictionary = {
-	&"growth": "延伸菌路", &"remote_cultivation": "远程攻击芽", &"connection": "连接菌结",
-	&"cultivation": "就地培育",
+	&"growth": "延伸花径", &"remote_cultivation": "远程炮台花苞", &"connection": "连接花朵",
+	&"cultivation": "就地建造",
 }
 const STATE_TEXT: Dictionary = {
 	&"waiting": "等待", &"executing": "执行中", &"paused": "已暂停",
 	&"completed": "已完成", &"cancelled": "已取消", &"failed": "失败",
-	&"maturing": "独立成熟",
+	&"maturing": "设施成形",
 }
 const REASON_TEXT: Dictionary = {
 	&"queued": "排队中", &"pipeline_busy": "等待当前施工", &"paused": "已暂停",
-	&"tip_limit": "等待空闲尖端", &"maturation_handoff": "等待培育交接",
-	&"disconnected": "菌路断开，等待恢复", &"nutrition": "等待营养",
-	&"in_transit": "营养运输中", &"core_empty": "母核营养不足",
-	&"combat_reserve": "保留战斗营养", &"repair_budget": "营养优先用于修复",
+	&"tip_limit": "等待空闲延伸花苞", &"maturation_handoff": "等待建造交接",
+	&"disconnected": "花径断开，等待恢复", &"nutrition": "等待创作能量",
+	&"in_transit": "创作能量运输中", &"core_empty": "小画家创作能量不足",
+	&"combat_reserve": "保留战斗创作能量", &"repair_budget": "创作能量优先用于修复",
 	&"settlement_pending": "等待退款结算", &"construction_busy": "等待当前施工",
-	&"startup": "等待启动库存", &"occupied": "器官槽位已占用",
-	&"invalid_configuration": "施工配置无效", &"core_unavailable": "母核不可用",
+	&"startup": "等待启动库存", &"occupied": "设施槽位已占用",
+	&"invalid_configuration": "施工配置无效", &"core_unavailable": "小画家不可用",
 }
 
 @export var coordinator: ConstructionCoordinator
@@ -334,7 +334,7 @@ func _refresh_labels(limit: int) -> void:
 	_refresh_maturing_selector()
 	if _has_coordinator() and coordinator.multi_worker_enabled:
 		_title_label.offset_right = 266.0
-		_title_label.text = "目标 %d/%d · 尖端 %d/%d · 等待 %d" % [
+		_title_label.text = "目标 %d/%d · 延伸花苞 %d/%d · 等待 %d" % [
 			_entries.size(), limit, int(_snapshot.get("tip_count", 0)),
 			int(_snapshot.get("tip_limit", 1)), int(_snapshot.get("waiting_count", 0))]
 	else:
@@ -356,7 +356,7 @@ func _refresh_maturing_selector() -> void:
 		for construction_id: String in ids:
 			_maturing_selector.add_item("")
 			_maturing_selector.set_item_metadata(_maturing_selector.item_count - 1, construction_id)
-	_maturing_selector.set_item_text(0, "成熟 %d ▾" % _maturing.size())
+	_maturing_selector.set_item_text(0, "建造 %d ▾" % _maturing.size())
 	for index: int in range(_maturing.size()):
 		var request: Dictionary = _maturing[index]
 		var detail: Dictionary = request.get("detail", {})
@@ -365,14 +365,14 @@ func _refresh_maturing_selector() -> void:
 			int(round(float(detail.get("progress", 0.0)) * 100.0))])
 	_maturing_selector.disabled = _maturing.is_empty()
 	_maturing_selector.select(maxi(0, ids.find(_selected_construction_id)))
-	_maturing_selector.tooltip_text = "已接通的芽和就地培育在此选择；不占外部目标或尖端名额。"
+	_maturing_selector.tooltip_text = "已接通的芽和就地建造在此选择；不占外部目标或延伸花苞名额。"
 
 
 func _kind_text(entry: Dictionary) -> String:
 	var kind: StringName = StringName(entry.get("kind", &""))
 	if kind in [&"remote_cultivation", &"cultivation"]:
 		var organ_kind: StringName = entry.get("parameters", {}).get("organ_kind", &"attack")
-		return ("远处" if kind == &"remote_cultivation" else "培育") + ("胃囊" if organ_kind == &"digestive" else "攻击芽")
+		return ("远处" if kind == &"remote_cultivation" else "建造") + ("回收碎纸机" if organ_kind == &"digestive" else "炮台花苞")
 	return String(KIND_TEXT.get(kind, String(kind)))
 
 

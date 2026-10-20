@@ -5,12 +5,12 @@ extends Control
 signal changed(snapshot: Dictionary)
 
 const EVENT_TEXTS: Dictionary = {
-	&"target_placed": "目标已放置，营养会沿菌丝送往尖端。\n网络接通后，覆盖内的尸骸才能回运。",
-	&"remains_returned": "尸体已送达胃囊，正在排队消化。\n绿色回流送抵母核后，营养才能再次使用。",
-	&"nutrition_returned": "消化营养已回到母核，也会推动成长。\n先取左前80，再准备向右前扩张。",
-	&"stage_unlocked": "菌落已成长，新的能力已经解锁。\n查看成长栏；扩张与器官仍需付费建设。",
-	&"differentiated": "首次分化已完成。\n破甲对付重甲，散射应对小型群体。",
-	&"network_broken": "网络断路：失联区域暂停补给与采集。\nF选受损组织，J付费修复；也可L连存活菌结。",
+	&"target_placed": "目标已放置，补给会沿花径送往延伸花苞。\n与小画家接通后，花海内的回收物才能运回。",
+	&"remains_returned": "回收物已送达碎纸机，正在等待加工。\n补给送回小画家后，创作能量才能再次使用。",
+	&"nutrition_returned": "补给已送回小画家，增加创作能量与累计回收。\n先回收左前画架的80能量，再准备向右前扩张。",
+	&"stage_unlocked": "创作进入新阶段，新的能力已经解锁。\n查看创作阶段；扩张和设施仍需付费建设。",
+	&"differentiated": "首次炮台改装已完成。\n橡皮炮台应对重甲花羊，喷漆炮台拦截小涂鸦羊。",
+	&"network_broken": "花径中断：失联区域暂停补给与采集。\nF选择受损对象，J付费修复；也可L连接存活花朵。",
 }
 
 var is_enabled: bool = true
@@ -90,7 +90,7 @@ func _message_for(event_id: StringName, facts: Dictionary) -> String:
 	if event_id == &"stage_unlocked" and (raw_stage is String or raw_stage is StringName):
 		var stage_name: String = String(raw_stage).strip_edges().replace("\n", " ")
 		if not stage_name.is_empty() and stage_name.length() <= 12:
-			message = "菌落成长至「%s」，新的能力已经解锁。\n查看成长栏；扩张与器官仍需付费建设。" % stage_name
+			message = "创作进入「%s」阶段，新的能力已经解锁。\n查看创作阶段；扩张和设施仍需付费建设。" % stage_name
 	return message
 
 

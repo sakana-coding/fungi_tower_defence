@@ -17,7 +17,7 @@ func show_objectives(snapshot: Dictionary) -> void:
 
 func _render_flow() -> void:
 	wave_label.text = "第三关 · 自我和解"
-	progress_label.text = "收集碎片 %d/3 · 连通菌域持续覆盖5秒" % int(_objectives.get("completed", 0))
+	progress_label.text = "收集碎片 %d/3 · 连通花海累计收集5秒" % int(_objectives.get("completed", 0))
 	var rows: PackedStringArray = []
 	for fragment: Dictionary in _objectives.get("fragments", []):
 		rows.append("%s：%s" % [fragment.name, "已收集" if fragment.collected else (
@@ -28,7 +28,7 @@ func _render_flow() -> void:
 		soonest = minf(soonest, float(source.remaining))
 	next_label.text = "下批来袭约 %ds · 压力阶段 %d/3" % [ceili(soonest), int(_flow_snapshot.get("stage", 0)) + 1] \
 		if is_finite(soonest) else "准备探索"
-	pause_label.text = "已暂停 · 收集、生产与运输冻结" if _paused else "失联保留进度；灰色菌域残影不能收集"
+	pause_label.text = "已暂停 · 收集、生成与运输冻结" if _paused else "失联保留进度；灰色花海残影不能收集"
 	start_button.text = "提前开始防守"
 	start_button.disabled = _paused or _has_result or _ending_pending or not bool(_flow_snapshot.get("can_start", false))
 	pause_button.text = "恢复 · Space" if _paused else "暂停 · Space"
@@ -42,11 +42,11 @@ func _render_result() -> void:
 	if not _has_result:
 		return
 	var won: bool = bool(_result_snapshot.get("victory", false))
-	result_title.text = "自我和解 · 通关" if won else "母核失守"
+	result_title.text = "自我和解 · 通关" if won else "小画家倒下了 · 本次挑战失败"
 	result_subtitle.text = "三个碎片已经完整收集" if won else "保护探索路线，再次出发"
-	result_left_label.text = "收集碎片：%d / 3\n累计回收：%d 营养" % [
+	result_left_label.text = "收集碎片：%d / 3\n累计回收：%d 创作能量" % [
 		int(_result_snapshot.get("objective", {}).get("completed", 0)), int(_result_snapshot.get("total_recovered", 0))]
-	result_right_label.text = "母核生命：%s\n本局用时：%s" % [
+	result_right_label.text = "小画家生命：%s\n本局用时：%s" % [
 		_health_text(float(_result_snapshot.get("core_health", 0))), _time_text(float(_result_snapshot.get("elapsed_seconds", 0)))]
 
 

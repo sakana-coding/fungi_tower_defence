@@ -37,7 +37,7 @@ func _ready() -> void:
 	hud.set_combat_demo_enabled(false)
 	hud.show_progression_hint({})
 	hud.show_combat_hint({"enabled": false, "visible": false})
-	(hud.get_node("HelpLabel") as Label).text = "G 伸展 · B 种芽 · C 培育 · O 切换器官 · T 改向 · M 移植 · L 连接 · P 暂停建设 · X 取消 · R 重开"
+	(hud.get_node("HelpLabel") as Label).text = "G 延伸 · B 远处建造 · C 建造 · O 切换设施 · T 改向 · M 搬迁 · L 连接 · P 暂停建设 · X 取消 · R 重开"
 
 func _process(delta: float) -> void:
 	if not _result_snapshot.is_empty():

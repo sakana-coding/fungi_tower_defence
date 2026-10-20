@@ -3,15 +3,15 @@ extends CanvasLayer
 ## 首关工具坞：隐藏旧显示层，复用其真实数据、按钮意图和地图控制器。
 
 const PAGE_TITLES: Dictionary = {
-	&"overview": "菌落概况", &"wave": "波次详情", &"build": "培育与建设",
-	&"queue": "施工队列", &"selection": "所选组织", &"repair": "组织修复",
-	&"differentiation": "攻击分化", &"operations": "改向与移植", &"logistics": "运输与回收",
+	&"overview": "创作概况", &"wave": "波次详情", &"build": "设施建造",
+	&"queue": "施工队列", &"selection": "所选对象", &"repair": "修复",
+	&"differentiation": "炮台改装", &"operations": "改向与搬迁", &"logistics": "运输与回收",
 	&"help": "操作手册", &"more": "更多", &"messages": "消息记录", &"development": "开发演示",
 }
 const DEMO_ACTIONS: Dictionary = {
-	"F5  尸骸回收": &"original_carcass_demo", "F6  断路恢复": &"traffic_recovery_demo",
+	"F5  回收物回收": &"original_carcass_demo", "F6  断路恢复": &"traffic_recovery_demo",
 	"F7  成长解锁": &"progression_demo", "F8  战斗分工": &"combat_specialization_demo",
-	"F9  地形危机": &"terrain_threat_demo", "F10  菌落运营": &"colony_operations_demo",
+	"F9  地形危机": &"terrain_threat_demo", "F10  画中世界运营": &"colony_operations_demo",
 }
 
 var active_page: StringName = &""
@@ -29,6 +29,8 @@ var start_button: Button
 var pause_button: Button
 var more_button: Button
 var menu_button: Button
+var camera_reset_button: Button
+var exposure_label: Label
 var goal_label: Label
 var health_meter: ArtHealthBar
 var health_value_label: Label
@@ -81,6 +83,7 @@ func configure(level: Node2D) -> void:
 	_level.add_child(level_menu)
 	level_menu.configure(_level)
 	_build_shell()
+	_level.frontier_status.exposure_in_hud = true
 	_build_pages()
 	_hide_legacy_panels()
 	_level.hud.notice_changed.connect(_on_notice)
@@ -103,7 +106,7 @@ func _build_shell() -> void:
 	var resource_column := VBoxContainer.new()
 	top_left.add_child(resource_column)
 	var resources: HBoxContainer = _horizontal(resource_column)
-	health_button = _button(resources, "母核 240/240", toggle_page.bind(&"overview"))
+	health_button = _button(resources, "小画家 240/240", toggle_page.bind(&"overview"))
 	health_button.custom_minimum_size = Vector2(200, 44)
 	for state: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_disabled_color"]:
 		health_button.add_theme_color_override(state, Color.TRANSPARENT)
@@ -122,12 +125,17 @@ func _build_shell() -> void:
 	health_value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	health_value_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	health_button.add_child(health_value_label)
-	nutrition_button = _button(resources, "营养 72", toggle_page.bind(&"overview"))
+	nutrition_button = _button(resources, "创作能量 72", toggle_page.bind(&"overview"))
 	goal_label = Label.new()
 	goal_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	goal_label.custom_minimum_size = Vector2(400, 40)
+	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	goal_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	goal_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	goal_label.add_theme_font_size_override("font_size", 18)
-	goal_label.text = "目标：收集三个碎片，保护母核" if _level.has_method("get_fragment_targets") else (
-		"目标：摧毁三台AI，保护母核" if _level.has_method("get_facility_targets") else "目标：清除六波敌人，保护母核")
+	goal_label.text = "目标：保护小画家，找回三块记忆碎片" if _level.has_method("get_fragment_targets") else (
+		"目标：保护小画家，摧毁三台AI绘图终端" if _level.has_method("get_facility_targets") else "目标：守住小画家，抵御六波涂鸦羊")
+	goal_label.tooltip_text = goal_label.text
 	resource_column.add_child(goal_label)
 	var goal_box := ArtUI.paper(ArtUI.UI + "目标.png", 8)
 	goal_box.content_margin_left = 32
@@ -152,21 +160,33 @@ func _build_shell() -> void:
 	more_button.tooltip_text = "更多：物流、操作手册、引导与重开"
 	dock = _surface("Dock")
 	var commands: HBoxContainer = _horizontal(dock)
-	for item: Array in [[&"grow", "伸展\nG"], [&"seed", "种芽\nB"], [&"build", "培育\nC"],
-			[&"link", "接合\nL"], [&"repair", "修复\nF"], [&"queue", "队列\n0"]]:
+	for item: Array in [[&"grow", "延伸\nG"], [&"seed", "远处建造\nB"], [&"build", "建造\nC"],
+			[&"link", "连接\nL"], [&"repair", "修复\nF"], [&"queue", "队列\n0"]]:
 		var button: Button = _button(commands, item[1], _on_dock_pressed.bind(item[0]))
 		button.toggle_mode = true
 		button.custom_minimum_size = Vector2(90, 60)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		dock_buttons[item[0]] = button
-	selection_button = _button(_root, "所选组织 · 详情", toggle_page.bind(&"selection"))
+	selection_button = _button(_root, "所选对象 · 详情", toggle_page.bind(&"selection"))
 	selection_button.name = "SelectedDetails"
 	selection_button.hide()
+	camera_reset_button = _button(_root, "视角复位", _level.colony_camera.reset_view)
+	camera_reset_button.name = "CameraReset"
+	camera_reset_button.tooltip_text = "Home · 恢复开局位置与缩放"
+	exposure_label = Label.new()
+	exposure_label.name = "ExposureHint"
+	exposure_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	exposure_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	exposure_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	exposure_label.add_theme_color_override("font_color", Color("9a572a"))
+	exposure_label.add_theme_font_size_override("font_size", 18)
 	_mode_panel = _surface("PlacementHint")
 	var hint_paper := ArtUI.paper(ArtUI.UI + "窗口 (2).png", 32)
 	_mode_panel.add_theme_stylebox_override("panel", hint_paper)
 	_mode_panel.minimum_size_changed.connect(func() -> void: _layout_mode_hint.call_deferred())
-	var mode_row: HBoxContainer = _horizontal(_mode_panel)
+	var hint_column := VBoxContainer.new()
+	_mode_panel.add_child(hint_column)
+	var mode_row: HBoxContainer = _horizontal(hint_column)
 	mode_row.add_theme_constant_override("separation", 20)
 	_mode_label = Label.new()
 	_mode_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -180,6 +200,7 @@ func _build_shell() -> void:
 	details_button.name = "ModeDetails"
 	details_button.custom_minimum_size = Vector2(80, 50)
 	details_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	hint_column.add_child(exposure_label)
 	_mode_panel.hide()
 	_toast = _button(_root, "", toggle_page.bind(&"messages"))
 	_toast.name = "Notice"
@@ -226,6 +247,7 @@ func _build_pages() -> void:
 	page.action("运输与回收", open_page.bind(&"logistics"), row)
 	page.action("施工队列", open_page.bind(&"queue"), row)
 	page.mirror_label(hud.stock_label, false, page.disclosure("库存明细"))
+	page.text(GameplayCopy.WORLD_GUIDE, page.disclosure("小画家与花朵网络"))
 	page = _page(&"wave")
 	for label: Label in [flow.wave_label, flow.progress_label, flow.counts_label, flow.next_label, flow.pause_label]:
 		page.mirror_label(label)
@@ -236,11 +258,11 @@ func _build_pages() -> void:
 			_objective_buttons[facility.facility_id] = page.action(facility.display_name,
 				_level.prioritize_facility.bind(facility.facility_id))
 		page.action("恢复自动选敌", _level.clear_facility_priority)
-		page.text("点击设施设为优先目标，再次点击取消。只有射程内的器官会向它开火。")
+		page.text("点击设施设为优先目标，再次点击取消。只有射程内的炮台会向它开火。")
 	elif _level.has_method("get_fragment_targets"):
-		page.text("用有效菌域覆盖碎片并保持连通5秒。多处覆盖不加速，断路保留进度，收齐立即结束。")
+		page.text("让与小画家连通的花海覆盖碎片，累计收集5秒。多处覆盖不加速，断路保留进度，收齐立即结束。")
 	page = _page(&"build")
-	page.heading("培育类型 · O 切换")
+	page.heading("建造类型 · O 切换")
 	row = page.row()
 	_attack_choice = page.mirror_button(_level._attack_choice, row)
 	_stomach_choice = page.mirror_button(_level._stomach_choice, row)
@@ -248,34 +270,35 @@ func _build_pages() -> void:
 	_stomach_choice.toggle_mode = true
 	row = page.row()
 	page.mirror_button(hud.cultivation_button, row, true)
-	page.action("B 远处种芽", _on_dock_pressed.bind(&"seed"), row)
+	page.action("B 远处建造", _on_dock_pressed.bind(&"seed"), row)
 	page.mirror_label(hud.cultivation_reason_label)
 	page.heading("网络")
 	row = page.row()
-	page.action("G 伸展", _on_dock_pressed.bind(&"grow"), row)
-	page.action("L 接合", _on_dock_pressed.bind(&"link"), row)
+	page.action("G 延伸花径", _on_dock_pressed.bind(&"grow"), row)
+	page.action("L 连接花朵", _on_dock_pressed.bind(&"link"), row)
 	page.mirror_label(hud.growth_label)
 	row = page.row()
 	page.mirror_button(hud.growth_pause_button, row, true)
 	page.mirror_button(hud.growth_cancel_button, row, true)
 	var details: VBoxContainer = page.disclosure("材料与费用")
 	page.mirror_label(hud.growth_supply_label, false, details)
-	page.text("攻击器官 12＝8 结构＋4 库存；胃囊 8 全计结构。远处种芽另付实际网络费用。", details)
-	page.action("目标改向 / 移植", open_page.bind(&"operations"))
+	page.text("文具炮台 12＝8 结构＋4 库存；回收碎纸机 8 全计结构。远处建造另付实际网络费用。", details)
+	page.text(GameplayCopy.FACILITY_GUIDE, page.disclosure("设施说明"))
+	page.action("目标改向 / 搬迁", open_page.bind(&"operations"))
 	_build_queue_page()
 	page = _page(&"selection")
 	page.mirror_label(hud.selection_label)
 	_selection_health = page.text("")
 	page.mirror_label(hud.stock_label)
 	row = page.row()
-	_selection_supply = page.action("N 供养", _request_supply, row, true)
-	page.action("攻击分化", open_page.bind(&"differentiation"), row)
+	_selection_supply = page.action("N 补给", _request_supply, row, true)
+	page.action("炮台改装", open_page.bind(&"differentiation"), row)
 	row = page.row()
-	page.action("培育", open_page.bind(&"build"), row)
-	page.action("改向 / 移植", open_page.bind(&"operations"), row)
-	page.action("F 选择组织修复", _on_dock_pressed.bind(&"repair"))
-	page.mirror_label(hud.cultivation_reason_label, true, page.disclosure("培育条件"))
-	page.mirror_label(hud.recovery_label, true, page.disclosure("消化与回收明细"))
+	page.action("建造", open_page.bind(&"build"), row)
+	page.action("改向 / 搬迁", open_page.bind(&"operations"), row)
+	page.action("F 选择修复", _on_dock_pressed.bind(&"repair"))
+	page.mirror_label(hud.cultivation_reason_label, true, page.disclosure("建造条件"))
+	page.mirror_label(hud.recovery_label, true, page.disclosure("加工与回收明细"))
 	_build_differentiation_page()
 	page = _page(&"repair")
 	page.mirror_label(hud.repair_info_label)
@@ -285,29 +308,30 @@ func _build_pages() -> void:
 	row = page.row()
 	page.mirror_button(hud.repair_pause_button, row, true)
 	page.mirror_button(hud.repair_cancel_button, row, true)
-	page.mirror_label(hud.repair_info_label, true, page.disclosure("修复账目与菌脉详情"))
+	page.mirror_label(hud.repair_info_label, true, page.disclosure("修复账目与花径详情"))
 	page = _page(&"operations")
 	row = page.row()
 	page.action("T 目标改向", _begin_operation.bind(&"retarget"), row)
-	page.action("M 移植 · 6", _begin_operation.bind(&"transplant"), row)
+	page.action("M 搬迁 · 6", _begin_operation.bind(&"transplant"), row)
 	page.mirror_button(_level._cancel_transplant, page, true)
 	page.mirror_label(_level._operations_status)
 	page.action("选择施工任务", open_page.bind(&"queue"))
 	page = _page(&"logistics")
-	page.heading("营养与通行")
+	page.heading("补给与通行")
 	page.mirror_label(hud.transport_label)
 	page.mirror_label(hud.traffic_label)
-	page.heading("回收与消化")
+	page.heading("回收与加工")
 	page.mirror_label(hud.recovery_label)
+	page.text(GameplayCopy.resource_guide(WorldArt.find_theme(_level).chapter), page.disclosure("本章回收与补给"))
 	page.mirror_label(hud.get_node("FieldLegend") as Label, false,
 		page.disclosure("地图图例"))
 	_build_help_page()
 	page = _page(&"more")
 	row = page.row()
-	var more_items: Array = [[&"overview", "菌落概况"], [&"logistics", "运输回收"], [&"wave", "波次详情"],
+	var more_items: Array = [[&"overview", "创作概况"], [&"logistics", "运输回收"], [&"wave", "波次详情"],
 			[&"help", "操作手册 / 引导"], [&"messages", "消息记录"]]
 	if _level.has_method("get_facility_targets"):
-		more_items[2][1] = "AI目标与生产"
+		more_items[2][1] = "终端目标与生成"
 	elif _level.has_method("get_fragment_targets"):
 		more_items[2][1] = "碎片与来袭"
 	if _level.has_method("open_development_demo"):
@@ -374,7 +398,7 @@ func _build_differentiation_page() -> void:
 	page.mirror_button(source.pause_button, row, true)
 	page.mirror_button(source.continue_button, row, true)
 	page.mirror_button(source.cancel_button, row, true)
-	var details: VBoxContainer = page.disclosure("分化规则与退款")
+	var details: VBoxContainer = page.disclosure("改装规则与退款")
 	page.mirror_label(source.type_info_label, false, details)
 	page.text(DifferentiationInputController.RULES_FULL, details)
 
@@ -388,11 +412,16 @@ func _build_help_page() -> void:
 	page.add_child(_guide_toggle)
 	_guide_label = page.text("")
 	_guide_dismiss = page.action("知道了 / 下一条", _level.first_guide.dismiss_current)
+	var enemy_details: VBoxContainer = page.disclosure("敌人与应对")
+	page.text(GameplayCopy.enemy_guide(WorldArt.find_theme(_level).chapter), enemy_details)
+	if _level.has_method("get_facility_targets"):
+		page.text(GameplayCopy.TERMINAL_GUIDE, enemy_details)
 	page.heading("建造与运营")
-	page.text("G 伸展 · B 远处种芽 · C 原位培育\nO 切换器官 · L 连接菌结\nT 目标改向 · M 移植 · Y 取消移植准备")
+	page.text("G 延伸花径 · B 远处建造 · C 原位建造\nO 切换设施 · L 连接花朵\nT 目标改向 · M 搬迁 · Y 取消搬迁准备")
 	page.heading("任务与修复")
-	page.text("P 建设暂停 / 继续 · X 取消建设\nF 选择组织 · J 修复 · K 修复暂停 / 继续\nBackspace 取消修复 · N 供养所选攻击器官")
+	page.text("P 建设暂停 / 继续 · X 取消建设\nF 选择对象 · J 修复 · K 修复暂停 / 继续\nBackspace 取消修复 · N 补给所选文具炮台")
 	page.heading("全局")
+	page.text("WASD 移动视角 · 按住鼠标中键拖动\n滚轮围绕鼠标缩放 · Home / 视角复位\n触控板：双指平移、捏合缩放\nSpace 规划暂停中仍可移动镜头与查看预览。")
 	page.text("Space 全局暂停 / 恢复 · R 重开\n右键 / Esc 退出当前操作" +
 		("\nF5–F10 各阶段开发演示" if _level.has_method("open_development_demo") else ""))
 	var details: VBoxContainer = page.disclosure("首关地图与资源提示")
@@ -427,8 +456,8 @@ func refresh() -> void:
 	if not visible:
 		return
 	var core: MotherCore = _level.mother_core
-	health_button.text = "母核 %d/%d" % [ceili(core.health), ceili(core.max_health)]
-	nutrition_button.text = "营养 %d" % core.nutrition
+	health_button.text = "小画家 %d/%d" % [ceili(core.health), ceili(core.max_health)]
+	nutrition_button.text = "创作能量 %d" % core.nutrition
 	health_button.tooltip_text = _level.flow_hud.colony_label.text
 	nutrition_button.tooltip_text = "点击查看成长、累计回收与完整库存"
 	var flow: Dictionary = _level.wave_flow.get_snapshot()
@@ -449,7 +478,7 @@ func refresh() -> void:
 			button.disabled = not facility.is_alive()
 	wave_button.tooltip_text = _level.flow_hud.next_label.text + "\n点击查看波次详情"
 	if not _objective_buttons.is_empty():
-		wave_button.tooltip_text = _level.flow_hud.next_label.text + "\n点击查看AI目标与生产"
+		wave_button.tooltip_text = _level.flow_hud.next_label.text + "\n点击查看绘图终端与敌人生成"
 	elif _level.has_method("get_fragment_targets"):
 		wave_button.tooltip_text = _level.flow_hud.next_label.text + "\n点击查看碎片与来袭"
 	start_button.text = _level.flow_hud.start_button.text
@@ -484,15 +513,15 @@ func refresh() -> void:
 func _refresh_selection() -> void:
 	var selected: HyphaNode = _level.selected_node
 	selection_button.visible = is_instance_valid(selected)
-	_selection_health.text = "未选择组织；点击地图上的菌结后查看。"
+	_selection_health.text = "未选择对象；点击地图上的花朵后查看。"
 	if is_instance_valid(selected):
 		selection_button.text = "%s · 详情" % selected.display_name
-		_selection_health.text = "菌结生命 %.0f/%.0f · %s" % [selected.health, selected.max_health,
+		_selection_health.text = "花朵生命 %.0f/%.0f · %s" % [selected.health, selected.max_health,
 			"已连通" if _level.network_system.is_available_connected_to_core(selected) else "失联"]
 		var organ: Node = selected.get_organ_occupant()
 		if is_instance_valid(organ) and organ.has_method("get_health_snapshot"):
 			var health: Dictionary = organ.get_health_snapshot()
-			_selection_health.text += "\n器官生命 %.0f/%.0f" % [float(health.get("health", 0)), float(health.get("max_health", 0))]
+			_selection_health.text += "\n设施生命 %.0f/%.0f" % [float(health.get("health", 0)), float(health.get("max_health", 0))]
 
 
 func _refresh_map_labels() -> void:
@@ -508,6 +537,9 @@ func _refresh_map_labels() -> void:
 
 
 func _refresh_mode() -> void:
+	exposure_label.text = _level.frontier_status.get_exposure_text()
+	exposure_label.visible = not exposure_label.text.is_empty()
+	camera_reset_button.disabled = not _level.colony_camera.can_control()
 	var mode: StringName = &""
 	var message: String = ""
 	if _level._operation_mode != &"":
@@ -570,7 +602,7 @@ func open_page(id: StringName) -> void:
 	active_page = id
 	for key: StringName in pages:
 		pages[key].visible = key == id
-	_drawer_title.text = "AI目标与生产" if id == &"wave" and not _objective_buttons.is_empty() else PAGE_TITLES[id]
+	_drawer_title.text = "终端目标与生成" if id == &"wave" and not _objective_buttons.is_empty() else PAGE_TITLES[id]
 	if id == &"wave" and _level.has_method("get_fragment_targets"):
 		_drawer_title.text = "碎片与来袭"
 	_scroll.scroll_vertical = 0
@@ -599,7 +631,7 @@ func is_pointer_over_ui(point: Vector2) -> bool:
 		return false
 	if maturing_selector.get_popup().visible:
 		return true
-	for control: Control in [top_left, top_right, dock, drawer, selection_button, _mode_panel, _toast]:
+	for control: Control in [top_left, top_right, dock, drawer, selection_button, _mode_panel, _toast, camera_reset_button]:
 		if control.is_visible_in_tree() and control.get_global_rect().has_point(point):
 			return true
 	return false
@@ -720,11 +752,11 @@ func _layout() -> void:
 	drawer.size = Vector2(520, maxf(300, viewport_size.y - drawer.position.y - 140))
 	selection_button.position = Vector2(24, viewport_size.y - 151)
 	selection_button.size = Vector2(320, 38)
+	camera_reset_button.position = Vector2(viewport_size.x - 164, viewport_size.y - 82)
+	camera_reset_button.size = Vector2(140, 46)
 	_layout_mode_hint()
 	_toast.position = Vector2(24, maxf(128, top_left.get_global_rect().end.y + 12))
 	_toast.size = Vector2(minf(660, viewport_size.x - 48), 48)
-	if is_instance_valid(_level.frontier_status):
-		_level.frontier_status.exposure_label_position = Vector2(24, viewport_size.y - 216)
 
 
 func _layout_mode_hint() -> void:
@@ -736,8 +768,6 @@ func _layout_mode_hint() -> void:
 	var height: float = maxf(124, _mode_panel.get_combined_minimum_size().y)
 	_mode_panel.size.y = height
 	_mode_panel.position = Vector2(24 if drawer.visible else (viewport_size.x - hint_width) * 0.5, dock.position.y - height - 16)
-	if _mode_panel.visible and is_instance_valid(_level.frontier_status):
-		_level.frontier_status.exposure_label_position = Vector2(24, _mode_panel.position.y - 32)
 
 
 func _box(background: Color, border: Color, radius: int) -> StyleBoxFlat:

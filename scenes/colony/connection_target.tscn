@@ -21,7 +21,7 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = SubResource("SystemFont_target")
 theme_override_font_sizes/font_size = 14
-text = "请选择两个已有菌结"
+text = "请选择两个已有花朵"
 autowrap_mode = 3
 
 [node name="FirstLabel" type="Label" parent="."]
@@ -32,7 +32,7 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = SubResource("SystemFont_target")
 theme_override_font_sizes/font_size = 13
-text = "① 已选菌结"
+text = "① 已选花朵"
 
 [node name="SecondLabel" type="Label" parent="."]
 mouse_filter = 2
@@ -42,4 +42,4 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = SubResource("SystemFont_target")
 theme_override_font_sizes/font_size = 13
-text = "② 第二菌结"
+text = "② 第二花朵"

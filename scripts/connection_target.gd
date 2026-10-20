@@ -9,13 +9,13 @@ const PAUSED_COLOR: Color = Color(0.61, 0.75, 0.95)
 const COMPLETE_COLOR: Color = Color(0.41, 0.92, 0.75)
 const ERROR_COLOR: Color = Color(0.94, 0.43, 0.40)
 const STATE_TEXT: Dictionary = {
-	&"idle": "未开始", &"waiting": "等待供养", &"extending": "延伸中",
+	&"idle": "未开始", &"waiting": "等待补给", &"extending": "延伸中",
 	&"paused": "已暂停", &"cancelled": "已取消", &"completed": "已接通",
 }
 const WAIT_TEXT: Dictionary = {
-	&"nutrition": "等待营养", &"in_transit": "营养运输中", &"core_empty": "母核营养不足",
-	&"combat_reserve": "保留战斗营养", &"repair_budget": "营养优先用于修复", &"disconnected": "菌路断开，等待恢复连接",
-	&"invalid_configuration": "连接配置无效", &"core_unavailable": "母核不可用",
+	&"nutrition": "等待创作能量", &"in_transit": "创作能量运输中", &"core_empty": "小画家创作能量不足",
+	&"combat_reserve": "保留战斗创作能量", &"repair_budget": "创作能量优先用于修复", &"disconnected": "花径断开，等待恢复连接",
+	&"invalid_configuration": "连接配置无效", &"core_unavailable": "小画家不可用",
 	&"paused": "连接已暂停", &"settlement_pending": "等待退款结算",
 }
 
@@ -61,7 +61,7 @@ func _draw() -> void:
 				draw_circle(local_end, 5.0, FIRST_COLOR, true, -1.0, true)
 				draw_circle(local_end, 8.0, color, false, 1.0, true)
 				var font: Font = status_label.get_theme_font("font")
-				draw_string(font, local_end + Vector2(10, -8), "中继 %d 营养" % relay_cost,
+				draw_string(font, local_end + Vector2(10, -8), "中继 %d 创作能量" % relay_cost,
 					HORIZONTAL_ALIGNMENT_LEFT, -1.0, 12, FIRST_COLOR)
 	if _has_first:
 		_draw_endpoint(to_local(_first_position), FIRST_COLOR, 13.0)
@@ -139,7 +139,14 @@ func is_preview() -> bool:
 	return _is_preview
 
 
+func refresh_view() -> void:
+	if is_node_ready():
+		_refresh_labels()
+
+
 func _refresh_labels() -> void:
+	for label: Label in [status_label, first_label, second_label]:
+		label.scale = Vector2.ONE / get_global_transform_with_canvas().get_scale().abs()
 	var color: Color = _marker_color()
 	status_label.modulate = color
 	first_label.modulate = FIRST_COLOR
@@ -150,11 +157,11 @@ func _refresh_labels() -> void:
 	var target: Variant = _selection.get("target_node")
 	var first: Variant = _selection.get("first_node")
 	var second: Variant = _selection.get("second_node")
-	first_label.text = "① 已选菌结" + _endpoint_role(first, source, target)
-	second_label.text = "② 第二菌结" + _endpoint_role(second, source, target)
+	first_label.text = "① 已选花朵" + _endpoint_role(first, source, target)
+	second_label.text = "② 第二花朵" + _endpoint_role(second, source, target)
 	if _is_preview:
 		if not bool(_preview.get("valid", false)):
-			status_label.text = String(_preview.get("error", "请选择两个已有菌结"))
+			status_label.text = String(_preview.get("error", "请选择两个已有花朵"))
 		else:
 			status_label.text = "左键确认连接 · " + _direction_text() + "\n" + _cost_text()
 	else:
@@ -185,7 +192,7 @@ func _refresh_labels() -> void:
 
 func _cost_text() -> String:
 	var relays: PackedVector2Array = _route_plan.get("junction_positions", PackedVector2Array())
-	return "延伸 %d + 中继菌结 %d = 总计 %d 营养\n已有两端各 0 · 付费中继 %d · 距离 %.0f" % [
+	return "延伸 %d + 中继花朵 %d = 总计 %d 创作能量\n已有两端各 0 · 付费中继 %d · 距离 %.0f" % [
 		int(_route_plan.get("extension_cost", 0)), int(_route_plan.get("junction_cost", 0)),
 		int(_route_plan.get("total_cost", _snapshot.get("total_cost", 0))), relays.size(),
 		float(_route_plan.get("distance", _snapshot.get("total_distance", 0.0))),
@@ -193,7 +200,7 @@ func _cost_text() -> String:
 
 
 func _direction_text() -> String:
-	return "方向 ② → ①（供养自动反向）" if bool(_selection.get("reversed", false)) \
+	return "方向 ② → ①（补给自动反向）" if bool(_selection.get("reversed", false)) \
 		else "方向 ① → ②"
 
 
@@ -201,7 +208,7 @@ func _endpoint_role(endpoint: Variant, source: Variant, target: Variant) -> Stri
 	if not is_instance_valid(endpoint):
 		return ""
 	if is_instance_valid(source) and endpoint == source:
-		return " · 供养起点（已有 0）"
+		return " · 补给起点（已有 0）"
 	if is_instance_valid(target) and endpoint == target:
 		return " · 接入终点（已有 0）"
 	return ""
@@ -241,13 +248,13 @@ func _draw_direction(start: Vector2, end: Vector2, color: Color) -> void:
 func _position_label(label: Label) -> void:
 	var canvas_transform: Transform2D = get_global_transform_with_canvas()
 	var bounds: Rect2 = _label_screen_bounds()
-	var label_rect: Rect2 = canvas_transform * Rect2(label.position, label.size)
+	var label_rect: Rect2 = canvas_transform * Rect2(label.position, label.size * label.scale)
 	if label_rect.end.x > bounds.end.x:
-		label.position.x -= label.size.x + 36.0
-		label_rect = canvas_transform * Rect2(label.position, label.size)
+		label.position.x -= (label.size.x + 36.0) * label.scale.x
+		label_rect = canvas_transform * Rect2(label.position, label.size * label.scale)
 	var screen_offset: Vector2 = Vector2(
-		clampf(label_rect.position.x, bounds.position.x, bounds.end.x - label_rect.size.x),
-		clampf(label_rect.position.y, bounds.position.y, bounds.end.y - label_rect.size.y)
+		clampf(label_rect.position.x, bounds.position.x, maxf(bounds.position.x, bounds.end.x - label_rect.size.x)),
+		clampf(label_rect.position.y, bounds.position.y, maxf(bounds.position.y, bounds.end.y - label_rect.size.y))
 	) - label_rect.position
 	label.position += canvas_transform.affine_inverse().basis_xform(screen_offset)
 
@@ -255,7 +262,7 @@ func _position_label(label: Label) -> void:
 func _position_status_label() -> void:
 	var canvas_transform: Transform2D = get_global_transform_with_canvas()
 	var bounds: Rect2 = _label_screen_bounds()
-	var label_rect: Rect2 = canvas_transform * Rect2(status_label.position, status_label.size)
+	var label_rect: Rect2 = canvas_transform * Rect2(status_label.position, status_label.size * status_label.scale)
 	var size: Vector2 = label_rect.size
 	var anchor: Vector2 = canvas_transform.origin
 	var gap: float = canvas_transform.basis_xform(Vector2(0, 6)).length()
@@ -267,25 +274,26 @@ func _position_status_label() -> void:
 	var roles: Array[Rect2] = []
 	for label: Label in [first_label, second_label]:
 		if label.visible:
-			roles.append(canvas_transform * Rect2(label.position, label.size))
+			roles.append(canvas_transform * Rect2(label.position, label.size * label.scale))
 	# 紧邻目标的角色标签先排好位置，再为完整报价/等待信息留出间隙。
 	if _has_first and _first_position.is_equal_approx(global_position):
-		var first_rect: Rect2 = canvas_transform * Rect2(first_label.position, first_label.size)
+		var first_rect: Rect2 = canvas_transform * Rect2(first_label.position, first_label.size * first_label.scale)
 		above = minf(above, first_rect.position.y - gap)
 		below = maxf(below, first_rect.end.y + gap)
 		right = maxf(right, first_rect.end.x + gap)
 		left = minf(left, first_rect.position.x - gap - size.x)
 	if _has_second and _second_position.is_equal_approx(global_position):
-		var second_rect: Rect2 = canvas_transform * Rect2(second_label.position, second_label.size)
+		var second_rect: Rect2 = canvas_transform * Rect2(second_label.position, second_label.size * second_label.scale)
 		above = minf(above, second_rect.position.y - gap)
 		below = maxf(below, second_rect.end.y + gap)
 		right = maxf(right, second_rect.end.x + gap)
 		left = minf(left, second_rect.position.x - gap - size.x)
-	var aligned_x: float = clampf(anchor.x + endpoint_gap, bounds.position.x, bounds.end.x - size.x)
-	var centered_y: float = clampf(anchor.y - size.y / 2.0, bounds.position.y, bounds.end.y - size.y)
+	var maximum: Vector2 = (bounds.end - size).max(bounds.position)
+	var aligned_x: float = clampf(anchor.x + endpoint_gap, bounds.position.x, maximum.x)
+	var centered_y: float = clampf(anchor.y - size.y / 2.0, bounds.position.y, maximum.y)
 	var candidates: Array[Vector2] = [
 		Vector2(aligned_x, above - size.y),
-		Vector2(clampf(left, bounds.position.x, bounds.end.x - size.x), above - size.y),
+		Vector2(clampf(left, bounds.position.x, maximum.x), above - size.y),
 		Vector2(right, centered_y), Vector2(left, centered_y),
 	]
 	# 上方不够时沿角色标签两侧寻找空位，最后才考虑目标下方。
@@ -294,7 +302,7 @@ func _position_status_label() -> void:
 		candidates.append(Vector2(role.end.x + gap, centered_y))
 	candidates.append(Vector2(aligned_x, below))
 	var chosen: Vector2 = Vector2(aligned_x,
-		clampf(above - size.y, bounds.position.y, bounds.end.y - size.y))
+		clampf(above - size.y, bounds.position.y, maximum.y))
 	for candidate_position: Vector2 in candidates:
 		var candidate: Rect2 = Rect2(candidate_position, size)
 		if not bounds.encloses(candidate):

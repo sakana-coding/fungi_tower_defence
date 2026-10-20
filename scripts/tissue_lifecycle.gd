@@ -88,7 +88,7 @@ func _on_tissue_destroyed(tissue: Node2D) -> void:
 		tissue.queue_free()
 	tissue_lost.emit(identity, _kind(tissue), position)
 	var hud: ColonyHUD = _level.get("hud") as ColonyHUD
-	hud.show_notice("%s被毁：已投入结构保留；空菌结按 C 重新付费培育" % _kind(tissue))
+	hud.show_notice("%s被毁：已投入结构保留；空花朵按 C 重新付费建造" % GameplayCopy.tissue_name(_kind(tissue)))
 
 
 func _bind_new_stomach(reference: WeakRef) -> void:
@@ -100,7 +100,7 @@ func _bind_new_stomach(reference: WeakRef) -> void:
 	if not is_instance_valid(_level.get("digestive_organ")):
 		_level.set("digestive_organ", stomach)
 	var hud: ColonyHUD = _level.get("hud") as ColonyHUD
-	hud.show_notice("胃囊付费长成：8结构、空输入与产物，已加入统一回收和绿色回流")
+	hud.show_notice("回收碎纸机已建成：消耗8创作能量，初始无回收物和补给；现在可接收回收物并加工")
 
 
 func _kind(tissue: Node) -> StringName:

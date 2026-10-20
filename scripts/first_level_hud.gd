@@ -138,9 +138,9 @@ func is_pointer_over_panel(point: Vector2) -> bool:
 
 func _render_colony() -> void:
 	if _colony_snapshot.is_empty():
-		colony_label.text = "母核 --/-- · 营养 -- · 累计回收 --\n成长：-- · 本局用时 -- · 空格 暂停/恢复"
+		colony_label.text = "小画家 --/-- · 创作能量 -- · 累计回收 --\n创作阶段：-- · 本局用时 -- · 空格 暂停/恢复"
 	else:
-		colony_label.text = "母核 %s/%s · 营养 %d · 累计回收 %d\n成长：%s · 本局用时 %s · 空格 暂停/恢复" % [
+		colony_label.text = "小画家 %s/%s · 创作能量 %d · 累计回收 %d\n创作阶段：%s · 本局用时 %s · 空格 暂停/恢复" % [
 			_health_text(float(_colony_snapshot.get("core_health", 0.0))),
 			_health_text(float(_colony_snapshot.get("core_max_health", 0.0))),
 			int(_colony_snapshot.get("nutrition", 0)),
@@ -213,16 +213,16 @@ func _render_result() -> void:
 		result_right_label.text = ""
 		return
 	var victory: bool = bool(_result_snapshot.get("victory", false))
-	result_title.text = "守住菌落 · 首关胜利" if victory else "本次挑战失败"
+	result_title.text = "守住画中的世界 · 第一章完成" if victory else "小画家倒下了 · 本次挑战失败"
 	result_title.modulate = Color.WHITE
 	result_subtitle.text = "六波均已清空 · 本局数据如下" if victory else "回到初始准备，调整布局后再次挑战"
-	result_left_label.text = "到达波次：%d / %d\n完成波次：%d / %d\n累计回收：%d 营养\n成长阶段：%s" % [
+	result_left_label.text = "到达波次：%d / %d\n完成波次：%d / %d\n累计回收：%d 创作能量\n创作阶段：%s" % [
 		int(_result_snapshot.get("reached_wave", 0)), WAVE_TOTAL,
 		int(_result_snapshot.get("completed_waves", 0)), WAVE_TOTAL,
 		int(_result_snapshot.get("total_recovered", 0)),
 		String(_result_snapshot.get("stage_name", "--")),
 	]
-	result_right_label.text = "成熟器官：%d\n母核生命：%s\n本局用时：%s" % [
+	result_right_label.text = "建成设施：%d\n小画家生命：%s\n本局用时：%s" % [
 		int(_result_snapshot.get("mature_organs", 0)),
 		_health_text(float(_result_snapshot.get("core_health", 0.0))),
 		_time_text(float(_result_snapshot.get("elapsed_seconds", 0.0))),

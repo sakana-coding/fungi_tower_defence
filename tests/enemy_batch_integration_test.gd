@@ -184,7 +184,7 @@ func _capture_archetypes() -> void:
 		enemy.position = Vector2(260 + index * 340, 365)
 		var label: Label = Label.new()
 		label.position = Vector2(160 + index * 340, 400)
-		label.text = "%s\n生命 %d · 护甲 %d\n速度 %.0f · 接触伤害 %d\n攻击间隔 %.1f 秒 · 尸体 %d 营养" % [
+		label.text = "%s\n生命 %d · 护甲 %d\n速度 %.0f · 接触伤害 %d\n攻击间隔 %.1f 秒 · 回收物 %d 创作能量" % [
 			labels[index], enemy.max_health, enemy.armor, enemy.move_speed, enemy.attack_damage,
 			enemy.attack_timer.wait_time, enemy.remains_nutrition]
 		label.add_theme_font_override("font", font)

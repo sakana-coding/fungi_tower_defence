@@ -218,7 +218,7 @@ func _test_ui_intents_and_snapshot_copy() -> void:
 		and not _hud.is_pointer_over_panel(Vector2(620, 380)),
 		"Only visible panel rectangles claim pointer input")
 	_check(_hud.colony_label.text.contains("81.5/100")
-		and _hud.colony_label.text.contains("营养 37")
+		and _hud.colony_label.text.contains("创作能量 37")
 		and _hud.colony_label.text.contains("回收 148")
 		and _hud.colony_label.text.contains("02:05"), "Colony summary renders supplied health, stock, recovered and elapsed values")
 	var flow: Dictionary = _flow_snapshot()
@@ -243,7 +243,7 @@ func _test_ui_intents_and_snapshot_copy() -> void:
 	_check(int(_intents["pause"]) == 2 and int(_intents["restart"]) == 1 and paused,
 		"Pause and restart buttons accept actual pointer clicks while SceneTree is paused")
 	var actual: Dictionary = {"victory": true, "reached_wave": 6, "completed_waves": 6,
-		"total_recovered": 173, "stage_name": "成熟", "mature_organs": 5,
+		"total_recovered": 173, "stage_name": "成形", "mature_organs": 5,
 		"core_health": 63.5, "elapsed_seconds": 245.9,
 		"audit": {"arrival_ids": ["fixture:arrival:1"]}}
 	_hud.show_result(actual)
@@ -254,12 +254,12 @@ func _test_ui_intents_and_snapshot_copy() -> void:
 		"total_recovered": 999, "stage_name": "初生", "elapsed_seconds": 0})
 	_hud.show_flow({"state": &"interrupted", "wave_index": 1, "completed_waves": 0,
 		"wave_total": 6, "can_start": true})
-	_check(_hud.result_panel.visible and _hud.result_title.text.contains("胜利"), "Settlement is shown from the captured victory flag")
+	_check(_hud.result_panel.visible and _hud.result_title.text.contains("第一章完成"), "Settlement is shown from the captured victory flag")
 	_check(_hud.result_left_label.text.contains("到达波次：6 / 6")
 		and _hud.result_left_label.text.contains("完成波次：6 / 6")
-		and _hud.result_left_label.text.contains("173 营养")
-		and _hud.result_left_label.text.contains("成熟"), "Settlement shows actual reached/completed waves, recovered nutrition and stage")
-	_check(_hud.result_right_label.text.contains("器官：5")
+		and _hud.result_left_label.text.contains("173 创作能量")
+		and _hud.result_left_label.text.contains("成形"), "Settlement shows actual reached/completed waves, recovered nutrition and stage")
+	_check(_hud.result_right_label.text.contains("设施：5")
 		and _hud.result_right_label.text.contains("生命：63.5")
 		and _hud.result_right_label.text.contains("04:05"), "Settlement shows actual mature organs, core health and elapsed time")
 	var copied_audit: Dictionary = _hud._result_snapshot.get("audit", {})
@@ -278,7 +278,7 @@ func _test_ui_intents_and_snapshot_copy() -> void:
 	_hud.show_result({"victory": false, "reached_wave": 3, "completed_waves": 2,
 		"total_recovered": 45, "stage_name": "扩张", "mature_organs": 2,
 		"core_health": 0, "elapsed_seconds": 75})
-	_check(_hud.result_title.text == "本次挑战失败"
+	_check(_hud.result_title.text == "小画家倒下了 · 本次挑战失败"
 		and _hud.result_left_label.text.contains("到达波次：3 / 6")
 		and _hud.result_left_label.text.contains("完成波次：2 / 6")
 		and _hud.result_right_label.text.contains("生命：0"), "Defeat settlement replaces the previous result with its own captured values")

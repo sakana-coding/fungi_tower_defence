@@ -22,7 +22,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.82, 0.89, 0.83, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 16
-text = "左键选择 · G 伸展 · B 种芽 · C 培育 · L 连接 · P 暂停/续 · X 取消 · R 重开 · F5 原演示 · F6 断路 · F7 成长 · F8 战斗分工 · F9 地形危机"
+text = "左键选择 · G 延伸 · B 远处建造 · C 建造 · L 连接 · P 暂停/续 · X 取消 · R 重开 · F5 原演示 · F6 断路 · F7 成长 · F8 战斗分工 · F9 地形危机"
 
 [node name="RepairHelp" type="Label" parent="."]
 offset_left = 24.0
@@ -33,7 +33,7 @@ mouse_filter = 2
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.83, 0.82, 0.59, 1)
-text = "F 选组织/菌丝 · J 修复 · K 暂停/继续 · Backspace 取消修复（P/X 仍控制建设）"
+text = "F 选对象/花径 · J 修复 · K 暂停/继续 · Backspace 取消修复（P/X 仍控制建设）"
 
 [node name="StageLabel" type="Label" parent="."]
 offset_left = 24.0
@@ -44,7 +44,7 @@ mouse_filter = 1
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 17
 theme_override_colors/font_color = Color(0.70, 0.91, 0.76, 1)
-text = "成长：初生 · 累计回收 0 · 下一门槛 60（还差 60）"
+text = "创作阶段：起笔 · 累计回收 0 · 下一门槛 60（还差 60）"
 clip_text = true
 
 [node name="RepairPanel" type="Control" parent="."]
@@ -72,7 +72,7 @@ mouse_filter = 2
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.87, 0.86, 0.69, 1)
-text = "修复：按 F 选择一条受损菌丝"
+text = "修复：按 F 选择一条受损花径"
 clip_text = true
 
 [node name="Buttons" type="HBoxContainer" parent="RepairPanel"]
@@ -115,7 +115,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.96, 0.8, 0.4, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 20
-text = "未选择菌结"
+text = "未选择花朵"
 
 [node name="StockLabel" type="Label" parent="."]
 offset_left = 24.0
@@ -126,7 +126,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.96, 0.84, 0.47, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "母核营养：72 · 器官库存：4/6 · 在途供养：0"
+text = "小画家创作能量：72 · 设施库存：4/6 · 在途补给：0"
 clip_text = true
 
 [node name="TransportLabel" type="Label" parent="."]
@@ -138,7 +138,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.73, 0.83, 0.76, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "营养包：在途 0 · 已到达 0 · 中止 0"
+text = "补给包：在途 0 · 已到达 0 · 中止 0"
 clip_text = true
 
 [node name="NoticeLabel" type="Label" parent="."]
@@ -150,7 +150,7 @@ mouse_filter = 1
 theme_override_colors/font_color = Color(0.65, 0.73, 0.67, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "按 G 向右侧域外尸体伸展；绿色营养包抵达母核后才计入累计回收"
+text = "按 G 向右侧域外回收物伸展；补给包抵达小画家后才计入累计回收"
 clip_text = true
 
 [node name="BattleLabel" type="Label" parent="."]
@@ -175,7 +175,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.73, 0.83, 0.76, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "攻击器官：2 · 总库存：8/12 · 在途供养：0"
+text = "文具炮台：2 · 总库存：8/12 · 在途补给：0"
 clip_text = true
 
 [node name="RecoveryLabel" type="Label" parent="."]
@@ -187,7 +187,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.79, 0.7, 0.83, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 15
-text = "尸体：在途 0 · 已送达 0\n胃囊：排队 0\n输出：0/2 · 营养 0/20\n绿色回流：在途 0\n累计回收：+0"
+text = "回收物：在途 0 · 已送达 0\n回收碎纸机：排队 0\n输出：0/2 · 创作能量 0/20\n补给回运：在途 0\n累计回收：+0"
 
 [node name="FieldLegend" type="Label" parent="."]
 offset_left = 24.0
@@ -198,7 +198,7 @@ mouse_filter = 2
 theme_override_colors/font_color = Color(0.66, 0.83, 0.77, 1)
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "青绿：菌域 · 琥珀：射程 · 黄：供养 · 紫：尸体 · 绿：回流"
+text = "浅绿覆盖：花海 · 射程圈：炮台射程\n回收物送往碎纸机；加工补给送回小画家；建设与战斗补给送往设施"
 
 [node name="CultivationReasonLabel" type="Label" parent="."]
 offset_left = 632.0
@@ -209,7 +209,7 @@ mouse_filter = 1
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.82, 0.83, 0.66, 1)
-text = "选择空菌结培育：12 营养 = 8 结构 + 4 库存"
+text = "选择空花朵建造：12 创作能量 = 8 结构 + 4 库存"
 clip_text = true
 
 [node name="GrowthButtons" type="HBoxContainer" parent="."]
@@ -225,16 +225,16 @@ size_flags_horizontal = 3
 focus_mode = 0
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "G 伸展"
+text = "G 延伸"
 
 [node name="RemoteCultivationButton" type="Button" parent="GrowthButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
-tooltip_text = "在远处种攻击芽：先伸展网络，再自动培育。总费为网络规划费 + 12。"
+tooltip_text = "在远处建造炮台：先伸展网络，再自动建造。总费为网络规划费 + 12。"
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "B 种攻击芽"
+text = "B 建造炮台"
 
 [node name="CultivationButton" type="Button" parent="GrowthButtons"]
 layout_mode = 2
@@ -243,16 +243,16 @@ focus_mode = 0
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
 disabled = true
-text = "C 培育"
+text = "C 建造"
 
 [node name="ConnectionButton" type="Button" parent="GrowthButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
-tooltip_text = "依次选择两个已有菌结建立连接；两端免菌结费，可形成环路。"
+tooltip_text = "依次选择两个已有花朵建立连接；两端免花朵费，可形成环路。"
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
-text = "L 连接菌结"
+text = "L 连接花朵"
 
 [node name="PauseButton" type="Button" parent="GrowthButtons"]
 layout_mode = 2
@@ -281,7 +281,7 @@ mouse_filter = 2
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.76, 0.9, 0.78, 1)
-text = "按 G 指定伸展目标"
+text = "按 G 指定延伸目标"
 
 [node name="GrowthSupplyLabel" type="Label" parent="."]
 offset_left = 632.0
@@ -303,7 +303,7 @@ mouse_filter = 1
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.80, 0.85, 0.92, 1)
-text = "通行占用 0/8 · 节点等待 0 包\n菌丝空闲 · 每条默认容量 2（双向共用）\n等待：黄 0 · 绿 0 · 紫 0（紫包占 2）"
+text = "通行占用 0/8 · 节点等待 0 包\n花径空闲 · 每条默认容量 2（双向共用）\n等待：补给 0 · 回运 0 · 回收物 0（回收包占 2）"
 clip_text = true
 
 [node name="ProgressionHintPanel" type="Control" parent="."]
@@ -397,8 +397,8 @@ offset_right = 91.0
 offset_bottom = 49.0
 focus_mode = 0
 toggle_mode = true
-text = "普通 ×6"
-tooltip_text = "普通敌人左右轮换；一次有限验证批次"
+text = "涂鸦羊 ×6"
+tooltip_text = "涂鸦羊左右轮换；一次有限验证批次"
 
 [node name="SwarmButton" type="Button" parent="CombatDemoPanel"]
 offset_left = 97.0
@@ -407,8 +407,8 @@ offset_right = 181.0
 offset_bottom = 49.0
 focus_mode = 0
 toggle_mode = true
-text = "小型·右"
-tooltip_text = "右翼进入3只小型敌人；推荐右翼散射"
+text = "小涂鸦羊·右"
+tooltip_text = "右翼进入3只小涂鸦羊；推荐右翼喷漆炮台"
 
 [node name="ArmoredButton" type="Button" parent="CombatDemoPanel"]
 offset_left = 187.0
@@ -417,8 +417,8 @@ offset_right = 271.0
 offset_bottom = 49.0
 focus_mode = 0
 toggle_mode = true
-text = "重甲·左"
-tooltip_text = "左翼进入1只重甲敌人；推荐左翼破甲"
+text = "重甲花羊·左"
+tooltip_text = "左翼进入1只重甲花羊；推荐左翼橡皮炮台"
 
 [node name="MixedButton" type="Button" parent="CombatDemoPanel"]
 offset_left = 277.0
@@ -428,7 +428,7 @@ offset_bottom = 49.0
 focus_mode = 0
 toggle_mode = true
 text = "混合 ×6"
-tooltip_text = "2普通左右轮换，3小型从右，1重甲从左"
+tooltip_text = "2涂鸦羊左右轮换，3小涂鸦羊从右，1重甲花羊从左"
 
 [node name="StartButton" type="Button" parent="CombatDemoPanel"]
 offset_left = 8.0
