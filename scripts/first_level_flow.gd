@@ -16,7 +16,7 @@ const WAVE_TOTAL: int = 6
 	preload("res://resources/first_level_waves/wave_05.tres"),
 	preload("res://resources/first_level_waves/wave_06.tres"),
 ]
-@export var preparation_seconds: float = 20.0
+@export var preparation_seconds: float = 12.0
 
 var _spawner: EnemySpawner
 var _bindings: Array[Dictionary] = []

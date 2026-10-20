@@ -6,8 +6,8 @@ const CORE_SCENE: PackedScene = preload("res://scenes/colony/mother_core.tscn")
 const SPAWNER_SCENE: PackedScene = preload("res://scenes/systems/enemy_spawner.tscn")
 const NORMAL_SCENE: PackedScene = preload("res://scenes/enemies/basic_enemy.tscn")
 const EXPECTED: Array[Array] = [
-	[8, 0, 0, 0], [7, 3, 0, 0], [7, 6, 0, 0],
-	[8, 6, 2, 0], [9, 6, 2, 1], [10, 6, 4, 1],
+	[6, 0, 0, 0], [4, 3, 0, 0], [4, 4, 0, 0],
+	[3, 4, 2, 0], [4, 4, 1, 1], [5, 4, 3, 1],
 ]
 const SNAPSHOT_KEYS: Array[String] = [
 	"state", "wave_index", "completed_waves", "wave_total", "planned", "spawned",
@@ -44,8 +44,8 @@ func _run() -> void:
 
 func _test_resources() -> void:
 	var flow := FirstLevelFlow.new()
-	_check(flow.waves.size() == 6 and flow.preparation_seconds == 20.0,
-		"Formal flow exports six waves and five 20-second preparation intervals")
+	_check(flow.waves.size() == 6 and flow.preparation_seconds == 12.0,
+		"Formal flow exports six waves and five 12-second preparation intervals")
 	_check(flow.process_mode == Node.PROCESS_MODE_PAUSABLE, "Flow countdown uses pausable processing")
 	var total: int = 0
 	var counts: Array[Array] = []
@@ -81,8 +81,8 @@ func _test_resources() -> void:
 			total += amount
 		schedules.append({"wave": index + 1, "spawn_span_seconds": span - last_gap,
 			"anchors": points.keys()})
-	_check(total == 86 and flow.get_total_planned_count() == total,
-		"Formal six waves plan 86 individuals and expose the configured victory target")
+	_check(total == 53 and flow.get_total_planned_count() == total,
+		"Formal six waves plan 53 individuals and expose the configured victory target")
 	evidence["resource_counts"] = counts
 	evidence["initial_schedules"] = schedules
 	flow.free()
@@ -211,9 +211,9 @@ func _test_manual_pause_and_timer() -> void:
 	_check(flow.get_snapshot()["total_defeated"] == 1 and flow.get_snapshot()["state"] == "fighting",
 		"Cumulative normal kills advance during combat before the final death")
 	_kill_active(fixture)
-	_check(flow.get_snapshot()["state"] == "preparation" and flow.get_snapshot()["preparation_remaining"] == 20.0
-		and flow.get_snapshot()["can_start"], "Normal clear begins a 20-second preparation with early start")
-	flow._process(19.0)
+	_check(flow.get_snapshot()["state"] == "preparation" and flow.get_snapshot()["preparation_remaining"] == 12.0
+		and flow.get_snapshot()["can_start"], "Normal clear begins a 12-second preparation with early start")
+	flow._process(11.0)
 	var remaining: float = flow.get_snapshot()["preparation_remaining"]
 	paused = true
 	flow._process(100.0)
@@ -252,16 +252,16 @@ func _test_six_waves_and_candidate() -> void:
 		_check(snapshot["active"] == 0 and snapshot["unspawned"] == 0
 			and snapshot["defeated"] == snapshot["planned"], "Every accepted clear has all planned normal deaths")
 		if index < 5:
-			_check(snapshot["state"] == "preparation" and snapshot["preparation_remaining"] == 20.0
+			_check(snapshot["state"] == "preparation" and snapshot["preparation_remaining"] == 12.0
 				and fixture["candidates"].is_empty(), "First five clears prepare without a victory candidate")
 	var final := flow.get_snapshot()
-	_check(final["state"] == "victory_candidate" and final["total_defeated"] == 86
+	_check(final["state"] == "victory_candidate" and final["total_defeated"] == 53
 		and fixture["starts"].size() == 6 and fixture["finishes"].size() == 6,
-		"Six true clears produce exactly 86 normal defeats and six completed batches")
+		"Six true clears produce exactly 53 normal defeats and six completed batches")
 	_check(fixture["candidates"].size() == 1, "Sixth clear emits exactly one candidate for the owning level")
 	var candidate: Dictionary = fixture["candidates"][0]
 	_check(candidate["completed_waves"] == 6 and candidate["wave_index"] == 6
-		and candidate["total_defeated"] == 86 and candidate["state"] == "completed"
+		and candidate["total_defeated"] == 53 and candidate["state"] == "completed"
 		and candidate["batch_id"] == final["batch_id"] and candidate["generation"] == final["batch_generation"]
 		and candidate["removed"] == 0 and candidate["active"] == 0 and candidate["unspawned"] == 0,
 		"Candidate supplies matching batch identity/generation and complete normal-death evidence")
@@ -408,7 +408,7 @@ func _test_reentrant_start_and_completion() -> void:
 			clicked[0] = true
 			flow._process(100.0)
 			clicks.append(flow.begin_next_wave()))
-	flow._process(20.0)
+	flow._process(12.0)
 	_check(fixture["starts"].size() == 2 and clicked[0] and not clicks.has(true),
 		"Timer expiry plus synchronous repeated clicks starts only one next batch")
 	await _destroy(fixture)

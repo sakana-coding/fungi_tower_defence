@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Entry_01"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_normal")
-group_count = 8
+group_count = 6
 group_interval = 5.0
 spawn_point_index = 0
 

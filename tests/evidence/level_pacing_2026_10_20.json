@@ -1,0 +1,604 @@
+{
+  "date": "2026-10-20",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "scope": "三关敌人数量、节奏与目标推进距离；保留现有未提交工作。",
+  "configuration": {
+    "first_level": {
+      "wave_totals_before": [
+        8,
+        10,
+        13,
+        16,
+        18,
+        21
+      ],
+      "wave_totals_after": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        13
+      ],
+      "total_before": 86,
+      "total_after": 53,
+      "preparation_seconds_before": 20,
+      "preparation_seconds_after": 12,
+      "spawn_span_seconds_after": [
+        25,
+        19.7,
+        23.5,
+        26.9,
+        29.9,
+        40.5
+      ]
+    },
+    "second_level": {
+      "facility_health_before": [
+        120,
+        156,
+        192
+      ],
+      "facility_health_after": [
+        84,
+        108,
+        132
+      ],
+      "positions_before": [
+        [
+          260,
+          300
+        ],
+        [
+          600,
+          205
+        ],
+        [
+          1000,
+          270
+        ]
+      ],
+      "positions_after": [
+        [
+          310,
+          400
+        ],
+        [
+          600,
+          275
+        ],
+        [
+          920,
+          440
+        ]
+      ],
+      "preparation_seconds_before": 45,
+      "preparation_seconds_after": 30,
+      "cycle_seconds_before": 35,
+      "cycle_seconds_after": 42,
+      "swarm_size_before": 2,
+      "swarm_size_after": 1,
+      "max_alive_per_source_before": 10,
+      "max_alive_per_source_after": 6,
+      "source_stagger_seconds": 6,
+      "destruction_grace_seconds": 45
+    },
+    "third_level": {
+      "positions_before": [
+        [
+          200,
+          250
+        ],
+        [
+          1010,
+          250
+        ],
+        [
+          1020,
+          740
+        ]
+      ],
+      "positions_after": [
+        [
+          280,
+          325
+        ],
+        [
+          940,
+          335
+        ],
+        [
+          950,
+          710
+        ]
+      ],
+      "route_steps_before": [
+        2,
+        3,
+        3
+      ],
+      "route_steps_after": [
+        1,
+        2,
+        2
+      ],
+      "cycle_seconds_before": 30,
+      "cycle_seconds_after": 40,
+      "swarm_size_before": 2,
+      "swarm_size_after": 1,
+      "max_alive_per_source_before": 12,
+      "max_alive_per_source_after": 6,
+      "collection_seconds": 5
+    }
+  },
+  "functional_checks": [
+    {
+      "test": "stage11_flow_test",
+      "checks": 5561,
+      "exit_code": 0,
+      "failures": [],
+      "diagnostics": []
+    },
+    {
+      "test": "stage11_integration_test",
+      "checks": 100,
+      "exit_code": 0,
+      "failures": [],
+      "diagnostics": [
+        "WARNING: 6 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 3 resources still in use at exit (run with --verbose for details)."
+      ]
+    },
+    {
+      "test": "stage11_pause_ui_test",
+      "checks": 55,
+      "exit_code": 0,
+      "failures": [],
+      "diagnostics": []
+    },
+    {
+      "test": "second_level_test",
+      "checks": 71,
+      "exit_code": 0,
+      "failures": [],
+      "diagnostics": [
+        "WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+      ]
+    },
+    {
+      "test": "third_level_test",
+      "checks": 105,
+      "exit_code": 0,
+      "failures": [],
+      "diagnostics": [
+        "WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+      ]
+    }
+  ],
+  "functional_checks_total": 5892,
+  "playthrough_options": "--headless --disable-render-loop --fixed-fps 20；正常60Hz物理、真实付费建设/供养/修复/射击，不注入伤害、养分或免费成长。",
+  "before_playthroughs": {
+    "first_level_playthrough_test": {
+      "exit_code": 0,
+      "failures": [],
+      "routes": [
+        {
+          "order": null,
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 425.442,
+          "spawned": 86,
+          "core_health": 240,
+          "ledger_balanced": true
+        }
+      ],
+      "diagnostics": [
+        "WARNING: 18 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 9 resources still in use at exit (run with --verbose for details)."
+      ]
+    },
+    "second_level_playthrough_test": {
+      "exit_code": 0,
+      "failures": [],
+      "routes": [
+        {
+          "order": [
+            "left",
+            "center",
+            "right"
+          ],
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 214.992,
+          "spawned": 8,
+          "core_health": 240,
+          "ledger_balanced": true
+        },
+        {
+          "order": [
+            "right",
+            "center",
+            "left"
+          ],
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 242.95,
+          "spawned": 16,
+          "core_health": 240,
+          "ledger_balanced": true
+        }
+      ],
+      "diagnostics": [
+        "WARNING: 14 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 7 resources still in use at exit (run with --verbose for details)."
+      ]
+    },
+    "third_level_playthrough_test": {
+      "exit_code": 1,
+      "failures": [
+        "route persistence build not ready at (870.0, 390.0)",
+        "route [&\"own_choice\", &\"persistence\", &\"first_creation\"] parallel=true did not win"
+      ],
+      "routes": [
+        {
+          "order": [
+            "first_creation",
+            "persistence",
+            "own_choice"
+          ],
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 174.692,
+          "spawned": 32,
+          "core_health": 240,
+          "ledger_balanced": true
+        },
+        {
+          "order": [
+            "own_choice",
+            "persistence",
+            "first_creation"
+          ],
+          "parallel": true,
+          "victory": false,
+          "elapsed_seconds": null,
+          "spawned": 18,
+          "core_health": null,
+          "ledger_balanced": null
+        }
+      ],
+      "diagnostics": [
+        "WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+      ]
+    }
+  },
+  "after_playthroughs": {
+    "first_level_playthrough_test": {
+      "exit_code": 0,
+      "failures": [],
+      "routes": [
+        {
+          "order": null,
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 273.142,
+          "spawned": 53,
+          "core_health": 240,
+          "ledger_balanced": true
+        }
+      ],
+      "diagnostics": []
+    },
+    "second_level_playthrough_test": {
+      "exit_code": 0,
+      "failures": [],
+      "routes": [
+        {
+          "order": [
+            "left",
+            "center",
+            "right"
+          ],
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 127.692,
+          "spawned": 2,
+          "core_health": 240,
+          "ledger_balanced": true
+        },
+        {
+          "order": [
+            "right",
+            "center",
+            "left"
+          ],
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 164.6,
+          "spawned": 5,
+          "core_health": 240,
+          "ledger_balanced": true
+        }
+      ],
+      "diagnostics": [
+        "WARNING: 18 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 9 resources still in use at exit (run with --verbose for details)."
+      ]
+    },
+    "third_level_playthrough_test": {
+      "exit_code": 0,
+      "failures": [],
+      "routes": [
+        {
+          "order": [
+            "first_creation",
+            "persistence",
+            "own_choice"
+          ],
+          "parallel": false,
+          "victory": true,
+          "elapsed_seconds": 100.642,
+          "spawned": 13,
+          "core_health": 240,
+          "ledger_balanced": true
+        },
+        {
+          "order": [
+            "own_choice",
+            "persistence",
+            "first_creation"
+          ],
+          "parallel": true,
+          "victory": true,
+          "elapsed_seconds": 106.0,
+          "spawned": 8,
+          "core_health": 240,
+          "ledger_balanced": true
+        }
+      ],
+      "diagnostics": [
+        "WARNING: 10 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+        "ERROR: 5 resources still in use at exit (run with --verbose for details)."
+      ]
+    }
+  },
+  "visual_review": {
+    "scenes": [
+      "second_level",
+      "third_level"
+    ],
+    "renderer": "OpenGL Compatibility / Apple M4",
+    "size": [
+      1200,
+      920
+    ],
+    "purpose": "核对移近后的目标、资源与文字标注；按实际截图调整局部标签位置。",
+    "diagnostics": [],
+    "captures": [
+      "PACING_MAP_CAPTURE second 0 (1200, 920)",
+      "PACING_MAP_CAPTURE third 0 (1200, 920)"
+    ]
+  },
+  "limitations": [
+    "自动路线耗时不代表人工操作速度，未进行完整人工通关或重新导出发布包。",
+    "旧版第三关双线路线的前沿完成检查超时，未获得成功耗时，故不用于前后耗时对比。",
+    "部分模拟和终局夹具退出仍报告 ObjectDB / resources still in use 清理诊断；旧版对照亦有同类诊断。断言通过不等于无引擎警告。"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "before_sha256": "da937d69f2cb265c3f24e32d082e529cc31c737657ae18c9544648590dad04f6",
+      "after_sha256": "611bf40bd4967dfeb50ef1d86e8cf8281b5c7509ed4ec2c9da463c421251b2b9"
+    },
+    {
+      "path": "docs/第三关接入说明.md",
+      "before_sha256": "8ea14f4db878b8bb828bc8e2154ec665299093fbfac8350c6ae5e219552a9dfc",
+      "after_sha256": "d86a2839e38e9f7bf0e06cce6d3f8ba20b4855427a9e6c415f7be2ee58c853e7"
+    },
+    {
+      "path": "docs/第二关接入说明.md",
+      "before_sha256": "edadcf1a3295c9f1ac6a951dcef443df0ddc35e402425fc766cd650c77d2afca",
+      "after_sha256": "5fcebacc8e0545cb09da59f4577743645c70611d9268610ad86458d84a5e589e"
+    },
+    {
+      "path": "resources/ai/second_level_production.tres",
+      "before_sha256": "0f274dfc5f0b8617930aec2ca962a84ffb57e95c6e662288e23f26dfef50132a",
+      "after_sha256": "d025353a4ff131752522a617167892333d93924fd1864656269b9927e57c62fc"
+    },
+    {
+      "path": "resources/exploration/third_level_production.tres",
+      "before_sha256": "b4102b79da5ddc4f319e4c0472040ca1fdfd60a73e6228007f852f98a44973a4",
+      "after_sha256": "49657a0357b09c65b49e017d622fabc5780b9fd7dd73581f69a4edc219a0ee92"
+    },
+    {
+      "path": "resources/first_level_waves/wave_01.tres",
+      "before_sha256": "2b12b969ca5ff3ada6171948b801c65dba0691fe7d508f97065c9858b39466a3",
+      "after_sha256": "121df2d4c167708fcf7fb3bdc4517d2521d0f508c9c54d00333c82f73500025a"
+    },
+    {
+      "path": "resources/first_level_waves/wave_02.tres",
+      "before_sha256": "8659da4931dfc7711b2ed70a0872e2b1d8001437a624eff9bd6ce048f90a48f1",
+      "after_sha256": "c8418f14d6ec2b61d76e9eca6c4d58b185915151acda36e32e41511b6b576ae2"
+    },
+    {
+      "path": "resources/first_level_waves/wave_03.tres",
+      "before_sha256": "f3755fc0d2c7b390d2617f6abdf5ec118be24d061ce1f6bbc0d859048eee1b09",
+      "after_sha256": "7d186d2e0a800c27df74e3ab58984f4ad187f20304d171fc318f45f5cb69513b"
+    },
+    {
+      "path": "resources/first_level_waves/wave_04.tres",
+      "before_sha256": "3fc200d665a9619d55ed7d38c79a0e2e0b731c06173e2a2e71cab18ae3f9486e",
+      "after_sha256": "0b78d509818857c0a7d4c24e33c2f9b4f823ff55d6e3e5a288f2640d3c455ce6"
+    },
+    {
+      "path": "resources/first_level_waves/wave_05.tres",
+      "before_sha256": "e73ec7f42f82a937d3647af1320a08117781f967bc946b50503accd6e52de396",
+      "after_sha256": "d371dddbba2dd0adf18b1690be97b6a465fe20e8b4c2a56f7fe5b83eed678eb4"
+    },
+    {
+      "path": "resources/first_level_waves/wave_06.tres",
+      "before_sha256": "2eb22e06384a652b61a2b9f5c725a795e78d7317aa7d66f2d237b4a99e2310a6",
+      "after_sha256": "8db6ec556683657dd8c586a47f12e73a127a79cdbb189c80689b344e705bdd37"
+    },
+    {
+      "path": "scenes/levels/second_level.tscn",
+      "before_sha256": "b59b54a21dc9aba5c36b7d6d81499a779bd976a73b89213818f482d242ec7f50",
+      "after_sha256": "8532f8426c303b0d47d254cc7084fd5ccf551957d15f2dbfdaeeefce1648bba6"
+    },
+    {
+      "path": "scenes/levels/third_level.tscn",
+      "before_sha256": "8b2eb93d8f5404f39ad5c1b219d09a6a22c1323fc31ceffe56f4f7f32911723c",
+      "after_sha256": "5ca389692bf0b4eef2c87dd647f297f042c99bb8f90df90bcaf0c1e63cf8dddb"
+    },
+    {
+      "path": "scripts/first_level_flow.gd",
+      "before_sha256": "4758984809ee729decb642ae9e99ed70a16fd7a6531a30ff254bdcb9ae0c5afa",
+      "after_sha256": "f4fac27d664fe1008c541bab2dd72ea7ba6377edc12e8c9a53c5ef65b1261841"
+    },
+    {
+      "path": "scripts/memory_fragment.gd",
+      "before_sha256": "eb6cf47b806829889c4b4a52c41dc9b53e38541630dafa93f1ddf73c5066f311",
+      "after_sha256": "80d7fc6eca29b3ee353c1451b000479e6440c168bd705beb104fb0dd27d2acdf"
+    },
+    {
+      "path": "tests/second_level_playthrough_test.gd",
+      "before_sha256": "a12784bc4219c54e0f2497d850102876a0f3081bc3d899409828bd28834d9de8",
+      "after_sha256": "e64eea43bfc02039656c33b7b9b8a640443cf00394dab7ca4dad9e6cb912c28f"
+    },
+    {
+      "path": "tests/second_level_test.gd",
+      "before_sha256": "d2b8cb31eb6bd4a537b4736b8e03e6603ce5680a7a1bbbeda1ba0815ea524dc0",
+      "after_sha256": "d28a1df1ca2a61d1fcd6db1651b08ae1015860af6c53c6440cba5ec2af0ca5cd"
+    },
+    {
+      "path": "tests/stage11_flow_test.gd",
+      "before_sha256": "b3d6ad25dd7111aa68153c2e410d2138d01ad43ac709f6b9b94afc5264f0e4e4",
+      "after_sha256": "f9d64893fb3c3c91778232371fd0b81d138a41c663d3520c032c5c33186e19c9"
+    },
+    {
+      "path": "tests/stage11_integration_test.gd",
+      "before_sha256": "66c7e2e02a358d58bc6cd61f978ce103bf115be4cb87fa1a5a5f95d865c2a84f",
+      "after_sha256": "29a43fa535800c4e8e5644dec4639f369065d73be055e963cbfc42d568a60e47"
+    },
+    {
+      "path": "tests/third_level_playthrough_test.gd",
+      "before_sha256": "03b494a91ae53814c627def78a96e6db12244a70252860566081dbf10213fc59",
+      "after_sha256": "6aad0b0e0b8b65b21fff4a9c232aa20117e6aeeb8f7dc83b9042d2149b60b976"
+    },
+    {
+      "path": "tests/third_level_test.gd",
+      "before_sha256": "26c3525634de795214e395fac0303690e39f79437c94985dd3a771bde9b411a8",
+      "after_sha256": "200eb4bf355ab288a4f5073e0b11780db9755ba021ff64fb70015a4a1ba93523"
+    }
+  ],
+  "local_validation_context": "此前本地工作区（88e1c77 及未提交改动）上的前后对照；files 字段记录该工作区内容哈希。PR 分支基于 168118f，验证另记于 pr_validation。",
+  "pr_validation": {
+    "upstream_base": "168118f161df7ff5f1168f1d8e2fa4c1c1eb4c88",
+    "functional_checks": [
+      {
+        "test": "stage11_flow_test",
+        "checks": 5561,
+        "exit_code": 0,
+        "failures": [],
+        "diagnostics": []
+      },
+      {
+        "test": "stage11_integration_test",
+        "checks": 100,
+        "exit_code": 0,
+        "failures": [],
+        "diagnostics": [
+          "WARNING: 6 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+          "ERROR: 3 resources still in use at exit (run with --verbose for details)."
+        ]
+      },
+      {
+        "test": "stage11_pause_ui_test",
+        "checks": 55,
+        "exit_code": 0,
+        "failures": [],
+        "diagnostics": []
+      },
+      {
+        "test": "second_level_test",
+        "checks": 71,
+        "exit_code": 0,
+        "failures": [],
+        "diagnostics": [
+          "WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+          "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+        ]
+      },
+      {
+        "test": "third_level_test",
+        "checks": 105,
+        "exit_code": 0,
+        "failures": [],
+        "diagnostics": [
+          "WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+          "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+        ]
+      },
+      {
+        "test": "colony_camera_test",
+        "checks": 217,
+        "exit_code": 0,
+        "failures": [],
+        "diagnostics": [
+          "WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+          "ERROR: 1 resources still in use at exit (run with --verbose for details)."
+        ]
+      },
+      {
+        "test": "ui_display_adaptation_test",
+        "checks": 387,
+        "exit_code": 0,
+        "failures": [],
+        "diagnostics": [
+          "WARNING: 4 ObjectDB instances were leaked at exit (run with `--verbose` for details).",
+          "ERROR: 2 resources still in use at exit (run with --verbose for details)."
+        ]
+      }
+    ],
+    "functional_checks_total": 6496,
+    "completed_playthroughs": [
+      {
+        "test": "first_level_playthrough_test",
+        "order": null,
+        "victory": true,
+        "elapsed_seconds": 273.142,
+        "spawned": 53,
+        "ledger_balanced": true
+      },
+      {
+        "test": "second_level_playthrough_test",
+        "order": [
+          "left",
+          "center",
+          "right"
+        ],
+        "victory": true,
+        "elapsed_seconds": 127.692,
+        "spawned": 2,
+        "ledger_balanced": true
+      },
+      {
+        "test": "second_level_playthrough_test",
+        "order": [
+          "right",
+          "center",
+          "left"
+        ],
+        "victory": true,
+        "elapsed_seconds": 164.6,
+        "spawned": 5,
+        "ledger_balanced": true
+      }
+    ],
+    "third_level_playthrough": "本次 PR 分支重跑已停止，未完成；此前本地版本的两条成功路线保留在 after_playthroughs。",
+    "import_diagnostics": []
+  }
+}

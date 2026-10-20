@@ -10,14 +10,14 @@
 [sub_resource type="Resource" id="Entry_01"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_normal")
-group_count = 3
+group_count = 2
 group_interval = 4.0
 spawn_point_index = 0
 
 [sub_resource type="Resource" id="Entry_02"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_swarm")
-group_size = 3
+group_size = 2
 group_interval = 4.0
 member_interval = 0.25
 member_spacing = 22.0
@@ -32,14 +32,14 @@ spawn_point_index = 0
 [sub_resource type="Resource" id="Entry_04"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_normal")
-group_count = 2
+group_count = 1
 group_interval = 4.0
 spawn_point_index = 0
 
 [sub_resource type="Resource" id="Entry_05"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_swarm")
-group_size = 3
+group_size = 2
 group_interval = 4.0
 member_interval = 0.25
 member_spacing = 22.0
@@ -48,14 +48,14 @@ spawn_point_index = 1
 [sub_resource type="Resource" id="Entry_06"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_armored")
-group_count = 2
+group_count = 1
 group_interval = 4.0
 spawn_point_index = 0
 
 [sub_resource type="Resource" id="Entry_07"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_normal")
-group_count = 3
+group_count = 1
 group_interval = 4.0
 spawn_point_index = 0
 
@@ -68,7 +68,7 @@ spawn_point_index = 1
 [sub_resource type="Resource" id="Entry_09"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_normal")
-group_count = 2
+group_count = 1
 group_interval = 4.0
 spawn_point_index = 0
 
@@ -82,4 +82,4 @@ spawn_point_index = 1
 script = ExtResource("1_wave")
 entries = Array[ExtResource("2_entry")]([SubResource("Entry_01"), SubResource("Entry_02"), SubResource("Entry_03"), SubResource("Entry_04"), SubResource("Entry_05"), SubResource("Entry_06"), SubResource("Entry_07"), SubResource("Entry_08"), SubResource("Entry_09"), SubResource("Entry_10")])
 title = "第六波 · 双路合围"
-direction_text = "两处入口交错来袭，四只重甲花羊掩护六只小涂鸦羊，啃食花羊从侧面绕入。"
+direction_text = "两处入口交错来袭，三只重甲花羊掩护四只小涂鸦羊，啃食花羊从侧面绕入。"

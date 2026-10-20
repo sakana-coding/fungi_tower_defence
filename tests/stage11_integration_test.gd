@@ -57,7 +57,7 @@ func _run() -> void:
 	_check(_is_clean(), "restart during battle clears enemies and counters")
 	await _finish_fixture(false, false)
 	_check(bool(level.get_result_snapshot().get("victory", false)), "six real batch identities create one victory")
-	_check(level.get_result_snapshot().get("total_defeated") == 86, "victory reports all 86 configured enemies")
+	_check(level.get_result_snapshot().get("total_defeated") == 53, "victory reports all 53 configured enemies")
 	_check(level.get_result_snapshot().get("completed_waves") == 6, "six waves completed")
 	_check(level.get_result_snapshot().get("resources", {}).get("balanced", false), "end snapshot balanced before cleanup")
 	var result: Dictionary = level.get_result_snapshot()

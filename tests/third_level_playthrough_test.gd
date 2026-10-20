@@ -3,9 +3,9 @@ extends SceneTree
 
 const LEVEL: PackedScene = preload("res://scenes/levels/third_level.tscn")
 const ROUTES: Dictionary = {
-	&"first_creation": [Vector2(350, 395), Vector2(270, 315)],
-	&"persistence": [Vector2(765, 460), Vector2(870, 390), Vector2(930, 310)],
-	&"own_choice": [Vector2(790, 660), Vector2(875, 670), Vector2(955, 695)],
+	&"first_creation": [Vector2(350, 395)],
+	&"persistence": [Vector2(765, 460), Vector2(870, 390)],
+	&"own_choice": [Vector2(790, 660), Vector2(875, 670)],
 }
 
 class QuietThirdLevel:
@@ -121,7 +121,8 @@ func _build_route(id: StringName, already_submitted: bool) -> bool:
 		var start: float = _level.elapsed_seconds
 		var ready: bool = false
 		var retries: int = 0
-		while _level.elapsed_seconds - start < 70 and _level.get_result_snapshot().is_empty():
+		while _level.elapsed_seconds - start < 70 and _level.get_result_snapshot().is_empty() \
+				and not _level.fragment_collection.collected_ids.has(id):
 			for weapon: SporeWeapon in _level.get_weapons():
 				if weapon.get_parent().global_position.distance_to(point) < 2:
 					ready = true

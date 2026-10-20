@@ -53,9 +53,20 @@ func _play(order: Array[StringName]) -> void:
 			Vector2(820, 535) if id == &"right" else (Vector2(445, 355) if order[0] == &"left" else Vector2(790, 385)))
 		var firing_point: Vector2 = POINTS[id] if id != &"center" else (
 			Vector2(550, 340) if order[0] == &"left" else Vector2(650, 340))
-		if not await _build(level, support) or not await _build(level, firing_point):
+		if not await _build(level, support):
 			failures.append("route %s could not build protected route to %s" % [order, id])
 			break
+		# 移近后的两翼可由资源点前沿直接进攻；中央仍需再推进一段。
+		var facility: AIFacility
+		for target: AIFacility in level.get_facility_targets():
+			if target.facility_id == id:
+				facility = target
+		var support_range: float = minf(level.normal_weapon_profile.attack_range,
+			preload("res://resources/weapons/scatter_spore.tres").attack_range)
+		if facility.is_alive() and support.distance_to(facility.global_position) > support_range:
+			if not await _build(level, firing_point):
+				failures.append("route %s could not build firing point for %s" % [order, id])
+				break
 		var destroyed: bool = false
 		var wait_started: float = level.elapsed_seconds
 		var next_log: float = wait_started + 30
@@ -84,6 +95,8 @@ func _play(order: Array[StringName]) -> void:
 		failures.append("route %s did not win" % [order])
 	if not bool(ledger.get("balanced", false)):
 		failures.append("route %s resource ledger diverged" % [order])
+	if int(level.wave_flow.get_snapshot().get("spawned", 0)) == 0:
+		failures.append("route %s bypassed all enemy production" % [order])
 	print("SECOND_LEVEL_ROUTE_RESULT ", JSON.stringify({"order": order, "result": result,
 		"production": level.wave_flow.get_snapshot(), "ledger": ledger}))
 	_active_level = null

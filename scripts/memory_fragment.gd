@@ -6,6 +6,7 @@ extends Node2D
 @export var display_name: String = "记忆碎片"
 @export_multiline var memory_text: String = ""
 @export_range(0.1, 60.0) var collection_seconds: float = 5.0
+@export var label_offset: Vector2 = Vector2(-100, 27)
 
 var progress_seconds: float = 0.0
 var collected: bool = false
@@ -15,7 +16,7 @@ var _label: Label
 
 func _ready() -> void:
 	_label = Label.new()
-	_label.position = Vector2(-100, 27)
+	_label.position = label_offset
 	_label.size = Vector2(200, 50)
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE

@@ -106,25 +106,51 @@ position = Vector2(875, 510)
 total_nutrition = 80
 
 [node name="LeftAI" parent="World/Enemies" node_paths=PackedStringArray("mother_core") instance=ExtResource("10_facility")]
-position = Vector2(260, 300)
+position = Vector2(310, 400)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"left"
 display_name = "左侧绘图终端"
-max_health = 120
+max_health = 84
+
+[node name="Status" parent="World/Enemies/LeftAI"]
+offset_left = 45.0
+offset_top = -28.0
+offset_right = 265.0
+offset_bottom = -4.0
 
 [node name="CenterAI" parent="World/Enemies" node_paths=PackedStringArray("mother_core") instance=ExtResource("10_facility")]
-position = Vector2(600, 205)
+position = Vector2(600, 275)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"center"
 display_name = "中央绘图终端"
-max_health = 156
+max_health = 108
+
+[node name="Title" parent="World/Enemies/CenterAI"]
+offset_left = 45.0
+offset_top = -50.0
+offset_right = 245.0
+offset_bottom = -26.0
 
 [node name="RightAI" parent="World/Enemies" node_paths=PackedStringArray("mother_core") instance=ExtResource("10_facility")]
-position = Vector2(1000, 270)
+position = Vector2(920, 440)
 mother_core = NodePath("../../Colony/MotherCore")
 facility_id = &"right"
 display_name = "右侧绘图终端"
-max_health = 192
+max_health = 132
+
+[node name="Title" parent="World/Enemies/RightAI"]
+offset_left = -50.0
+offset_right = 150.0
+
+[node name="Status" parent="World/Enemies/RightAI"]
+offset_left = 45.0
+offset_top = -28.0
+offset_right = 265.0
+offset_bottom = -4.0
+
+[node name="TitleLabel" parent="World/Remains/RightCarcass"]
+offset_left = -130.0
+offset_right = 14.0
 
 [node name="TerrainNavigation" type="Node2D" parent="World"]
 script = ExtResource("15_terrain")

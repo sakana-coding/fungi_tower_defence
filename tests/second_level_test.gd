@@ -58,8 +58,14 @@ func _initial_and_real_attack() -> void:
 			and level.wave_flow.profile.cycle_seconds == configured.cycle_seconds,
 		"production uses an isolated copy of the current editable second-level timing configuration")
 	_check(level.wave_flow.profile.destruction_grace_seconds == 45, "destruction provides at least forty-five seconds to rebuild and advance")
-	_check(level.get_facility_targets().map(func(ai: AIFacility) -> int: return ai.health) == [120, 156, 192],
+	_check(level.get_facility_targets().map(func(ai: AIFacility) -> int: return ai.health) == [84, 108, 132],
 		"three stable facilities retain their independent initial health")
+	for facility: AIFacility in level.get_facility_targets():
+		_check(level.terrain_navigation.is_point_walkable(facility.global_position, BasicEnemy.NAVIGATION_CLEARANCE),
+			"shortened objective route keeps each facility outside terrain obstacles")
+		_check(level.get_weapons().all(func(weapon: SporeWeapon) -> bool:
+			return weapon.get_parent().global_position.distance_to(facility.global_position) > weapon.get_weapon_profile().attack_range),
+			"initial defenses still need paid expansion to attack a facility")
 	_check(level.get_node("World/Remains").get_child_count() == 2, "two eighty-nutrient sources are present")
 	_check(level.compact_hud.visible and not level.compact_hud.drawer.visible,
 		"existing compact interface starts with details collapsed")
@@ -70,6 +76,9 @@ func _initial_and_real_attack() -> void:
 	level.compact_hud.close_drawer()
 	_check((level.get_attack_preview(Vector2(330, 440)).covered as PackedStringArray).has("左侧绘图终端"),
 		"remote attack preview identifies a covered facility")
+	_check((level.get_attack_preview(Vector2(355, 535)).covered as PackedStringArray).has("左侧绘图终端")
+		and (level.get_attack_preview(Vector2(820, 535)).covered as PackedStringArray).has("右侧绘图终端"),
+		"both resource-front positions can now attack their side facility without an extra outpost")
 	_check((level.get_attack_preview(level.mother_core.global_position).covered as PackedStringArray).is_empty(),
 		"initial rear location does not pretend to reach facilities")
 	var exit_point: Vector2 = level.get_node("World/Enemies/LeftAI/SpawnPoints/Exit").global_position
@@ -116,7 +125,9 @@ func _initial_and_real_attack() -> void:
 		if not left.is_alive(): break
 		await _frames(1)
 	_check(not left.is_alive(), "ordinary projectiles destroy a facility through real ammunition and supply")
-	_check(level.get_node("World/Remains").get_child_count() == 2, "facility destruction creates no enemy corpse")
+	_check(level.get_node("World/Remains").get_children().all(func(remains: Node) -> bool:
+		return remains is LargeCarcass or (remains is EnemyRemains and remains.has_meta("carcass_source_id"))),
+		"facility destruction creates no enemy corpse while allowing real harvest batches from nearby resource piles")
 	var ledger: Dictionary = level.get_combat_resource_snapshot()
 	_check(ledger.enemy_created_nutrition == 0 and ledger.balanced, "facility destruction provides no income and preserves the resource ledger")
 	left.take_damage(999)
@@ -135,11 +146,11 @@ func _staggered_start_and_grace() -> void:
 		and is_equal_approx(float(right.remaining) - float(center.remaining), 6.0),
 		"initial production offsets the three entrances by six seconds")
 	_check(producer.profile.get_scenes_for_cycle(119, 0, 0).size() == 1
-		and producer.profile.get_scenes_for_cycle(120, 0, 0).size() == 3
-		and producer.profile.get_scenes_for_cycle(239, 0, 0).size() == 3
-		and producer.profile.get_scenes_for_cycle(240, 0, 0).size() == 5,
+		and producer.profile.get_scenes_for_cycle(120, 0, 0).size() == 2
+		and producer.profile.get_scenes_for_cycle(239, 0, 0).size() == 2
+		and producer.profile.get_scenes_for_cycle(240, 0, 0).size() == 4,
 		"small enemies begin at 120 seconds and mixed heavy pressure at 240 seconds")
-	_check(producer.profile.max_alive_per_source == 10, "three intact sources allow at most 30 live or pending enemies")
+	_check(producer.profile.max_alive_per_source == 6, "three intact sources allow at most 18 live or pending enemies")
 	_check(level.start_next_wave() and left.remaining == 0.0
 		and center.remaining == 6.0 and right.remaining == 12.0,
 		"early start removes preparation while retaining entrance offsets")
@@ -200,7 +211,15 @@ func _production_and_targets() -> void:
 	level.get_facility_targets()[0].take_damage(999)
 	var left_cycles: int = int(producer._sources[&"left"].cycles)
 	var center_cycles: int = int(producer._sources[&"center"].cycles)
-	await _frames(80)
+	# 低压力上限可能已满；真实击败一名中央敌人后，验证该来源恢复生产。
+	for enemy: Node in level.get_node("World/Enemies").get_children():
+		if enemy is BasicEnemy and enemy.get_meta("source_id", &"") == &"center" and enemy.is_alive():
+			enemy.take_damage(999)
+			break
+	for _frame: int in range(240):
+		if int(producer._sources[&"center"].cycles) > center_cycles:
+			break
+		await _frames(1)
 	_check(int(producer._sources[&"left"].cycles) == left_cycles,
 		"destroyed facility permanently stops all its future batches")
 	_check(int(producer._sources[&"center"].cycles) > center_cycles,

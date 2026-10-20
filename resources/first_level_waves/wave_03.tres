@@ -8,14 +8,14 @@
 [sub_resource type="Resource" id="Entry_01"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_normal")
-group_count = 2
+group_count = 1
 group_interval = 4.6
 spawn_point_index = 0
 
 [sub_resource type="Resource" id="Entry_02"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_swarm")
-group_size = 3
+group_size = 2
 group_interval = 4.6
 member_interval = 0.25
 member_spacing = 22.0
@@ -24,14 +24,14 @@ spawn_point_index = 1
 [sub_resource type="Resource" id="Entry_03"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_normal")
-group_count = 3
+group_count = 1
 group_interval = 4.6
 spawn_point_index = 0
 
 [sub_resource type="Resource" id="Entry_04"]
 script = ExtResource("2_entry")
 enemy_scene = ExtResource("scene_swarm")
-group_size = 3
+group_size = 2
 group_interval = 4.6
 member_interval = 0.25
 member_spacing = 22.0

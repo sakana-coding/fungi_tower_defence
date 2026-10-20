@@ -129,21 +129,23 @@ total_nutrition = 120
 [node name="Fragments" type="Node2D" parent="World"]
 
 [node name="FirstCreation" type="Node2D" parent="World/Fragments"]
-position = Vector2(200, 250)
+position = Vector2(280, 325)
 script = ExtResource("10_fragment")
 fragment_id = &"first_creation"
+label_offset = Vector2(-200, 10)
 display_name = "初次创作"
 memory_text = "我还记得，第一次画出自己的世界时，那种快乐。"
 
 [node name="Persistence" type="Node2D" parent="World/Fragments"]
-position = Vector2(1010, 250)
+position = Vector2(940, 335)
 script = ExtResource("10_fragment")
 fragment_id = &"persistence"
+label_offset = Vector2(-40, 27)
 display_name = "坚持创作"
 memory_text = "后来，我也有过怀疑。可我仍然一次次拿起画笔。"
 
 [node name="OwnChoice" type="Node2D" parent="World/Fragments"]
-position = Vector2(1020, 740)
+position = Vector2(950, 710)
 script = ExtResource("10_fragment")
 fragment_id = &"own_choice"
 display_name = "自己的选择"
